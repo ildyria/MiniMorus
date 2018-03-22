@@ -64,11 +64,7 @@
   C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $2^{-16}$}
 \end{align*}
 
-\begin{figure}
-  \substatesfalse
-  % \substatesfalse to label state words and/or masks
-  \centering
-  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
+\newcommand{\printstate}[1]{
   \ifsubstates \pgfmathsetmacro{\roundsep}{1.25}
   \else        \pgfmathsetmacro{\roundsep}{0.80} \fi
   \pgfmathsetmacro{\opoffset}{.1}
@@ -148,9 +144,41 @@
       }
     }
   }
+}
+
+\begin{figure}
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
+    \printstate{}
   \end{tikzpicture}%}}}
   \caption{\cipher{MiniMorus} state update function (1 step = 5 rounds).}
   \label{fig:minimorus}
 \end{figure}
 
+
+\begin{figure}
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
+    \printstate{}
+
+    \draw[very thick, green!50!black]
+      (C) -- (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) --
+      (tanB0-|and0.east)
+      (and0) -- (xnd0) (xnd0) -- (tlll-1) (xnd0) -- (xor0)
+      (and-1.east|-tanA-1) -- (tanA-1)
+      (tanA-1) -- (txor0) (txor0) -- (xor0)
+      (xor0) -- (lll0) (lll0) -- (W40)
+      ;
+
+
+  \end{tikzpicture}%}}}
+  \caption{\cipher{MiniMorus} linear approximation fragments.}
+  \label{fig:minimorus}
+\end{figure}
 \end{document}
