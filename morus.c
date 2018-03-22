@@ -28,7 +28,7 @@ void and_state(S o, S s1 , S s2)
 {
 	for (int i = 0; i < 4; ++i)
 	{
-		o[i] = s1[i] ^ s2[i]
+		o[i] = s1[i] ^ s2[i];
 	}
 }
 
@@ -36,7 +36,7 @@ void xor_state(S o, S s)
 {
 	for (int i = 0; i < 4; ++i)
 	{
-		o[i] ^= s[i]
+		o[i] ^= s[i];
 	}
 }
 
@@ -56,7 +56,7 @@ void permute_state(S s, int bits)
 		t = s[0];
 		s[0] = s[2];
 		s[2] = t;
-		t = s[1]
+		t = s[1];
 		s[1] = s[3];
 		s[3] = t;
 	}
@@ -69,8 +69,3 @@ void permute_state(S s, int bits)
 		s[0] = t;
 	}
 }
-
-
-
-
-
