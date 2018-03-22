@@ -2,6 +2,7 @@
 
 import random
 import math
+import sys
 
 def randword():
     return random.randrange(0,2**32)
@@ -12,9 +13,9 @@ def rotl(word, rotations=1, width=32):
     return ((word << rotations) & ones) | (word >> (width - rotations))
 
 def printstates(statelist, desc=""):
-    print desc
+    print(desc)
     for state in statelist:
-        print "[" + " ".join([hex(word)[2:].zfill(32/4) for word in state]) + "]"
+        print("[" + " ".join([hex(word)[2:].zfill(8) for word in state]) + "]")
 
 def xor(l):
     return reduce((lambda x, y: x ^ y), l, 0)
@@ -35,9 +36,16 @@ def minimorus_stateupdate(S, C=[], M=0):
 def minimorus_example():
     S = []
     C = []
-    S.append([[randword() for w in range(5)]]); printstates(S[0], "init")
-    minimorus_stateupdate(S, C);                printstates(S[-1], "S^1")
-    minimorus_stateupdate(S, C);                printstates(S[-1], "S^2")
+    # S.append([[randword() for w in range(5)]]); printstates(S[0], "init")
+    S.append([[1 for w in range(5)]]);
+    printstates(S[0], "init")
+    minimorus_stateupdate(S, C);
+    printstates(S[-1], "S^1")
+    minimorus_stateupdate(S, C);
+    printstates(S[-1], "S^2")
+
+minimorus_example()
+sys.exit("Stop")
 
 def minimorus_linearsample():
     S = []
@@ -147,12 +155,12 @@ def minimorus_linearstats(num):
     bias = (bias - num/2)/float(num)
     potential = correlation**2
     #print "prob", probability
-    print "corr", correlation
+    print("corr", correlation)
     #print "bias", bias
     #print "pote", potential, math.log(potential, 2)
-    print "logD", math.log(bias**(-2), 2)
+    print("logD", math.log(bias**(-2), 2))
     biascost = math.fabs(math.log(2*math.fabs(bias), 2))  # math.copysign(1,bias)
-    print "bias: +- 2^-", biascost
+    print("bias: +- 2^-", biascost)
 
 
     # p = 1/4

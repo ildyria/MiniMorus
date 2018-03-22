@@ -66,7 +66,7 @@ void mini_morus_round(S state, uint32_t message) {
 	state[3] = rotate_left(state[3], 22);
 
 	state[4] ^= message;
-	state[4] ^= state[0] ^ state[1];
+	state[4] ^= state[0] & state[1];
 	state[4] ^= state[2];
 	state[4] = rotate_left(state[4], 13);
 }
@@ -84,12 +84,6 @@ void init(S state, uint32_t iv, uint32_t key, uint32_t const1, uint32_t const2){
 }
 
 void rand_init(S state){
-  // FILE * f = fopen("/dev/urandom", "rb");
-  // fread(&state[0], 5*sizeof(uint32_t), 1, f);
-  // fread(&state[1], sizeof(uint32_t), 1, f);
-  // fread(&state[2], sizeof(uint32_t), 1, f);
-  // fread(&state[3], sizeof(uint32_t), 1, f);
-  // fread(&state[4], sizeof(uint32_t), 1, f);
 	state[0] = rand();
 	state[1] = rand();
 	state[2] = rand();
@@ -117,11 +111,12 @@ inline void minimorus_sample(S* saved_state, uint32_t* saved_cipher, int num)
     save_state(saved_state,state,i);
     saved_cipher[i] = encrypt(0, state);
   }
+  save_state(saved_state,state,i);
 }
 
 long long minimorus_linearsample()
 {
-  S saved_state[5];
+  S saved_state[6];
   uint32_t saved_cipher[5];
 
   uint32_t mask1 = 0;
@@ -139,28 +134,106 @@ long long minimorus_linearsample()
   //             mask(C[2], [1,7,15,27]),
   //             mask(C[3], [6,20,14]),
   //             mask(C[4], [19]),
-  //             mask(S[2][-1][2], [0])]) # 2^-9
+  //             mask(S[2][2], [0])]) # 2^-9
 
+  // --------------------------------------------
+  //
+  // mask(&mask1,27);
+  // res ^= saved_cipher[0] & mask1;
+  //
+  // mask(&mask2,0);
+  // mask(&mask2,26);
+  // mask(&mask2,8);
+  // res ^= saved_cipher[1] & mask2;
+  //
+  // mask(&mask3,31);
+  // mask(&mask3,13);
+  // mask(&mask3,7);
+  // res ^= saved_cipher[2] & mask3;
+  //
+  // mask(&mask4,12);
+  // res ^= saved_cipher[3] & mask4;
+  //
+  // mask(&mask5,0);
+  // // printf("%08x\n", mask5);
+  // res ^= saved_state[2][2] & mask5;
 
-  mask(&mask1,2);
-  res ^= saved_cipher[0] & mask1;
+  // --------------------------------------------
 
-  mask(&mask2,1);
-  mask(&mask2,7);
-  mask(&mask2,15);
-  mask(&mask2,27);
-  res ^= saved_cipher[1] & mask2;
+    // mask(&mask1,2);
+    // res ^= saved_cipher[1] & mask1;
+    //
+    // mask(&mask2,1);
+    // mask(&mask2,7);
+    // mask(&mask2,15);
+    // mask(&mask2,27);
+    // res ^= saved_cipher[2] & mask2;
+    //
+    // mask(&mask3,6);
+    // mask(&mask3,20);
+    // mask(&mask3,14);
+    // res ^= saved_cipher[3] & mask3;
+    //
+    // mask(&mask4,19);
+    // res ^= saved_cipher[4] & mask4;
+    //
+    // mask(&mask5,0);
+    // res ^= saved_state[2][2] & mask5;
 
-  mask(&mask3,6);
-  mask(&mask3,20);
-  mask(&mask3,14);
-  res ^= saved_cipher[2] & mask3;
+    --------------------------------------------
 
-  mask(&mask4,19);
-  res ^= saved_cipher[3] & mask4;
+    mask(&mask1,27);
+    res ^= saved_cipher[0] & mask1;
 
-  mask(&mask5,0);
-  res ^= saved_state[2][2] & mask5;
+    mask(&mask2,0);
+    mask(&mask2,26);
+    mask(&mask2,8);
+    mask(&mask2,2);
+    res ^= saved_cipher[1] & mask2;
+
+    mask(&mask3,31);
+    mask(&mask3,13);
+    mask(&mask3,1);
+    mask(&mask3,15);
+    mask(&mask3,27);
+    res ^= saved_cipher[2] & mask3;
+
+    mask(&mask4,6);
+    mask(&mask4,12);
+    mask(&mask4,20);
+    mask(&mask4,14);
+    res ^= saved_cipher[3] & mask4;
+
+    mask4 = 0;
+    mask(&mask4,19);
+    res ^= saved_cipher[4] & mask4;
+
+    // --------------------------------------------
+
+  // mask(&mask1,2);
+  // // printf("%08x\n", mask1);
+  // res ^= saved_cipher[0] & mask1;
+  //
+  // mask(&mask2,1);
+  // mask(&mask2,7);
+  // mask(&mask2,15);
+  // mask(&mask2,27);
+  // // printf("%08x\n", mask2);
+  // res ^= saved_cipher[1] & mask2;
+  //
+  // mask(&mask3,6);
+  // mask(&mask3,20);
+  // mask(&mask3,14);
+  // // printf("%08x\n", mask3);
+  // res ^= saved_cipher[2] & mask3;
+  //
+  // mask(&mask4,19);
+  // // printf("%08x\n", mask4);
+  // res ^= saved_cipher[3] & mask4;
+  //
+  // mask(&mask5,0);
+  // // printf("%08x\n", mask5);
+  // res ^= saved_state[2][2] & mask5;
 
   return 1 & HW(res);
 }
@@ -176,26 +249,26 @@ void minimorus_linearstats(unsigned long long num) {
     long double potential;
     long double biases;
     long double biases_cost;
-    int tid;
+    // int tid;
 
     printf("num:  %llu\n", num);
     printf("--------------------------\n");
 
     // try using openmp to speed things up
-    #pragma omp parallel for private(res, tid) reduction(+:bias,inbalance)
+    // #pragma omp parallel for private(res, tid) reduction(+:bias,inbalance)
     for(i = 0 ; i < num; ++i)
     {
       res = minimorus_linearsample();
       // inbalance += (-1)^res // this is -1 if odd 1 if even
       // printf("1 -> -1 = %i\n",(~(1-1) << 1) + 1);
       // printf("0 ->  1 = %i\n",(~(0-1) << 1) + 1);
-      inbalance += (~((res &1) -1) << 1) + 1;
+      inbalance += 1 - 2*res;
       bias += res;
       if((i & 0x3fffff) == 0)
       {
-        tid = omp_get_thread_num();
-        // printf("sampling, %llu\n", i);
-        printf("sampling, %llu -- thread %d\n", i, tid);
+        // tid = omp_get_thread_num();
+        printf("sampling, %llu\n", i);
+        // printf("sampling, %llu -- thread %d\n", i, tid);
       }
     }
 
@@ -216,21 +289,29 @@ void minimorus_linearstats(unsigned long long num) {
     printf("--------------------------\n");
     printf("prob: %Lf\n", probability);
     printf("corr: %Lf\n", correlation);
-    printf("bias: %Lf\n", biases);
+    printf("biases: %Lf\n", biases);
     printf("ptnt: %Lf\n", potential);
-    printf("logD: %Lf\n", log2l(1/(biases*biases)));
 
-    biases_cost = fabsl(log2(2*fabsl(biases)));
-    printf("bias: +- 2^-%Lf\n", biases_cost);
-
+    // printf("logD: %Lf\n", log2l(1/(biases*biases)));
+    // biases_cost = fabsl(log2(2*fabsl(biases)));
+    // printf("bias: +- 2^-%Lf\n", biases_cost);
 }
 
 int main(int argc, char const *argv[]) {
 
+  // S st = {1, 1, 1, 1, 1};
+  // print_state(st);
+  // printf("%08x\n",encrypt(0,st));
+  // print_state(st);
+  // printf("%08x\n",encrypt(0,st));
+  // print_state(st);
+
+
   /* Intializes random number generator */
   long long int num = 1;
-  num <<= 25;
+  num <<= 34;
   srand((unsigned) time(NULL));
   minimorus_linearstats(num);
+  // minimorus_linearstats(1);
   return 0;
 }
