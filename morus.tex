@@ -50,7 +50,19 @@
 
 \newif\ifsubstates\substatesfalse
 
+
 \begin{document}
+
+\noindent
+2 approximations for $S^{2,2}_{0}$:
+\begin{align*}
+  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
+  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus
+  C^4_{19} \tag{corr. $2^{-9}$} \\
+\intertext{Combined ciphertext-only approximation:}
+  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
+  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $2^{-16}$}
+\end{align*}
 
 \begin{figure}
   \substatesfalse
