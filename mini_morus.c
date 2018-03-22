@@ -180,7 +180,7 @@ long long minimorus_linearsample()
     // mask(&mask5,0);
     // res ^= saved_state[2][2] & mask5;
 
-    --------------------------------------------
+  //  --------------------------------------------
 
     mask(&mask1,27);
     res ^= saved_cipher[0] & mask1;
@@ -309,7 +309,7 @@ int main(int argc, char const *argv[]) {
 
   /* Intializes random number generator */
   long long int num = 1;
-  num <<= 34;
+  num <<= 35;
   srand((unsigned) time(NULL));
   minimorus_linearstats(num);
   // minimorus_linearstats(1);
