@@ -54,3 +54,9 @@ dkms.conf
 mini_morus
 morus
 
+# LaTeX
+*.aux
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+morus.log

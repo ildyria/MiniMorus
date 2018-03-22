@@ -48,7 +48,7 @@
 \tikzset{next/.style={->, >=latex}}
 \tikzset{trail/.style={line width=2pt, line cap=round}}
 \definecolor{delta}{HTML}{B58900}
-\definecolor{epsilon}{HTML}{CB4B16}
+\definecolor{epsil}{HTML}{CB4B16}
 \definecolor{gamma}{HTML}{6C71C4}
 \definecolor{beta}{HTML}{268BD2}
 \definecolor{alpha}{HTML}{859900}
@@ -76,7 +76,7 @@
   C^4_{19} \tag{corr. $2^{-9}$} \\
 \intertext{Combined ciphertext-only approximation:}
   0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
-  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $2^{-16}$}
+  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-16.5}$}
 \end{align*}
 
 \newcommand{\printstate}{
@@ -190,8 +190,11 @@
       (and-1.east|-tanA-1) -- (tanA-1) (tanA-1) -- (txor0) (txor0) -- (xor0)
       (xor0) -- (lll0) (lll0) -- (W40) node[below] {$i+b_0$}
       ;
+    \draw[trail, alpha, dashed]
+      (and-1.east|-tanB-1) -- (tanB-1) (tanB-1) -- (tanA0) (tanA0) -- (tanA0-|and0.east)
+      ;
   \end{tikzpicture}%}}}
-  \caption*{$\alpha_i$: weight 1} %$C^j_i, S^{j-1,0}_{i+5}$ ($w\!=\!1$)}
+  \caption*{$\alpha_i$: weight 1 (not 2)} %$C^j_i, S^{j-1,0}_{i+5}$ ($w\!=\!1$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -207,7 +210,7 @@
       (W40) node[below] {\phantom{$i$}}
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\beta_i$: weight 0} %$C^j_i, S^{j,0}_i, S^{j,1}_i$ ($w\!=\!0$)}
+  \caption*{$\beta_i$: weight 1} %$C^j_i, S^{j,0}_i, S^{j,1}_i$ ($w\!=\!0$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -240,7 +243,7 @@
   \begin{subfigure}{.32\textwidth}
   \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
     \printstate
-    \draw[trail, epsilon]
+    \draw[trail, epsil]
       (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
       (xor2) -- (lll2) (xor2) -- (txor2) (txor2) -- (W40) node[below] {$i$}
       (lll2) -- (W42) node[below] {$i+b_2$}
@@ -273,33 +276,72 @@
 
 
 \begin{figure}
+  \newcommand{\M}[2]{1.65,-1.5*#1-.25-.25*#2}
+  \newcommand{\C}[1]{-.1,-.25-1.5*#1}
+  \renewcommand{\S}[2]{.25+.25*#2,-1.5*#1}
   \centering
   \begin{subfigure}{\textwidth}
+    \begin{tikzpicture}[xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
+      \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+      \foreach \r in {0,...,4} { \draw (\S{0}{\r}) node[above] {$S^{\r}$}; }
+      \draw (\C{0}|-\S{0}{0}) node[above] {$C$};
 
-    Approximation 1 for $S^{2,2}_0$ (weight 7):
+      \draw[alpha] (\C{0}) node[left] {27} -| (\S{1}{0}) node[above right] {0}
+                   (\M{0}{0}) node[right] {$\alpha_{27}$};
 
-    Step 0: $\alpha_{27}$ (weight 1)
+      \draw[beta]  (\C{1}) node[above left] {0} -| (\S{1}{0}) node[below right] {0}
+                   (\C{1}-|\S{1}{0}) -| ([xshift=-1pt]\S{1}{1}) node[above] {0\,}
+                   (\M{1}{0}) node[right] {$\beta_0$};
+      \draw[alpha] ([yshift=-1.5pt]\C{1}) node[left] {8} -| (\S{2}{0}) node[above right] {\!\!13}
+                   (\M{1}{1}) node[right] {$\alpha_{8,26}$};
+      \draw[alpha] ([yshift=-3.0pt]\C{1}) node[below left] {26} -| ([xshift=-1pt]\S{2}{0}) node[above left] {31\!};
+      \draw[gamma] (\S{1}{1}) node[above] {\,0} -- (\S{2}{1}) node[above left] {31\!\!}
+                   (\S{1}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{1}{4}) node[above] {0\,}
+                   (\M{1}{2}) node[right] {$\gamma_0$};
+      \draw[delta] (\S{1}{4}) node[above] {\,0} -- (\S{2}{4}) node[above right] {13}
+                   (\S{1}{4}) ++(0,-1.0) -| ([xshift=2pt]\S{2}{2}) node[below] {0} node[black] {$\times$}
+                   (\M{1}{3}) node[right] {$\delta_0$};
 
-    Step 1: $\alpha_{8,26}, \beta_0, \gamma_0, \delta_0$ (weight 4)
+      \draw[beta]  (\C{2}) node[above left] {31} -| ([xshift=-1pt]\S{2}{0}) node[below left] {31\!}
+                   (\C{2}-|[xshift=-1pt]\S{2}{0}) -| ([xshift=0pt]\S{2}{1}) node[below left] {31\!\!}
+                   (\M{2}{0}) node[right] {$\beta_{13,31}$};
+      \draw[beta]  ([yshift=-1.5pt]\C{2}) node[left] {13} -| (\S{2}{0}) node[below right] {\!\!13}
+                   ([yshift=-1.5pt]\C{2}-|\S{2}{0}) -| ([xshift=1pt]\S{2}{1}) node[above] {\,\,\,13};
+      \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {7} -| (\S{3}{0}) node[above right] {12}
+                   (\M{2}{1}) node[right] {$\alpha_7$};
+      \draw[gamma] ([xshift=2pt]\S{2}{1}) node[below right] {13} -- ([xshift=2pt]\S{3}{1}) node[above right] {12}
+                   ([xshift=2pt]\S{2}{1}) ++(0,-.75) -| (\S{2}{4}) node[below right] {13}
+                   (\M{2}{2}) node[right] {$\gamma_{13}$};
 
-    Step 2: $\alpha_7, \beta_{13,31}, \gamma_{13}$ (weight 2)
+      \draw[beta]  (\C{3}) node[left] {12} -| (\S{3}{0}) node[below right] {12}
+                   (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {12}
+                   (\M{3}{0}) node[right] {$\beta_{12}$};
 
-    Step 3: $\beta_{12}$ (weight 0)
+      \draw (\S{4}{2}) node[above] {\normalsize weight 7};
 
-    Step 4: ---
-    \bigskip
 
-    Approximation 2 for $S^{2,2}_0$ (weight 9):
+      \begin{scope}[xshift=2.5cm]
+        \foreach \r in {1,...,4} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+        \foreach \r in {0,...,4} { \draw (\S{1}{\r}) node[above] {$S^{\r}$}; }
+        \draw (\C{0}|-\S{1}{0}) node[above] {$C$};
 
-    Step 0: ---
+        \draw[alpha] (\M{1}{1}) node[right] {$\alpha_2$};
 
-    Step 1: $\alpha_2$ (weight 1)
+        \draw[beta]  (\M{2}{0}) node[right] {$\beta_7$};
+        \draw[alpha] (\M{2}{1}) node[right] {$\alpha_{1,15,27}$};
+        \draw[gamma] (\M{2}{2}) node[right] {$\gamma_7$};
+        \draw[delta] (\M{2}{3}) node[right] {$\delta_7$};
+        \draw[epsil] (\M{2}{4}) node[right] {$\varepsilon_0$};
 
-    St.2: $\alpha_{1,15,27}, \beta_7, \gamma_7, \delta_7, \varepsilon_0$ (weight 6)
+        \draw[beta]  (\M{3}{0}) node[right] {$\beta_{6,20}$};
+        \draw[alpha] (\M{3}{1}) node[right] {$\alpha_{14}$};
+        \draw[gamma] (\M{3}{2}) node[right] {$\gamma_{20}$};
 
-    Step 3: $\alpha_{14}, \beta_{6, 20}, \gamma_{20}$ (weight 2)
+        \draw[beta]  (\M{4}{0}) node[right] {$\beta_{19}$};
 
-    Step 4: $\beta_{19}$ (weight 0)
+        \draw (\S{5}{2}) node[above] {\normalsize weight 9};
+      \end{scope}
+    \end{tikzpicture}
     \caption{\cipher{MiniMORUS-640}}
   \end{subfigure}
   \bigskip
@@ -308,7 +350,7 @@
 
     \caption{\cipher{MiniMORUS-1280}}
   \end{subfigure}
-  \caption{\cipher{MiniMORUS} approximations for $S^{2,2}_0$}
+  \caption{\cipher{MiniMORUS}: Two approximations for $S^{2,2}_0$}
 \end{figure}
 
 \end{document}
