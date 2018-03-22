@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import random
 import math
@@ -24,27 +24,29 @@ def xor(l):
 def mask(word, bits):
     return xor([(word & (1 << bit)) >> bit for bit in bits])
 
-def minimorus_stateupdate(S, C=[], M=0):
-    Si = list(S[-1][-1])
+def minimorus_stateupdate(S, C=[], M=0, wordsize=32):
+    Si = list(S[-1])
     C.append(M ^ Si[0] ^ Si[1] ^ (Si[2] & Si[3]))
-    S.append([]);                                            #S[-1].append(list(Si))  # S^i_0,*
-    Si[0] = rotl((Si[0] ^ (Si[1] & Si[2]) ^ Si[3]),      5); #S[-1].append(list(Si))  # S^i_1,*
-    Si[1] = rotl((Si[1] ^ (Si[2] & Si[3]) ^ Si[4] ^ M), 31); #S[-1].append(list(Si))  # S^i_2,*
-    Si[2] = rotl((Si[2] ^ (Si[3] & Si[4]) ^ Si[0] ^ M),  7); #S[-1].append(list(Si))  # S^i_3,*
-    Si[3] = rotl((Si[3] ^ (Si[4] & Si[0]) ^ Si[1] ^ M), 22); #S[-1].append(list(Si))  # S^i_4,*
-    Si[4] = rotl((Si[4] ^ (Si[0] & Si[1]) ^ Si[2] ^ M), 13); S[-1].append(list(Si))  # S^i_5,* = S^i+1_0,*
+    if wordsize == 32:
+        Si[0] = rotl((Si[0] ^ (Si[1] & Si[2]) ^ Si[3]),      5);
+        Si[1] = rotl((Si[1] ^ (Si[2] & Si[3]) ^ Si[4] ^ M), 31);
+        Si[2] = rotl((Si[2] ^ (Si[3] & Si[4]) ^ Si[0] ^ M),  7);
+        Si[3] = rotl((Si[3] ^ (Si[4] & Si[0]) ^ Si[1] ^ M), 22);
+        Si[4] = rotl((Si[4] ^ (Si[0] & Si[1]) ^ Si[2] ^ M), 13); S.append(list(Si))
+    else:
+        pass
 
 def minimorus_example():
     S = []
     C = []
-    S.append([[randword() for w in range(5)]]); printstates(S[0], "init")
-    minimorus_stateupdate(S, C);                printstates(S[-1], "S^1")
-    minimorus_stateupdate(S, C);                printstates(S[-1], "S^2")
+    S.append([randword() for w in range(5)]); printstates(S[0], "init")
+    minimorus_stateupdate(S, C);              printstates(S[-1], "S^1")
+    minimorus_stateupdate(S, C);              printstates(S[-1], "S^2")
 
 def minimorus_linearsample():
     S = []
     C = []
-    S.append([[randword() for w in range(5)]])
+    S.append([randword() for w in range(5)])
     minimorus_stateupdate(S, C)
     minimorus_stateupdate(S, C)
     minimorus_stateupdate(S, C)
@@ -52,17 +54,38 @@ def minimorus_linearsample():
     minimorus_stateupdate(S, C)
     bit = 0
 
+    return xor([mask(S[1][0], [0]),
+                mask(S[1][4], [0]),
+                mask(C[1], [0,8,26]),
+                mask(C[2], [13,31]),
+                # 2^-3 version
+                mask(S[2][4], [13]),
+                mask(S[3][1], [12]),
+                # 2^-4 version
+                #mask(S[2][1], [13]),
+                ]) # 2^-3
+
+    return xor([mask(S[1][1], [0]),
+                mask(C[1], [8,26]),
+                mask(C[2], [13,31]),
+                mask(S[2][4], [13]),
+                mask(S[1][4], [0]),
+                mask(S[3][1], [12]),
+                ]) # 2^-4
+
+
+
     return xor([mask(C[0], [27]),
                 mask(C[1], [0,26]),
                 mask(C[2], [31]),
-                mask(S[1][-1][4], [0])]) # 2^-3
+                mask(S[1][4], [0])]) # 2^-3
 
     # Approx 1 for S2
     #return xor([mask(C[0], [27]),
     #            mask(C[1], [0,26,8]),
     #            mask(C[2], [31,13,7]),
     #            mask(C[3], [12]),
-    #            mask(S[2][-1][2], [0])]) # 2^-7
+    #            mask(S[2][2], [0])]) # 2^-7
 
     # Approx 2 for S2
     # TESTED WITH 2^-22
@@ -70,7 +93,7 @@ def minimorus_linearsample():
     #            mask(C[2], [1,7,15,27]),
     #            mask(C[3], [6,20,14]),
     #            mask(C[4], [19]),
-    #            mask(S[2][-1][2], [0])]) # 2^-9
+    #            mask(S[2][2], [0])]) # 2^-9
 
 def minimorus_linearstats(num):
     count = 0
