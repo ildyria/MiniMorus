@@ -3,6 +3,7 @@
 \usepackage{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{ifthen}
+\usepackage{subcaption}
 
 \usepackage{tikz}
 \usetikzlibrary{calc,math}
@@ -45,6 +46,7 @@
 \tikzset{oprot/.style={op, rectangle, rounded corners=2pt, inner sep=2pt, minimum width=3ex, font=\scriptsize}}
 \tikzset{optee/.style={shape=circle, fill, draw, inner sep=0pt, minimum size=2pt}}
 \tikzset{next/.style={->, >=latex}}
+\tikzset{trail/.style={line width=2pt, green!50!black}}
 
 \newcommand{\cipher}[1]{\textsf{#1}}
 
@@ -64,7 +66,7 @@
   C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $2^{-16}$}
 \end{align*}
 
-\newcommand{\printstate}[1]{
+\newcommand{\printstate}{
   \ifsubstates \pgfmathsetmacro{\roundsep}{1.25}
   \else        \pgfmathsetmacro{\roundsep}{0.80} \fi
   \pgfmathsetmacro{\opoffset}{.1}
@@ -151,7 +153,7 @@
   % \substatesfalse to label state words and/or masks
   \centering
   \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
-    \printstate{}
+    \printstate
   \end{tikzpicture}%}}}
   \caption{\cipher{MiniMorus} state update function (1 step = 5 rounds).}
   \label{fig:minimorus}
@@ -162,22 +164,52 @@
   \substatesfalse
   % \substatesfalse to label state words and/or masks
   \centering
-  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
-    \printstate{}
-
-    \draw[very thick, green!50!black]
-      (C) -- (lll-1)
+  \begin{subfigure}{.3\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail]
+      (C) -- node[below] {$i$} (lll-1)
       (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
-      (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) --
-      (tanB0-|and0.east)
+      (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) -- (tanB0-|and0.east)
       (and0) -- (xnd0) (xnd0) -- (tlll-1) (xnd0) -- (xor0)
-      (and-1.east|-tanA-1) -- (tanA-1)
-      (tanA-1) -- (txor0) (txor0) -- (xor0)
-      (xor0) -- (lll0) (lll0) -- (W40)
+      (and-1.east|-tanA-1) -- (tanA-1) (tanA-1) -- (txor0) (txor0) -- (xor0)
+      (xor0) -- (lll0) (lll0) -- (W40) node[below] {$i+5$}
+      (W-20) node[above] {\phantom{$i$}}
       ;
-
-
   \end{tikzpicture}%}}}
+  \caption{$\alpha_i$: $C^j \to S^{j-1,0}$}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.3\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail]
+      (C) -- node[below] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) (txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+  \end{tikzpicture}%}}}
+  \caption{$\beta_i$: $C^j \to S^{j,0}, S^{j,1}$}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.3\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail]
+      (W-21) node[above] {$i$} -- (xnd1) (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i-1$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption{$\gamma_i$: $S^{j,1}, S^{j,4} \to S^{j+1,1}$}
+  \end{subfigure}
   \caption{\cipher{MiniMorus} linear approximation fragments.}
   \label{fig:minimorus}
 \end{figure}
