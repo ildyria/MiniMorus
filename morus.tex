@@ -210,6 +210,31 @@
   \end{tikzpicture}%}}}
   \caption{$\gamma_i$: $S^{j,1}, S^{j,4} \to S^{j+1,1}$}
   \end{subfigure}
+  \bigskip
+
+  \begin{subfigure}{.3\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail]
+      (W-24) node[above] {$i$} -- (xnd4) (xnd4) -- (xor4) (xnd4) -- (and4)
+      (xor4) -- (lll4) (xor4) -- (txor4) (txor4) -- (W42) node[below] {$i$}
+      (lll4) -- (W44) node[below] {$i+13$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption{$\delta_i$: $S^{j,4} \to S^{j+1,2}, S^{j+1,4}$}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.3\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail]
+      (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
+      (xor2) -- (lll2) (xor2) -- (txor2) (txor2) -- (W40) node[below] {$i$}
+      (lll2) -- (W42) node[below] {$i+7$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption{$\varepsilon_i$: $S^{j,2} \to S^{j+1,0}, S^{j+1,2}$}
+  \end{subfigure}
   \caption{\cipher{MiniMorus} linear approximation fragments.}
   \label{fig:minimorus}
 \end{figure}
