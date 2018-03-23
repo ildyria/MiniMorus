@@ -3,8 +3,8 @@ FULL = morus
 LIBS = -lm -fopenmp
 CC = gcc
 CFLAGS = -g -Wall -O3 -fopenmp
-MINI_OBJECTS = $(MINI:%=%.o) main.o
-FULL_OBJECTS = $(FULL:%=%.o) main.o
+MINI_OBJECTS = $(MINI:%=%.o) $(MINI:%=main_%.o)
+FULL_OBJECTS = $(FULL:%=%.o) $(FULL:%=main_%.o)
 HEADERS = $(wildcard *.h)
 
 .PHONY: default all clean

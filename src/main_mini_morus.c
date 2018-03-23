@@ -1,4 +1,4 @@
-#include "main.h"
+#include "main_mini_morus.h"
 
 inline void copy_word(state_words* to, const state_words* from)
 {
