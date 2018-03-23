@@ -51,9 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-mini_morus
-morus
-
 # LaTeX
 *.aux
 *.synctex.gz
