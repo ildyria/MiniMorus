@@ -10,11 +10,11 @@ inline void copy_word(state_words* to, const state_words* from)
 
 inline void save_state(state* state_saved, state state, int i)
 {
-  copy_word(&state_saved[i][0], &state[0]);
-  copy_word(&state_saved[i][1], &state[1]);
-  copy_word(&state_saved[i][2], &state[2]);
-  copy_word(&state_saved[i][3], &state[3]);
-  copy_word(&state_saved[i][4], &state[4]);
+  copy_word(&(state_saved[i][0]), &(state[0]));
+  copy_word(&(state_saved[i][1]), &(state[1]));
+  copy_word(&(state_saved[i][2]), &(state[2]));
+  copy_word(&(state_saved[i][3]), &(state[3]));
+  copy_word(&(state_saved[i][4]), &(state[4]));
 }
 
 inline void sample(state* saved_state, state_words* saved_cipher, int num, unsigned int* seed)
