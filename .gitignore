@@ -57,3 +57,12 @@ dkms.conf
 *.fdb_latexmk
 *.fls
 morus.log
+
+# Annoying MacOS things
+.DS_Store
+
+# output
+*.pdf
+
+# Sage stuff
+*.sage.py

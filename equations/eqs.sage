@@ -1,12 +1,15 @@
 LL = []
 
 large = 0
-#0 means use MORUS-640 rotation constants, 1 means use MORUS-1280's
+#0 means use MORUS-640 rotation constants & word size, 1 means use MORUS-1280's
+
+nWords = 1
+#nWords = 1 for mini MORUS, 4 for the full MORUS
 
 wordSize = [32,64][large]
-nWords = 1
 
 size = wordSize * nWords
+#size of a register
 
 nRounds = 5
 
@@ -22,8 +25,9 @@ LL += sum(sum(S,[]),[])
 
 
 R = PolynomialRing(GF(2),(nRounds+1)*size*5, LL)
-C = [[ R.gens_dict()[x] for x in c ] for c in C ]
-S = [[[ R.gens_dict()[x] for x in s ] for s in ss ] for ss in S ]
+D = R.gens_dict()
+C = [[ D[x] for x in c ] for c in C ]
+S = [[[ D[x] for x in s ] for s in ss ] for ss in S ]
 def eq1(i,j):
     return C[i][j] + S[i][0][j] + S[i][1][(j-w[2])%size] + S[i][2][j] * S[i][3][j]
 def eq2(i,j):
