@@ -17,11 +17,14 @@ inline void save_state(state* state_saved, state state, int i)
 inline void sample(state* saved_state, state_words* saved_cipher, int num, unsigned int* seed)
 {
   state state;
+  state_words null_words;
+  // state_words output;
   int i;
   rand_init(state, seed);
+  null_word(&null_words);
   for (i = 0; i < num; i++) {
     save_state(saved_state, state, i);
-    saved_cipher[i] = encrypt(0, state);
+    encrypt(&saved_cipher[i], null_words, state);
   }
   save_state(saved_state, state, i);
 }
@@ -47,7 +50,7 @@ void linear_stats(unsigned long long num) {
     printf("num:  %llu\n", (num* omp_get_max_threads()));
     printf("--------------------------\n");
 
-    omp_set_num_threads(16);
+    // omp_set_num_threads(16);
     # pragma omp parallel private(i, tid, seed) reduction(+:bias,inbalance)
     {
       tid = omp_get_thread_num();

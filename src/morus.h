@@ -11,6 +11,8 @@ void rand_init(state st, unsigned int* seed);
 
 void iterate(state st, state_words message);
 
-state_words encrypt(state_words message, state state);
+void encrypt(state_words* out, state_words message, state state);
 
 int linear(state* saved_state, state_words* saved_cipher);
+
+inline void null_word(state_words* w);

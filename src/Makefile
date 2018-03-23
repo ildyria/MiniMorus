@@ -1,24 +1,29 @@
-TARGET = mini_morus
+MINI = mini_morus
+FULL = morus
 LIBS = -lm -fopenmp
 CC = gcc
 CFLAGS = -g -Wall -O3 -fopenmp
+MINI_OBJECTS = $(MINI:%=%.o) main.o
+FULL_OBJECTS = $(FULL:%=%.o) main.o
+HEADERS = $(wildcard *.h)
 
 .PHONY: default all clean
 
-default: $(TARGET)
+default: $(FULL) $(MINI)
 all: default
-
-OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
-HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
 		$(CC) $(CFLAGS) -c $< -o $@
 
-.PRECIOUS: $(TARGET) $(OBJECTS)
+.PRECIOUS: $(FULL) $(MINI) $(MINI_OBJECTS) $(FULL_OBJECTS)
 
-$(TARGET): $(OBJECTS)
-		$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
+$(MINI): $(MINI_OBJECTS)
+		$(CC) $(MINI_OBJECTS) -Wall $(LIBS) -o $@
+
+$(FULL): $(FULL_OBJECTS)
+		$(CC) $(FULL_OBJECTS) -Wall $(LIBS) -o $@
 
 clean:
 		-rm -f *.o
-		-rm -f $(TARGET)
+		-rm -f $(FULL)
+		-rm -f $(MINI)

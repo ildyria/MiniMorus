@@ -1,5 +1,9 @@
 #include "mini_morus.h"
 
+void null_word(state_words* w) {
+   *w = 0;
+}
+
 inline void print_state(state state) {
   printf("%08x %08x %08x %08x %08x\n", state[0], state[1], state[2], state[3], state[4]);
 }
@@ -44,20 +48,15 @@ void iterate(state st, state_words message) {
 	st[4] = rotate_left(st[4], 13);
 }
 
-state_words encrypt(state_words message, state st)
+void encrypt(state_words* out, state_words message, state st)
 {
 	state_words mem = message;
 	message ^= st[0];
 	message ^= st[1];
 	message ^= st[2] & st[3];
 	iterate(st, mem);
-	return message;
+  *out = message;
 }
-
-
-
-
-
 
 inline uint32_t gen_mask(uint32_t* mask, unsigned int i)
 {

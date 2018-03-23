@@ -2,6 +2,8 @@
 
 import random
 import math
+# import sys
+from functools import reduce
 
 def randword():
     return random.randrange(0,2**32)
@@ -12,9 +14,9 @@ def rotl(word, rotations=1, width=32):
     return ((word << rotations) & ones) | (word >> (width - rotations))
 
 def printstates(statelist, desc=""):
-    print desc
+    print(desc)
     for state in statelist:
-        print "[" + " ".join([hex(word)[2:].zfill(32/4) for word in state]) + "]"
+        print("[" + " ".join([hex(word)[2:].zfill(8) for word in state]) + "]")
 
 def xor(l):
     return reduce((lambda x, y: x ^ y), l, 0)
@@ -73,16 +75,16 @@ def minimorus_linearsample():
 def minimorus_linearstats(num):
     count = 0
     imbalance2 = 0
-    for i in xrange(num):
+    for i in range(num):
         res = minimorus_linearsample()
         count += res
         imbalance2 += (-1)**res  # imbalance: 1/2 (#0 - #1)
     bias = (count - num/2)/float(num)
     correlation = imbalance2 / float(num)
     weight = math.fabs(math.log(math.fabs(correlation), 2))
-    print "correl", correlation
-    print "weight", weight
-    print "logDat", 2*weight + 2
+    print ("correl", correlation)
+    print ("weight", weight)
+    print ("logDat", 2*weight + 2)
 
 if __name__ == "__main__":
     minimorus_linearstats(2**16)
