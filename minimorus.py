@@ -7,8 +7,10 @@ from functools import reduce
 
 width=64
 approximations = dict( \
-        alpha=dict(w=1, masks=lambda S, C, width: []) if width==32 else \
-              dict(w=1, masks=lambda S, C, width: []),
+        alpha=dict(w=1, masks=lambda S, C, width: [mask(C[0], [27]),
+                                                   mask(S[1][0], [0])]) if width==32 else \
+              dict(w=1, masks=lambda S, C, width: [mask(C[0], [51]),
+                                                   mask(S[1][0], [0])]),
         appr1=dict(w=7, masks=lambda S, C, width: [mask(C[0], [27]),
                                                    mask(C[1], [0,26,8]),
                                                    mask(C[2], [31,13,7]),
@@ -56,7 +58,8 @@ approximations = dict( \
 #                mask(C[2], [31]),
 #                mask(S[1][4], [0])]) # 2^-3
 
-approximation = approximations['appr1']
+#approximation = approximations['appr1']
+approximation = approximations['appr2']
 
 def randword(width=32):
     return random.randrange(0,2**width)
@@ -97,11 +100,11 @@ def minimorus_linearsample(masks, width=32):
     S = []
     C = []
     S.append([randword(width) for w in range(5)])
-    minimorus_stateupdate(S, C, width)
-    minimorus_stateupdate(S, C, width)
-    minimorus_stateupdate(S, C, width)
-    minimorus_stateupdate(S, C, width)
-    minimorus_stateupdate(S, C, width)
+    minimorus_stateupdate(S, C, 0, width)
+    minimorus_stateupdate(S, C, 0, width)
+    minimorus_stateupdate(S, C, 0, width)
+    minimorus_stateupdate(S, C, 0, width)
+    minimorus_stateupdate(S, C, 0, width)
     bit = 0
 
     return xor(masks(S, C, width))
@@ -109,7 +112,7 @@ def minimorus_linearsample(masks, width=32):
 def minimorus_linearstats(approximation, width):
     expweight = approximation['w']
     masks = approximation['masks']
-    num = 2**(2*expweight+7)
+    num = 2**(2*expweight+5)
 
     count = 0
     imbalance = 0

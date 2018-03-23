@@ -4,6 +4,9 @@
 \usepackage{amsmath,amssymb}
 \usepackage{ifthen}
 \usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage[section]{placeins}
 
 \usepackage{tikz}
 \usetikzlibrary{calc,math}
@@ -64,29 +67,6 @@
 \newcommand{\cipher}[1]{\textsf{#1}}
 
 \newif\ifsubstates\substatesfalse
-
-
-\begin{document}
-
-\noindent
-2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
-\begin{align*}
-  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
-  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19} \tag{corr. $2^{-9}$} \\
-\intertext{Combined ciphertext-only approximation:}
-  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
-  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-15.5}$}
-\end{align*}
-\bigskip
-
-\noindent
-2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-1280}:
-\begin{align*}
-  S^{2,2}_0 &= C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50} \tag{corr. $2^{-7}$} \\
-  S^{2,2}_0 &= C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24} \tag{corr. $2^{-9}$} \\
-\intertext{Combined ciphertext-only approximation:}
-  0 &= C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24} \tag{corr. $\approx 2^{-??}$}
-\end{align*}
 
 \newcommand{\printstate}{
   \ifsubstates \pgfmathsetmacro{\roundsep}{1.25}
@@ -171,7 +151,11 @@
   }
 }
 
-\begin{figure}
+\begin{document}
+
+\section{Description of \cipher{MORUS} and \cipher{MiniMORUS}}
+
+\begin{figure}[h]
   \substatesfalse
   % \substatesfalse to label state words and/or masks
   \centering
@@ -181,6 +165,59 @@
   \caption{\cipher{MiniMORUS} state update function (1 step = 5 rounds).}
   \label{fig:minimorus}
 \end{figure}
+
+\clearpage
+
+
+\section{Linear Approximations for \cipher{MiniMORUS}}
+
+\noindent
+2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
+\begin{align*}
+  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
+  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19} \tag{corr. $2^{-9}$} \\
+\intertext{Combined ciphertext-only approximation:}
+  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
+  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-15.5}$}
+\end{align*}
+\bigskip
+
+\noindent
+2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-1280}:
+\begin{align*}
+  S^{2,2}_0 &= C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50} \tag{corr. $2^{-7}$} \\
+  S^{2,2}_0 &= C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24} \tag{corr. $2^{-9}$} \\
+\intertext{Combined ciphertext-only approximation:}
+  0 &= C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24} \tag{corr. $\approx 2^{-??}$}
+\end{align*}
+
+
+\begin{table}
+  \caption{Verification of approximations}
+  \begin{tabular}{@{}llSSSS@{}}
+    \toprule
+    & & \multicolumn{4}{@{}c@{}}{Weight} \\
+    \cmidrule{3-6}
+    \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS-640}}
+             & {Na\"{\i}ve} & {Exp.} & {Bool.} & {Meas.} \\
+    \midrule
+    $\chi_1$ & $S^{2,2}_0 = C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12}$
+             &            & 7    & 7     & 7 \\
+    $\chi_2$ & $S^{2,2}_0 = C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19}$
+             &            & 9    & 9     & 9 \\
+    $\chi$   & $0 = C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus C^3_{6,12,14,20} \oplus C^4_{19}$
+             &            & 16   & 16    & 15.5 \\
+    \midrule
+    \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS-1280}} \\
+    $\chi_1$ & $S^{2,2}_0 = C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50}$
+             &            & 7    & {?}   & 7 \\
+    $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
+             &            & 9    & {?}   & 9 \\
+    $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
+             &            & 16   & 16    & {??} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 
 \begin{figure}
@@ -460,5 +497,9 @@
   \end{tikzpicture}
   \caption{\cipher{MiniMORUS}: Two approximations for $S^{2,2}_0$}
 \end{figure}
+
+\clearpage
+
+\section{Linear Approximations for \cipher{MORUS}}
 
 \end{document}
