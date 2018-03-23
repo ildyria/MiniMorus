@@ -47,6 +47,7 @@ void linear_stats(unsigned long long num) {
     printf("num:  %llu\n", (num* omp_get_max_threads()));
     printf("--------------------------\n");
 
+    omp_set_num_threads(16);
     # pragma omp parallel private(i, tid, seed) reduction(+:bias,inbalance)
     {
       tid = omp_get_thread_num();
@@ -76,7 +77,7 @@ void linear_stats(unsigned long long num) {
 
 int main(int argc, char const *argv[]) {
   long long int num = 1;
-  num <<= 20;
+  num <<= 33;
   linear_stats(num);
   return 0;
 }
