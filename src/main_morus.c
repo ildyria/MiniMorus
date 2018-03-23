@@ -83,7 +83,7 @@ void linear_stats(unsigned long long num) {
 
 int main(int argc, char const *argv[]) {
   long long int num = 1;
-  num <<= 33;
+  num <<= 30;
   linear_stats(num);
   return 0;
 }

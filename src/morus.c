@@ -180,38 +180,70 @@ inline uint32_t HW(uint32_t x)
     return x & 0x0000003F;
 }
 
+// return xor([mask(S[1][0], [0]),
+//             mask(S[1][4], [0]),
+//             mask(C[1], [0,8,26]),
+//             mask(C[2], [13,31]),
+//             # 2^-3 version
+//             mask(S[2][4], [13]),
+//             mask(S[3][1], [12]),
+//             # 2^-4 version
+//             #mask(S[2][1], [13]),
+//             ]) # 2^-3
+
 int linear(state* saved_state, state_words* saved_cipher) {
-  // uint32_t mask = 0;
+  uint32_t mask = 0;
   uint32_t res = 0;
 
-  // gen_mask(&mask,27);
-  // res ^= saved_cipher[0] & mask;
-  //
-  // mask = 0;
-  // gen_mask(&mask,0);
-  // gen_mask(&mask,26);
-  // gen_mask(&mask,8);
-  // gen_mask(&mask,2);
-  // res ^= saved_cipher[1] & mask;
-  //
-  // mask = 0;
-  // gen_mask(&mask,31);
-  // gen_mask(&mask,13);
-  // gen_mask(&mask,1);
-  // gen_mask(&mask,15);
-  // gen_mask(&mask,27);
-  // res ^= saved_cipher[2] & mask;
-  //
-  // mask = 0;
-  // gen_mask(&mask,6);
-  // gen_mask(&mask,12);
-  // gen_mask(&mask,20);
-  // gen_mask(&mask,14);
-  // res ^= saved_cipher[3] & mask;
-  //
-  // mask = 0;
-  // gen_mask(&mask,19);
-  // res ^= saved_cipher[4] & mask;
+  mask = 0;
+  gen_mask(&mask,0);
+  res ^= saved_state[1][0][0] & mask;
+  res ^= saved_state[1][0][1] & mask;
+  res ^= saved_state[1][0][2] & mask;
+  res ^= saved_state[1][0][3] & mask;
+
+  res ^= saved_state[1][4][0] & mask;
+  res ^= saved_state[1][4][1] & mask;
+  res ^= saved_state[1][4][2] & mask;
+  res ^= saved_state[1][4][3] & mask;
+
+  mask = 0;
+  gen_mask(&mask,0);
+  gen_mask(&mask,8);
+  gen_mask(&mask,26);
+  res ^= saved_cipher[1][0] & mask;
+  res ^= saved_cipher[1][1] & mask;
+  res ^= saved_cipher[1][2] & mask;
+  res ^= saved_cipher[1][3] & mask;
+
+  mask = 0;
+  gen_mask(&mask,13);
+  gen_mask(&mask,31);
+  res ^= saved_cipher[1][0] & mask;
+  res ^= saved_cipher[1][1] & mask;
+  res ^= saved_cipher[1][2] & mask;
+  res ^= saved_cipher[1][3] & mask;
+
+  mask = 0;
+  gen_mask(&mask,13);
+  res ^= saved_state[2][4][0] & mask;
+  res ^= saved_state[2][4][1] & mask;
+  res ^= saved_state[2][4][2] & mask;
+  res ^= saved_state[2][4][3] & mask;
+
+  mask = 0;
+  gen_mask(&mask,13);
+  res ^= saved_state[2][1][0] & mask;
+  res ^= saved_state[2][1][1] & mask;
+  res ^= saved_state[2][1][2] & mask;
+  res ^= saved_state[2][1][3] & mask;
+
+  mask = 0;
+  gen_mask(&mask,12);
+  res ^= saved_state[3][1][0] & mask;
+  res ^= saved_state[3][1][1] & mask;
+  res ^= saved_state[3][1][2] & mask;
+  res ^= saved_state[3][1][3] & mask;
 
   return 1 & HW(res);
 }
