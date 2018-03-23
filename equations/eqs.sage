@@ -40,7 +40,7 @@ def eq4(i,j):
     k = wordSize*floor(j/wordSize) + (j-b[4])%wordSize
     return S[i+1][4][j] + S[i][4][(k - w[1])%size] + S[i+1][2][(k - w[4])%size]+ S[i+1][0][k]*S[i+1][1][k]
 def eq5(i,j):
-    k = (wordSize*floor(j/wordSize) + (j-b[2])%wordSize-w[4] - w[4])%size
+    k = (wordSize*floor(j/wordSize) + (j-b[2])%wordSize - w[4])%size
     return S[i+1][2][j] + S[i][2][k] + S[i+1][0][(k-w[2])%size]+ S[i][3][(k-w[0])%size] * S[i][4][(k-w[1])%size]
 
 def eqS0(i,j):
@@ -61,4 +61,3 @@ def eqS0b(i,j):
 #trail equation from round i, shifted by j positions (the one we used for mini Morus is i,j = 3,0)
 def eq(i,j):
     return eqS0b(i,j)+eqS0(i,j)
-
