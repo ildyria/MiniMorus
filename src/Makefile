@@ -1,10 +1,11 @@
 MINI = mini_morus
 FULL = morus
-LIBS = -lm -fopenmp -flto -fwhole-program -fdelete-null-pointer-checks
+LIBS = -lm -fopenmp -flto -fwhole-program -fdelete-null-pointer-checks -march=native
 CC = gcc
-CFLAGS = -Wall -O3 -fopenmp -fdelete-null-pointer-checks -flto 
-MINI_OBJECTS = $(MINI:%=%.o) $(MINI:%=main_%.o)
-FULL_OBJECTS = $(FULL:%=%.o) $(FULL:%=main_%.o)
+CFLAGS = -Wall -O3 -fopenmp -fdelete-null-pointer-checks -flto -march=native
+COMMON_FILE = aes-rng.c
+MINI_OBJECTS = $(MINI:%=%.o) $(MINI:%=main_%.o) $(COMMON_FILE:%.c=%.o)
+FULL_OBJECTS = $(FULL:%=%.o) $(FULL:%=main_%.o) $(COMMON_FILE:%.c=%.o)
 HEADERS = $(wildcard *.h)
 
 .PHONY: default all clean

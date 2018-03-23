@@ -14,12 +14,12 @@ inline uint32_t rotate_left(uint32_t x, int bits)
   return (x << bits) | (x >> (32 - bits));
 }
 
-void rand_init(state st, unsigned int* seed){
-	st[0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  st[1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  st[2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  st[3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  st[4] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
+void rand_init(state st, struct RNG_state* seed){
+  st[0] = aesrand_int32_r(seed);
+  st[1] = aesrand_int32_r(seed);
+  st[2] = aesrand_int32_r(seed);
+  st[3] = aesrand_int32_r(seed);
+  st[4] = aesrand_int32_r(seed);
 }
 
 void iterate(state st, state_words message) {

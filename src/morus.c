@@ -96,7 +96,7 @@ void null_word(state_words* w){
   (*w)[3] = 0;
 }
 
-void rand_init(state st, unsigned int* seed){
+void rand_init(state st, struct RNG_state* seed){
   // need to be faster !!!
 	// st[0][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
   // st[1][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
@@ -121,29 +121,29 @@ void rand_init(state st, unsigned int* seed){
   // st[2][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
   // st[3][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
   // st[4][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  st[0][0] = rand_r(seed);
-  st[1][0] = rand_r(seed);
-  st[2][0] = rand_r(seed);
-  st[3][0] = rand_r(seed);
-  st[4][0] = rand_r(seed);
+  st[0][0] = aesrand_int32_r(seed);
+  st[1][0] = aesrand_int32_r(seed);
+  st[2][0] = aesrand_int32_r(seed);
+  st[3][0] = aesrand_int32_r(seed);
+  st[4][0] = aesrand_int32_r(seed);
 
-  st[0][1] = rand_r(seed);
-  st[1][1] = rand_r(seed);
-  st[2][1] = rand_r(seed);
-  st[3][1] = rand_r(seed);
-  st[4][1] = rand_r(seed);
+  st[0][1] = aesrand_int32_r(seed);
+  st[1][1] = aesrand_int32_r(seed);
+  st[2][1] = aesrand_int32_r(seed);
+  st[3][1] = aesrand_int32_r(seed);
+  st[4][1] = aesrand_int32_r(seed);
 
-  st[0][2] = rand_r(seed);
-  st[1][2] = rand_r(seed);
-  st[2][2] = rand_r(seed);
-  st[3][2] = rand_r(seed);
-  st[4][2] = rand_r(seed);
+  st[0][2] = aesrand_int32_r(seed);
+  st[1][2] = aesrand_int32_r(seed);
+  st[2][2] = aesrand_int32_r(seed);
+  st[3][2] = aesrand_int32_r(seed);
+  st[4][2] = aesrand_int32_r(seed);
 
-  st[0][3] = rand_r(seed);
-  st[1][3] = rand_r(seed);
-  st[2][3] = rand_r(seed);
-  st[3][3] = rand_r(seed);
-  st[4][3] = rand_r(seed);
+  st[0][3] = aesrand_int32_r(seed);
+  st[1][3] = aesrand_int32_r(seed);
+  st[2][3] = aesrand_int32_r(seed);
+  st[3][3] = aesrand_int32_r(seed);
+  st[4][3] = aesrand_int32_r(seed);
 }
 
 void iterate(state st, state_words message) {

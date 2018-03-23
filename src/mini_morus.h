@@ -1,13 +1,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "aes-rng.h"
 
 typedef uint32_t state_words;
 typedef state_words state[5];
 
 void print_state(state st);
 
-void rand_init(state st, unsigned int* seed);
+void rand_init(state st, struct RNG_state* rng);
 
 void iterate(state st, state_words message);
 

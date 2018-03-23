@@ -17,7 +17,7 @@ inline void save_state(state* state_saved, state state, int i)
   copy_word(&(state_saved[i][4]), &(state[4]));
 }
 
-inline void sample(state* saved_state, state_words* saved_cipher, int num, unsigned int* seed)
+inline void sample(state* saved_state, state_words* saved_cipher, int num, struct RNG_state* seed)
 {
   state state;
   state_words null_words;
@@ -32,7 +32,7 @@ inline void sample(state* saved_state, state_words* saved_cipher, int num, unsig
   save_state(saved_state, state, i);
 }
 
-inline int linear_sample(unsigned int* seed)
+inline int linear_sample(struct RNG_state* seed)
 {
   state saved_state[6];
   state_words saved_cipher[5];
@@ -46,25 +46,25 @@ void linear_stats(unsigned long long num) {
     long long inbalance = 0;
     unsigned long long bias = 0;
     unsigned long long i = 0;
+    struct RNG_state* seed;
+    int small_seed = rand();
+    int tid = 0;
 
-    int tid;
-    unsigned int seed;
     printf("--------------------------\n");
     printf("num:  %llu\n", (num* omp_get_max_threads()));
     printf("--------------------------\n");
 
     // omp_set_num_threads(1);
     # pragma omp parallel private(i, tid, seed) reduction(+:bias,inbalance)
-    {
       tid = omp_get_thread_num();
-      seed = 123456789 ^ tid;
-      printf ( "  %6d  %12d\n", tid, seed);
+      seed = init_aesrand_r(small_seed,tid);
+      // printf ( "  %6d  %12d\n", tid, seed);
 
       // try using openmp to speed things up
       #pragma omp parallel for reduction(+:bias,inbalance)
       for(i = 0 ; i < num; ++i)
       {
-        res = linear_sample(&seed);
+        res = linear_sample(seed);
         inbalance += 1 - 2*res;
         bias += res;
         if((i & 0x3ffffff) == 0)
@@ -72,7 +72,6 @@ void linear_stats(unsigned long long num) {
           printf("sampling, %llu -- thread %d\n", i, tid);
         }
       }
-    }
 
     printf("--------------------------\n");
     printf("num:  %llu\n", (num* omp_get_max_threads()));
@@ -83,7 +82,8 @@ void linear_stats(unsigned long long num) {
 
 int main(int argc, char const *argv[]) {
   long long int num = 1;
-  num <<= 30;
+  num <<= 20;
+  srand(time(NULL));
   linear_stats(num);
   return 0;
 }
