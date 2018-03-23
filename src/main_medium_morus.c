@@ -1,20 +1,17 @@
-#include "main_morus.h"
+#include "main_medium_morus.h"
 
 inline void copy_word(state_words* to, const state_words* from)
 {
-  (*to)[0] = (*from)[0];
-  (*to)[1] = (*from)[1];
-  (*to)[2] = (*from)[2];
-  (*to)[3] = (*from)[3];
+  *to = *from;
 }
 
 inline void save_state(state* state_saved, state state, int i)
 {
-  copy_word(&(state_saved[i][0]), &(state[0]));
-  copy_word(&(state_saved[i][1]), &(state[1]));
-  copy_word(&(state_saved[i][2]), &(state[2]));
-  copy_word(&(state_saved[i][3]), &(state[3]));
-  copy_word(&(state_saved[i][4]), &(state[4]));
+  copy_word(&state_saved[i][0], &state[0]);
+  copy_word(&state_saved[i][1], &state[1]);
+  copy_word(&state_saved[i][2], &state[2]);
+  copy_word(&state_saved[i][3], &state[3]);
+  copy_word(&state_saved[i][4], &state[4]);
 }
 
 inline void sample(state* saved_state, state_words* saved_cipher, int num, struct RNG_state* seed)
@@ -47,15 +44,15 @@ void linear_stats(unsigned long long num) {
     unsigned long long bias = 0;
     unsigned long long i = 0;
     struct RNG_state* seed;
-    int small_seed = rand();
-    int tid = 0;
-
+    unsigned int small_seed = rand();
+    int tid;
     printf("--------------------------\n");
     printf("num:  %llu\n", (num* omp_get_max_threads()));
     printf("--------------------------\n");
 
-    // omp_set_num_threads(1);
+    // omp_set_num_threads(16);
     # pragma omp parallel private(i, tid, seed) reduction(+:bias,inbalance)
+    {
       tid = omp_get_thread_num();
       seed = init_aesrand_r(small_seed,tid);
       // printf ( "  %6d  %12d\n", tid, seed);
@@ -72,6 +69,7 @@ void linear_stats(unsigned long long num) {
           printf("sampling, %llu -- thread %d\n", i, tid);
         }
       }
+    }
 
     printf("--------------------------\n");
     printf("num:  %llu\n", (num* omp_get_max_threads()));
@@ -82,7 +80,7 @@ void linear_stats(unsigned long long num) {
 
 int main(int argc, char const *argv[]) {
   long long int num = 1;
-  num <<= 20;
+  num <<= 33;
   srand(time(NULL));
   linear_stats(num);
   return 0;

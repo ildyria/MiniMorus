@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "aes-rng.h"
 
-typedef uint32_t state_words;
+typedef uint64_t state_words;
 typedef state_words state[5];
 
 void print_state(state st);
