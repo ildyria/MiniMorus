@@ -1,8 +1,8 @@
 MINI = mini_morus
 FULL = morus
-LIBS = -lm -fopenmp
+LIBS = -lm -fopenmp -flto -fwhole-program -fdelete-null-pointer-checks
 CC = gcc
-CFLAGS = -g -Wall -O3 -fopenmp
+CFLAGS = -Wall -O3 -fopenmp -fdelete-null-pointer-checks -flto 
 MINI_OBJECTS = $(MINI:%=%.o) $(MINI:%=main_%.o)
 FULL_OBJECTS = $(FULL:%=%.o) $(FULL:%=main_%.o)
 HEADERS = $(wildcard *.h)
