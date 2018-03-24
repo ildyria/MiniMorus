@@ -38,10 +38,10 @@ def eq3(i,j):
     return S[i+1][1][j] + S[i][1][k]  + S[i][4][k]   + S[i][2][k] * S[i][3][(k - w[0])%size]
 def eq4(i,j):
     k = wordSize*floor(j/wordSize) + (j-b[4])%wordSize
-    return S[i+1][4][j] + S[i][4][(k - w[1])%size] + S[i+1][2][(k - w[4])%size]+ S[i+1][0][k]*S[i+1][1][k]
+    return S[i+1][4][j] + S[i][4][(k - w[1])%size] + S[i+1][2][(k + w[4])%size]+ S[i+1][0][k]*S[i+1][1][k]
 def eq5(i,j):
     k = (wordSize*floor(j/wordSize) + (j-b[2])%wordSize - w[4])%size
-    return S[i+1][2][j] + S[i][2][k] + S[i+1][0][(k-w[2])%size]+ S[i][3][(k-w[0])%size] * S[i][4][(k-w[1])%size]
+    return S[i+1][2][j] + S[i][2][k] + S[i+1][0][(k+w[2])%size]+ S[i][3][(k-w[0])%size] * S[i][4][(k-w[1])%size]
 
 def eqS0(i,j):
     k = wordSize*floor(j/wordSize)
