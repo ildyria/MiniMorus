@@ -5,18 +5,32 @@ import math
 import sys
 from functools import reduce
 
-width=64
 approximations = dict( \
-        alpha=dict(w=1, masks=lambda S, C, width: [mask(C[0], [27]),
-                                                   mask(S[1][0], [0])]) if width==32 else \
-              dict(w=1, masks=lambda S, C, width: [mask(C[0], [51]),
+        alpha=dict(w=1, masks=lambda S, C, width: [mask(C[0], [27 if width==32 else 51]),
                                                    mask(S[1][0], [0])]),
+        beta =dict(w=1, masks=lambda S, C, width: [mask(C[0], [0]),
+                                                   mask(S[0][0], [0]),
+                                                   mask(S[0][1], [0])]),
+        gamma=dict(w=1, masks=lambda S, C, width: [mask(S[0][1], [0]),
+                                                   mask(S[0][4], [0]),
+                                                   mask(S[1][1], [31 if width==32 else 46])]),
+        delta=dict(w=1, masks=lambda S, C, width: [mask(S[0][4], [0]),
+                                                   mask(S[1][2], [0]),
+                                                   mask(S[1][4], [13 if width==32 else 4])]),
+        epsil=dict(w=1, masks=lambda S, C, width: [mask(S[0][2], [0]),
+                                                   mask(S[1][0], [0]),
+                                                   mask(S[1][2], [7 if width==32 else 38])]),
+        #
+        #alphabeta=dict(w=2, masks=lambda S, C, width: [mask(S[0][0], [0]),
+        #                                               mask(S[0][1], [0]),
+        #                                               mask(S[1][0], [5 if width==32 else 13])]),
+        #
         appr1=dict(w=7, masks=lambda S, C, width: [mask(C[0], [27]),
                                                    mask(C[1], [0,26,8]),
                                                    mask(C[2], [31,13,7]),
                                                    mask(C[3], [12]),
-                                                   mask(S[2][2], [0])]) if width==32 else \
-              dict(w=7, masks=lambda S, C, width: [mask(C[0], [51]),
+                                                   mask(S[2][2], [0])] if width==32 else \
+                                                  [mask(C[0], [51]),
                                                    mask(C[1], [0,33,55]),
                                                    mask(C[2], [4,37,46]),
                                                    mask(C[3], [50]),
@@ -25,8 +39,8 @@ approximations = dict( \
                                                    mask(C[2], [1,7,15,27]),
                                                    mask(C[3], [6,20,14]),
                                                    mask(C[4], [19]),
-                                                   mask(S[2][2], [0])]) if width==32 else \
-              dict(w=9, masks=lambda S, C, width: [mask(C[1], [25]),
+                                                   mask(S[2][2], [0])] if width==32 else \
+                                                  [mask(C[1], [25]),
                                                    mask(C[2], [7,29,38,51]),
                                                    mask(C[3], [11,20,42]),
                                                    mask(C[4], [24]),
@@ -57,9 +71,6 @@ approximations = dict( \
 #                mask(C[1], [0,26]),
 #                mask(C[2], [31]),
 #                mask(S[1][4], [0])]) # 2^-3
-
-#approximation = approximations['appr1']
-approximation = approximations['appr2']
 
 def randword(width=32):
     return random.randrange(0,2**width)
@@ -129,4 +140,6 @@ def minimorus_linearstats(approximation, width):
     print ("attack", 2*weight + 2)
 
 if __name__ == "__main__":
-    minimorus_linearstats(approximation, width)
+    apprx = sys.argv[1] if len(sys.argv) > 1 else 'alpha'
+    width = int(sys.argv[2]) if len(sys.argv) > 2 else 32
+    minimorus_linearstats(approximations[apprx], width)

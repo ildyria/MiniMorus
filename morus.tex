@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 \usepackage{siunitx}
 \usepackage[section]{placeins}
+\usepackage[hidelinks]{hyperref}
 
 \usepackage{tikz}
 \usetikzlibrary{calc,math}
@@ -171,50 +172,69 @@
 
 \section{Linear Approximations for \cipher{MiniMORUS}}
 
-\noindent
-2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
-\begin{align*}
-  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
-  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19} \tag{corr. $2^{-9}$} \\
-\intertext{Combined ciphertext-only approximation:}
-  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
-  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-15.5}$}
-\end{align*}
-\bigskip
+Basic idea using the fragments in \autoref{fig:minimorusfragments} and a fixed message $M=0$:
+\begin{itemize}
+    \item $\alpha_i$ approximates (one bit of) state word $S^0$ with the ciphertext
+    \item $\beta_i$ approximates $S^1$ using $S^0$ and the ciphertext
+    \item $\gamma_i$ approximates $S^4$ using two approximations of $S^1$ in consecutive steps
+    \item $\delta_i$ approximates $S^2$ using two approximations of $S^4$ in consecutive steps
+    \item $\varepsilon_i$ approximates $S^0$ using two approximations of $S^2$ in consecutive steps
+\end{itemize}
+Thus, we obtain a ciphertext-only approximation by appropriately connecting
+$1 \times \alpha$ with $1 \times \varepsilon$, $2 \times \delta$, $4 \times \gamma$, $8 \times \beta$, $8 \times \alpha$.
+The attack is essentially independent of the rotation constants $b_i$.
+The resulting biased ciphertext expression is listed for both
+\cipher{MiniMORUS-640} and \cipher{MiniMORUS-1280} in \autoref{tab:miniapproximations}.
+Since each fragment has weight 1, we would expect a total weight of 24;
+however, the approximations are not independent (\autoref{fig:todo}).
+The actual weight is 16, and experiments confirm an even higher correlation of $2^{-15.5}$.
 
-\noindent
-2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-1280}:
-\begin{align*}
-  S^{2,2}_0 &= C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50} \tag{corr. $2^{-7}$} \\
-  S^{2,2}_0 &= C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24} \tag{corr. $2^{-9}$} \\
-\intertext{Combined ciphertext-only approximation:}
-  0 &= C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24} \tag{corr. $\approx 2^{-??}$}
-\end{align*}
+%\noindent
+%2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
+%\begin{align*}
+%  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
+%  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19} \tag{corr. $2^{-9}$} \\
+%\intertext{Combined ciphertext-only approximation:}
+%  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
+%  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-15.5}$}
+%\end{align*}
+%\bigskip
+%
+%\noindent
+%2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-1280}:
+%\begin{align*}
+%  S^{2,2}_0 &= C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50} \tag{corr. $2^{-7}$} \\
+%  S^{2,2}_0 &= C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24} \tag{corr. $2^{-9}$} \\
+%\intertext{Combined ciphertext-only approximation:}
+%  0 &= C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24} \tag{corr. $\approx 2^{-??}$}
+%\end{align*}
 
 
-\begin{table}
+\begin{table}[hb!]
   \caption{Verification of approximations}
-  \begin{tabular}{@{}llSSSS@{}}
+  \label{tab:miniapproximations}
+  \begin{tabular}{@{}llSSS@{}}
     \toprule
-    & & \multicolumn{4}{@{}c@{}}{Weight} \\
-    \cmidrule{3-6}
+    & & \multicolumn{3}{@{}c@{}}{Weight} \\
+    \cmidrule{3-5}
     \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS-640}}
-             & {Na\"{\i}ve} & {Exp.} & {Bool.} & {Meas.} \\
+             & {Exp.} & {Bool.} & {Meas.} \\
     \midrule
     $\chi_1$ & $S^{2,2}_0 = C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12}$
-             &            & 7    & 7     & 7 \\
+             & 7    & 7     & 7 \\
     $\chi_2$ & $S^{2,2}_0 = C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19}$
-             &            & 9    & 9     & 9 \\
+             & 9    & 9     & 9 \\
     $\chi$   & $0 = C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus C^3_{6,12,14,20} \oplus C^4_{19}$
-             &            & 16   & 16    & 15.5 \\
+             & 16   & 16    & 15.5 \\
     \midrule
     \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS-1280}} \\
+    \midrule
     $\chi_1$ & $S^{2,2}_0 = C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50}$
-             &            & 7    & {?}   & 7 \\
+             & 7    & 7     & 7 \\
     $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
-             &            & 9    & {?}   & 9 \\
+             & 9    & 9     & 9 \\
     $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
-             &            & 16   & 16    & {??} \\
+             & 16   & 16    & {??} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -317,9 +337,75 @@
     \caption*{\cipher{MiniMORUS} instances}
   \end{subfigure}
   \caption{\cipher{MiniMORUS} linear approximation fragments.}
-  \label{fig:minimorus}
+  \label{fig:minimorusfragments}
 \end{figure}
 
+
+\begin{figure}
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      %(xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      %(xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    %\draw[trail, beta,  dotted] (and-1) -- (and-1-|and1);
+    %\draw[trail, gamma, dotted] (and1)  -- (and-1-|and1) node[above, black] {=};
+    \draw[trail, beta]  (xnd-1) -- ++(-.5,0) coordinate (tmp) -- (tmp|-xnd1);
+    \draw[trail, gamma] (tmp|-xnd1) node[below, black] {=} -- (xnd1);
+  \end{tikzpicture}%}}}
+  \caption*{\cipher{MiniMORUS}: weight 0 (not 2)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \qquad
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    \draw[trail, beta,  dashed] (and-1.east|-tanB-1) -- (tanB-1);
+    \draw[trail, gamma, dashed] (tanB-1)  -- (tanB1) -- (tanB1-|and1.east);
+  \end{tikzpicture}%}}}
+  \caption*{\cipher{MORUS}: weight $4 \times 1$ (not $4 \times 2$)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \caption{Weight of $\beta_i \oplus \gamma_i$ for \cipher{MiniMORUS} and \cipher{MORUS}.}
+  \label{fig:minimorusfragments}
+\end{figure}
+
+TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
+(maybe not relevant due to overall complexity\dots)
 
 \begin{figure}
   \newcommand{\M}[2]{1.65,-1.5*#1-.25-.25*#2}
@@ -363,7 +449,7 @@
                    (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {12}
                    (\M{3}{0}) node[right] {$\beta_{12}$};
 
-      \draw (\S{4}{2}) node[above] {\normalsize weight 7 (not 9)};
+      \draw (\S{4}{2}) node[above] {\normalsize $\chi_1$: weight 7 (not 11)};
     \end{scope}
 
     \begin{scope}[xshift=2.5cm]
@@ -406,7 +492,7 @@
                    (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {19}
                    (\M{4}{0}) node[right] {$\beta_{19}$};
 
-      \draw (\S{5}{2}) node[above] {\normalsize weight 9 (not 11)};
+      \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
       \draw (\S{0}{2}) node[below] {\normalsize \cipher{MiniMORUS-640}};
     \end{scope}
 
@@ -448,7 +534,7 @@
                    (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {50}
                    (\M{3}{0}) node[right] {$\beta_{50}$};
 
-      \draw (\S{4}{2}) node[above] {\normalsize weight 7 (not 9)};
+      \draw (\S{4}{2}) node[above] {\normalsize $\chi_1$: weight 7 (not 11)};
       \draw (\S{5}{2}) node[above] {\normalsize \cipher{MiniMORUS-1280}};
     \end{scope}
 
@@ -492,7 +578,7 @@
                    (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {24}
                    (\M{4}{0}) node[right] {$\beta_{24}$};
 
-      \draw (\S{5}{2}) node[above] {\normalsize weight 9 (not 11)};
+      \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
     \end{scope}
   \end{tikzpicture}
   \caption{\cipher{MiniMORUS}: Two approximations for $S^{2,2}_0$}
@@ -501,5 +587,9 @@
 \clearpage
 
 \section{Linear Approximations for \cipher{MORUS}}
+
+\section{Differential Attack on the Finalization}
+
+\section{Key-Recovery Attack in Nonce-Misuse Setting}
 
 \end{document}
