@@ -195,13 +195,13 @@
 \maketitle
 
 \begin{abstract}
-In this note, we show the existence of linear biases in the output of the authenticated encryption scheme MORUS. More precisely, we show that when encrypting a fixed plaintext multiple times, a linear correlation exists between some bits at the output of the cipher. Moreover the bias depends purely on the plaintext, and not on the secret key of the cipher. In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is fixed and known. However, the biases are quite small: for the smaller MORUS640 variant, claiming a security level of 128 bits, the bias is $2^{-73}$, and would thus require around $2^{146}$ encryptions to be exploited directly; for MORUS1280, claiming a security level of 256 bits, the bias is $2^{-76}$, corresponding to a data requirement of $2^{152}$ encryptions. We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key, and can be exploited as long as a given plaintext is encrypted enough times, regardless of whether each encryption uses a different key.
+In this note, we show the existence of linear biases in the output of the authenticated encryption scheme MORUS. More precisely, we show that when encrypting a fixed plaintext multiple times, a linear correlation exists between some bits at the output of the cipher. Moreover the bias depends purely on the plaintext, and not on the secret key of the cipher. In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is known. However, the biases are quite small: for the smaller MORUS640 variant, claiming a security level of 128 bits, the bias is $2^{-73}$, and would thus require around $2^{146}$ encryptions to be exploited directly; for MORUS1280, claiming a security level of 256 bits, the bias is $2^{-76}$, corresponding to a data requirement of $2^{152}$ encryptions. We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key, and can be exploited as long as a given plaintext is encrypted enough times, regardless of whether each encryption uses a different key.
 \keywords{Linear Cryptanalysis, MORUS, CAESAR.}
 \end{abstract}
 
 \section{Introduction}
 
-Our main result is the existence of a linear trail linking ciphertext bits spanning five consecutive encryption steps. As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps. Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design. Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initalize the inner state of MORUS are irrelevant: the bias will exist regardless of their value.
+Our main result is the existence of a linear trail linking ciphertext bits spanning five consecutive encryption steps. As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps. Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design. Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initalize the inner state of MORUS are irrelevant: the bias is independent of their value.
 
 \section{Notation}
 
@@ -213,7 +213,7 @@ Note that the bias is sometimes defined as half the above value in the literatur
 \[
 \weight(E) \eqdef -\log|\bias(E)|
 \]
-where $\log$ denotes logarithm in base 2. By the piling-up lemma, the bias (resp. weight) of an XOR of independent variables is equal to the product (resp. sum) of their individual biases (resp. weights).
+where $\log()$ denotes logarithm in base 2. By the piling-up lemma, the bias (resp. weight) of an XOR of independent variables is equal to the product (resp. sum) of their individual biases (resp. weights).
 
 We will also use the following notation, where an \emph{encryption step} refers to one call to the \StateUpdate{} function:\\
 \centerline{
@@ -229,7 +229,7 @@ In the above notation, bit positions are always taken modulo the register size, 
 
 In the remainder, the $0$-th encryption step will denote the encryption step where our linear trail starts. Any encryption step could be chosen for that purpose, as long as at least four more encryption steps follow. In particular the $0$-th encryption step from the perspective of the trail does not have to be the first encryption step after initialization.
 
-Finally, let $x$ denote a register. Recall that register of \cipher{MORUS} are composed of four words. We now define register-wise and word-wise rotations (denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document):\\
+Finally, let $x$ denote a register. Recall that registers of \cipher{MORUS} are composed of four words. We now define register-wise and word-wise rotations (denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document):\\
 \centerline{
 \def\arraystretch{1.25}
 \begin{tabular}{lcl}
@@ -238,10 +238,12 @@ $x \rotlxy y$ &:& circular shift of each word within $x$ by $y$ bits to the left
 \end{tabular}
 }
 
+The $b_i$'s denote rotation constants, whose value depends on which version of \cipher{MORUS} is considered. Throughout, $w$ denotes the  word size, i.e. $w=32$ for \cipher{MORUS640} and $w=64$ for \cipher{MORUS1280}.
+
 \section{Symmetric Linear Combinations and \cipher{MiniMORUS}}
 \label{sec:introminimorus}
 
-To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Let $w$ denote the word size, i.e. $w = 32$ in the case of \cipher{MORUS640}, and $w = 64$ for \cipher{MORUS1280}. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
+To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
 
 \subsection{Symmetric Linear Combinations}
 
@@ -260,7 +262,7 @@ S^t_{i,j(0)} \oplus S^t_{i,j(1)} \oplus \dots \oplus S^t_{i,j(k)}
 \]
 is said to be \emph{symmetric} iff the set of bits $S^t_{i,j(0)}, \dots, S^t_{i,j(k)}$ is left invariant by a circular shift by $w$ bits; that is, iff:
 \[
-\{j(i) : i\leq k\} = \{j(i) + w \text{\rm{} mod } r : i\leq k\}.
+\{j(i) : i\leq k\} = \{j(i) + w \text{\rm{} mod } 4w : i\leq k\}.
 \]
 \end{definition}
 \emph{Example.} The following linear combination is symmetric for \cipher{MORUS640}, i.e. $w = 32$:
@@ -271,13 +273,13 @@ S^t_{0,0} \oplus S^t_{0,32} \oplus S^t_{0,64} \oplus S^t_{0,96}.
 
 This definition naturally extends to a linear combination across multiple registers, and also across ciphertext blocks.
 The value of such a linear combination is unaffected by register-wise rotations, since those rotations always shift registers by a multiple of the word size.
-On the other hand, since word-wise rotations always shift all four words within a register by the same amount, word-wise rotations preserve the symmetric property. Moreover, the XOR of two symmetric linear combinations is also symmetric; and the same holds for the AND operation (if we extend the symmetric property to non-linear combinations in the natural way).
+On the other hand, since word-wise rotations always shift all four words within a register by the same amount, word-wise rotations preserve the symmetry property. Moreover, the XOR of two symmetric linear combinations is also symmetric.%; and the same holds for the AND operation (if we extend the symmetric property to non-linear combinations in the natural way).
 
 This naturally leads to the idea of building a linear trail using only symmetric linear combinations, which is what we are going to do. As a result, the effect of register-wise rotations can be ignored. Moreover, since all linear combinations we consider are going to be symmetric, they can be described by truncating the linear combination to the first word of a register. Indeed, an equivalent way of saying a linear combination is symmetric, is that it involves the same bits in each word within a register. For example, in the case of (\ref{eq:symmetric}) above, the four bits involved are the first bit of each of the four words.
 
 \subsection{\cipher{MiniMORUS}}
 
-In fact, we can go further an consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see Figure~\ref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
+In fact, we can go further and consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see Figure~\ref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
 
 Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS}. We will then extend it to the full \cipher{MORUS} via the previous symmetry.
 
@@ -305,20 +307,11 @@ To build a linear trail on \cipher{MiniMORUS}, we combine the following five tra
     \item $\varepsilon^t_i$ approximates $S_0$ using two approximations of $S_2$ in consecutive steps.
 \end{itemize}
 
-The trail fragments are depicted on \Cref{fig:minimorusfragments}, and may be represented as follows (recall that the $b_i$'s are rotation constants):
-\begin{alignat*}{2}
-\alpha^t_i:\quad&& C^t_i &\to S^{t+1}_{0,i+b_0} \\
-\beta^t_i:\quad&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
-\gamma^t_i:\quad&& S^t_{1,i}, S^{t+1}_{1,i+b_1} &\to S^t_{4,i} \\
-\delta^t_i:\quad&& S^t_{4,i}, S^{t+1}_{4,i+b_4} &\to S^{t+1}_{2,i} \\
-\varepsilon^t_i:\quad&& S^t_{2,i}, S^{t+1}_{2,i+b_2} &\to S^{t+1}_{0,i}.
-\end{alignat*}
-
-In all cases except $\alpha^t_i$, the trail fragment approximates a single AND gate by zero, which holds with probability 3/4, and hence the trail fragment has weight 1. In the case of $\alpha^t_i$, two AND gates are involved; however the two gates share an entry in common, so their sum can be written as:
+The trail fragments are depicted on \Cref{fig:minimorusfragments}. In all cases except $\alpha^t_i$, the trail fragment approximates a single AND gate by zero, which holds with probability 3/4, and hence the trail fragment has weight 1. In the case of $\alpha^t_i$, two AND gates are involved; however the two gates share an entry in common, so their sum may be written in the form:
 \[
 x \cdot y \oplus x \cdot z = x \cdot (y \oplus z).
 \]
-As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way to look at this phenomenon is that the trail holds for two different approximations of the AND gates: the alternative approximation is depicted by a dashed line on \Cref{fig:minimorusfragments}.
+As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way of looking at this phenomenon is that the trail holds for two different approximations of the AND gates: the alternative approximation is depicted by a dashed line on \Cref{fig:minimorusfragments}.
 
 \begin{figure}
   \substatesfalse
@@ -340,7 +333,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
       (and-1.east|-tanB-1) -- (tanB-1) (tanB-1) -- (tanA0) (tanA0) -- (tanA0-|and0.east)
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\alpha_i$: weight 1 (not 2)} %$C^j_i, S^{j-1,0}_{i+5}$ ($w\!=\!1$)}
+  \caption*{$\alpha^t_i$: weight 1 (not 2)} %$C^j_i, S^{j-1,0}_{i+5}$ ($w\!=\!1$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -356,7 +349,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
       (W40) node[below] {\phantom{$i$}}
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\beta_i$: weight 1} %$C^j_i, S^{j,0}_i, S^{j,1}_i$ ($w\!=\!0$)}
+  \caption*{$\beta^t_i$: weight 1} %$C^j_i, S^{j,0}_i, S^{j,1}_i$ ($w\!=\!0$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -370,7 +363,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
       (lll1) -- (W41) node[below] {$i+b_1$}
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\gamma_i$: weight 1} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \caption*{$\gamma^t_i$: weight 1} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
   \end{subfigure}
   \bigskip
 
@@ -383,7 +376,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
       (lll4) -- (W44) node[below] {$i+b_4$}
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\delta_i$: weight 1} %$S^{j,4_i}, S^{j+1,2}_i, S^{j+1,4}_{i+13}$ ($w\!=\!1$)}
+  \caption*{$\delta^t_i$: weight 1} %$S^{j,4_i}, S^{j+1,2}_i, S^{j+1,4}_{i+13}$ ($w\!=\!1$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -395,7 +388,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
       (lll2) -- (W42) node[below] {$i+b_2$}
       ;
   \end{tikzpicture}%}}}
-  \caption*{$\varepsilon_i$: weight 1} %$S^{j,2}_i, S^{j+1,0}_i, S^{j+1,2}_{i+7}$ ($w\!=\!1$)}
+  \caption*{$\varepsilon^t_i$: weight 1} %$S^{j,2}_i, S^{j+1,0}_i, S^{j+1,2}_{i+7}$ ($w\!=\!1$)}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
@@ -416,13 +409,22 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
     \end{align*}
     \caption*{\cipher{MiniMORUS} instances}
   \end{subfigure}
-  \caption{\cipher{MiniMORUS} linear approximation fragments.}
+  \caption{\cipher{MiniMORUS} linear trail fragments.}
   \label{fig:minimorusfragments}
 \end{figure}
 
-Overall, the idea is that by using $\alpha^t_i$, we are able to approximate a bit of $S_0$ using only a ciphertext bit. By combining $\alpha^t_i$ with $\beta^t_i$, we are then able to approximate a bit of $S_1$ using only ciphertext bits (from two consecutive rounds). Likewise, $\gamma^t_i$ allows us to ``jump'' from $S_1$ to $S_4$, i.e. by combining $\alpha^t_i$ with $\beta^t_i$ and $\gamma^t_i$, we are able to approximate one bit of $S_4$ using only ciphertext bits. Notice however that $\gamma^t_i$ requires approximating $S_1$ in two consecutive rounds; and so the previous combination requires using $\alpha^t_i$ and $\beta^t_i$ \emph{twice}. In the same way, $\delta^t_i$ allows us to jump from $S_4$ to $S_2$; and $\varepsilon^t_i$ allows jumping from $S_2$ back to $S_0$. In the end, we are able to approximate a bit of $S_0$ using only ciphertext bits via the combination of all trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$.
+The way we are going to use each trail fragment may be summarized as follows, where in each case, elements to the left of the arrow $\to$ are used to approximate the element on the right of the arrow:
+\begin{alignat*}{2}
+\alpha^t_i:\quad&& C^t_i &\to S^{t+1}_{0,i+b_0} \\
+\beta^t_i:\quad&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
+\gamma^t_i:\quad&& S^t_{1,i}, S^{t+1}_{1,i+b_1} &\to S^t_{4,i} \\
+\delta^t_i:\quad&& S^t_{4,i}, S^{t+1}_{4,i+b_4} &\to S^{t+1}_{2,i} \\
+\varepsilon^t_i:\quad&& S^t_{2,i}, S^{t+1}_{2,i+b_2} &\to S^{t+1}_{0,i}.
+\end{alignat*}
 
-However, the same bit of $S_0$ can also be approximated much more simply by using $\alpha^t_i$ at the corresponding step. Thus that bit can be approximated from two different sides: the first one uses a combination of all trail fragments, and involves successive approximations of all state registers (except $S_3$) spanning several encryption steps. The second only involves using $\alpha^t_i$ at the final step reached by the previous trail. By XORing up these two approximations, we are left with only ciphertext bits, spanning five consecutive encryption rounds.
+In more detail, the idea is that by using $\alpha^t_i$, we are able to approximate a bit of $S_0$ using only a ciphertext bit. By combining $\alpha^t_i$ with $\beta^{t+1}_{i+b_0}$, we are then able to approximate a bit of $S_1$ (at step $t+1$) using only ciphertext bits from two consecutive rounds. Likewise, $\gamma^t_i$ allows us to ``jump'' from $S_1$ to $S_4$, i.e. by combining $\alpha^t_i$ with $\beta^t_i$ and $\gamma^t_i$ with appropriate choices of parameters $t$ and $i$ for each, we are able to approximate one bit of $S_4$ using only ciphertext bits. Notice however that $\gamma^t_i$ requires approximating $S_1$ in two consecutive rounds; and so the previous combination requires using $\alpha^t_i$ and $\beta^t_i$ \emph{twice} at different steps. In the same way, $\delta^t_i$ allows us to jump from $S_4$ to $S_2$; and $\varepsilon^t_i$ allows jumping from $S_2$ back to $S_0$. In the end, we are able to approximate a bit of $S_0$ using only ciphertext bits via the combination of all trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$.
+
+However, the same bit of $S_0$ can also be approximated directly by using $\alpha^t_i$ at the corresponding step. Thus that bit can be linearly approximated from two different sides: the first approximation uses a combination of all trail fragments, and involves successive approximations of all state registers (except $S_3$) spanning several encryption steps, as explained in the previous paragraph. The second approximation only involves using $\alpha^t_i$ at the final step reached by the previous trail. By XORing up these two approximations, we are left with only ciphertext bits, spanning five consecutive encryption rounds.
 
 Of course, the overall trail resulting from all of the previous combinations is quite complex, especially since $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$ each require two copies of the preceding trail fragment in consecutive rounds: that is, $\varepsilon^t_i$ requires two approximations of $S_2$, which requires using $\delta^t_i$ twice; and $\delta^t_i$ in turn requires using $\gamma^t_i$ twice, which itself requires using $\alpha^t_i$ and $\beta^t_i$ twice. Then $\alpha^t_i$ is used one final time to close the trail. One may naturally wonder if some components of this trail are in conflict. In particular, products of bits from registers $S_2$ and $S_3$ are approximated multiple times, by $\alpha^t_i$, $\beta^t_i$ and $\gamma^t_i$. To address this concern, and ensure that all approximations along the trail are in fact compatible, we now compute the full trail equation explicitely.
 
@@ -438,7 +440,7 @@ D^t_i:\quad&& S^t_{4,i} \oplus S^{t+1}_{4,i+b_4} \oplus S^{t+1}_{2,i} &= S^t_{0,
 E^t_i:\quad&& S^t_{2,i} \oplus S^{t+1}_{2,i+b_2} \oplus S^{t+1}_{0,i} &= S^t_{3,i} \cdot S^t_{4,i}
 \end{alignat*}
 
-From an algebraic point of view, building the full trail amounts to adding up copies of the previous equations for various choices of $t$ and $i$, so that eventually all $S^x_{y,z}$ on the left-hand side cancel out. Then we are left with only ciphertext terms on the left-hand side, while the right-hand side consists of a sum of biased expressions. By measuring the bias of the right-hand side expression, we will then be able to deduce the same bias on the linear combination of ciphertext bits on the left-hand side. We now set out to do so, and compute the equation of the full trail explicitely.
+From an algebraic point of view, building the full trail amounts to adding up copies of the previous equations for various choices of $t$ and $i$, so that eventually all $S^x_{y,z}$ terms on the left-hand side cancel out. Then we are left with only ciphertext terms on the left-hand side, while the right-hand side consists of a sum of biased expressions. By measuring the bias of the right-hand side expression, we will then be able to deduce the same bias on the linear combination of ciphertext bits on the left-hand side. We now set out to do so.
 
 In order to build the equation for the full trail, we start with $E^3_0$:
 \[
@@ -472,19 +474,19 @@ We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in 
 &&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
 \end{flalign*}
 
-The trail for \cipher{MORUS1280} is very similar, and is given in \Cref{sec:traileq}.
+The equation for \cipher{MORUS1280} is very similar, and is given in \Cref{sec:traileq}.
 
 \subsection{Bias of the Trail}
 \label{sec:minibias}
 
-In the equation for \cipher{MORUS640} from the previous section, each line on the right-hand side of the equality involves distinct terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a bias of $2^{-16}$. The same holds for \cipher{MORUS1280} (cf. \Cref{sec:traileq}).
+In the equation for \cipher{MORUS640} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MORUS1280} (cf. \Cref{sec:traileq}).
 
-That the bias is so high may be suprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total bias should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same round between registers $S_2$ and $S_3$. In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
+That the bias is so high may be suprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same round between registers $S_2$ and $S_3$. In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
 
-\subsection{Experiments}
+\subsection{Experimental Verification}
 
 To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}. 
-While our analysis from the previous section predicts a bias of $2^{-16}$, experiments confirm a slightly higher bias of $2^{-15.5}$ for \cipher{MORUS640}. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different rounds are not completely independent.
+While our analysis from the previous section predicts a bias of $2^{-16}$, experiments indicate a slightly higher bias of $2^{-15.5}$ for \cipher{MORUS640}. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different rounds are not completely independent.
 
 %\noindent
 %2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
@@ -540,17 +542,21 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
 \section{Trail for Full \cipher{MORUS}}
 
 \subsection{Symmetrizing the Trail}
-In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}. As explained in \Cref{sec:introminimorus}, translating a trail from one of the \cipher{MiniMORUS} ciphers to the corresponding full \cipher{MORUS} cipher just amounts to making the linear combinations symmetric---indeed, that was the point of introducing \cipher{MiniMORUS} in the first place. That is, for every $S^t_{i,j}$ (resp. $C^t_j$) term in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
+In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}.
+In order to build a trail on the full \cipher{MORUS}, we proceed exactly like we did for \cipher{MiniMORUS}, following the exact same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \cipher{MiniMORUS} to the four-word registers of full \cipher{MORUS}, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec:introminimorus}.
+That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
 \[
 S^3_{2,0} \oplus S^3_{2,32} \oplus S^3_{2,64} \oplus S^3_{2,96}.
 \]
 
+Thus, translating the trail from one of the \cipher{MiniMORUS} ciphers to the corresponding full \cipher{MORUS} cipher amounts to making every linear combination symmetric---indeed, that was the point of introducing \cipher{MiniMORUS} in the first place.
+Concretely, in order to build the full trail equation for \cipher{MORUS}, we write symmetric versions of equations $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ from \Cref{sec:minitraileq}, and then combine them in exactly the same way as before.
 In this way, the biased linear combination on \cipher{MiniMORUS640} given in \Cref{sec:minitraileq}, namely:
 \begin{align*}
 &C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}\\
 \oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}
 \end{align*}
-yields a biased linear combination on the full \cipher{MORUS640}, namely:
+utlimately yields the following biased symmetrized linear combination on the full \cipher{MORUS640}:
 \begin{align*}
 &C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}\\
 \oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}\\
@@ -559,22 +565,24 @@ yields a biased linear combination on the full \cipher{MORUS640}, namely:
 \oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}\\
 \oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}.
 \end{align*}
-We refer the reader to \Cref{sec:traileq} for the corresponding equation on \cipher{MORUS1280}.
+We refer the reader to \Cref{sec:traileq} for the corresponding linear combination on \cipher{MORUS1280}.
 
 \subsection{Bias of the Full Trail}
 
-Due to the observations from \autoref{sec:introminimorus}, the symmetrized trail on full \cipher{MORUS} more or less consists of four copies of the original trail on \cipher{MiniMORUS}. As such, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not simply behave as four copies of the original trail.
+The symmetrized trail on full \cipher{MORUS} may be intuitively understood as consisting of four copies of the original trail on \cipher{MiniMORUS}. Indeed, the only difference between full \cipher{MORUS} (for either version of \cipher{MORUS}) and four independent copies of \cipher{MiniMORUS} comes from register-wise rotations, which permute words within a register. But as observed in \Cref{sec:introminimorus}, register-wise rotations leave symmetric linear combinations invariant; and so, insofar as we only ever use symmetric linear combinations on all registers along the trail, register-wise rotations have no effect.
+
+Following the previous intuition, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
 
 To understand why that might be the case, assume a nonlinear term $S^0_{2,0} \cdot S^0_{3,0}$ arises from some part of the trail, and another term $S^0_{2,0} \cdot S^0_{3,w}$ arises from a different part of the trail (where $w$ denotes the word size). Then when we XOR the various trail fragments together, in \cipher{MiniMORUS} these two terms are actually equal and will cancel out, since register-wise rotations by multiple of $w$ bits are ignored. However in the real \cipher{MORUS} these terms are of course distinct and do not cancel out.
 
-In the actual trail for (either version of) full \cipher{MORUS}, this exact situation occurs when combining trail fragments $\beta^t_i$ and $\gamma^t_i$. Indeed, $\beta^t_i$ involves approximating the term $S^t_{2,i} \cdot S^t_{3,i}$, while $\gamma^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t{3,i-w}$ (cf. \Cref{fig:trailcollision}). While in \cipher{MiniMORUS}, these terms cancel out, in the full \cipher{MORUS}, when adding all symmetric copies of the trail, we end up with the sum:
+In the actual trail for (either version of) full \cipher{MORUS}, this exact situation occurs when combining trail fragments $\beta^t_i$ and $\gamma^t_i$. Indeed, $\beta^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i}$, while $\gamma^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i-w}$ (cf. \Cref{fig:trailcollision}). While in \cipher{MiniMORUS}, these terms cancel out, in the full \cipher{MORUS}, when adding all symmetric copies of the trail, we end up with the sum:
 \begin{align}
 &S^t_{2,i} \cdot S^t_{3,i} \oplus S^t_{3,i} \cdot S^t_{2,i+w}
 \oplus S^t_{2,i+w} \cdot S^t_{3,i+w} \oplus S^t_{3,i+w} \cdot S^t_{2,i+2w}\notag\\
 \oplus\; &S^t_{2,i+2w} \cdot S^t_{3,i+2w} \oplus S^t_{3,i+2w} \cdot S^t_{2,i+3w}
 \oplus S^t_{2,i+3w} \cdot S^t_{3,i+3w} \oplus S^t_{3,i+3w} \cdot S^t_{2,i}.\label{eq:8circle}
 \end{align}
-It may be observed that the products occuring in the equation above involve 8 terms in a circular ring. The weight of this expression can be computed by brute force, and is equal to $3$.
+It may be observed that the products occuring in the equation above involve 8 terms in a ring. The weight of this expression can be computed by brute force, and is equal to $3$.
 
 \begin{figure}
   \substatesfalse
@@ -639,9 +647,9 @@ It may be observed that the products occuring in the equation above involve 8 te
   \label{fig:trailcollision}
 \end{figure}
 
-In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (where 16 is the weight of the trail on \cipher{MiniMORUS1280}). Due to the complexity of the trail, we have confirmed that this bias is correct by explicitely computing the full trail equation in \Cref{sec:traileq}, and computing its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation does confirm a weight of 76 for the full trail on \cipher{MORUS1280}.
+In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \cipher{MiniMORUS1280} is 16). Due to the complexity of the trail, we have confirmed that this bias is correct by explicitely computing the full trail equation in \Cref{sec:traileq}, and computing its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation does yield a weight of 76 for the full trail on \cipher{MORUS1280}.
 
-In the case of \cipher{MORUS640}, collisions between rotation constants further complicate the analysis. More specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t{3,i}$ occurs. As explained previously, a quasi-collision with the term $S^t_{2,i} \cdot S^t{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However for \cipher{MORUS640}, trail fragment $\alpha^t_{i+d}$ is once used with an offest of $d = b_1+b_4-b_0-b_2 = 31+13-5-7 = 0 \;\text{mod}\; 32$ relative to $\gamma^t_i$. This creates another term $S^t_{2,i} \cdot S^t{3,i}$, and destroys one of the four occurences of \Cref{eq:8circle}. In the end, when computing the full trail equation on \cipher{MORUS640}, we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
+In the case of \cipher{MORUS640}, collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used with an offest of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case \cipher{MORUS640} is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurences of \Cref{eq:8circle}. In the end, when computing the full trail equation on \cipher{MORUS640}, we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
 
 %TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
 %(maybe not relevant due to overall complexity\dots)
@@ -830,18 +838,18 @@ In the case of \cipher{MORUS640}, collisions between rotation constants further 
 
 We emphasize that the biases we uncover between ciphertext bits are \emph{absolute}, in the sense that they do not depend on the encryption key, or the nonce. As such, they could be leveraged to mount an attack in a known-prefix, unknown-suffix scenario, similar to biases on the RC4 stream cipher. This is especially effective in a setting where the attacker is able to force multiple encryptions of the same plaintext, while controlling the length of the known prefix, such as in the BEAST attack on TLS.
 
-The design document of \cipher{MORUS} imposes a limit of $2^{64}$ encrypted blocks for a given key. However, since our attack is independent of the encryption key, and hence immune to rekeying, the limitation does not apply: all that matters for our attack is that the same plaintext be encrypted enough times.
+The design document of \cipher{MORUS} imposes a limit of $2^{64}$ encrypted blocks for a given key. However, since our attack is independent of the encryption key, and hence immune to rekeying, this limitation does not apply: all that matters for our attack is that the same plaintext be encrypted enough times.
 
 With the trail presented in this work, the data complexity is still out of reach, since exploiting the bias would require $2^{146}$ encrypted blocks for \cipher{MORUS640}, and $2^{152}$ encrypted blocks for \cipher{MORUS1280}. The data complexity could be slightly lowered by leveraging multilinear cryptanalysis; indeed, the trail holds for any bit shift, and if we assume independence, we could run $w$ copies of the trail in parallel on the same encrypted blocks (recall that $w$ is the word size, and the trail is invariant by rotation by $w$ bits). This would save a factor $2^5$ on the data complexity for \cipher{MORUS640}, and $2^6$ for \cipher{MORUS1280}; but the resulting complexity is still out of reach.
 
-However, the existence of this trail does hint at some weakness in the design of \cipher{MORUS}. Indeed, a notable feature of the trail is that the values of rotation constants are mostly irrelevant: a similar trail would exist for most choices of the constants. That it is possible to build a trail that ignores rotation constants may be seen as surprising. This would have been prevented by adding a word-wise rotation to one of the state registers at the input of the ciphertext equation---it seems that this would defeat any trail of the type uncovered in this work.
+However, the existence of this trail does hint at some weakness in the design of \cipher{MORUS}. Indeed, a notable feature of the trail is that the values of rotation constants are mostly irrelevant: a similar trail would exist for most choices of the constants. That it is possible to build a trail that ignores rotation constants may be surprising. This would have been prevented by adding a word-wise rotation to one of the state registers at the input of the ciphertext equation.
 
 \appendix
 
 \section{Trail Equations}
 \label{sec:traileq}
 
-In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each connected connected component. By the piling-up lemma, if we assume that the state bits are uniformly random and independent, then the weight of the full equation is equal to the sum of the weights of the connected components.
+In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each of these connected component. By the piling-up lemma, if we assume that the state bits are uniformly random and independent, then the weight of the full equation is equal to the sum of the weights of the connected components.
 
 \subsection{Trail Equation for \cipher{MiniMORUS640}}
 
