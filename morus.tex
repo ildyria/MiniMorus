@@ -12,6 +12,9 @@
 \usepackage{siunitx}
 \usepackage[section]{placeins}
 \usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+\allowdisplaybreaks%this is to allow page breaks within multiline equations (to accomodate full trail equations)
 
 \usepackage{xcolor}
 \definecolor{blue_link}{RGB}{0,0,200}
@@ -222,6 +225,8 @@ $S^t_i$ &:& the $i$-th register at the beginning of $t$-th encryption step.\\
 $S^t_{i,j}$ &:& the $j$-th bit of $S^t_i$, with $S^t_{i,0}$ being the rightmost bit.
 \end{tabular}
 }
+In the above notation, bit positions are always taken modulo the register size, i.e. 128 for \cipher{MORUS640} and 256 for \cipher{MORUS1280}.
+
 In the remainder, the $0$-th encryption step will denote the encryption step where our linear trail starts. Any encryption step could be chosen for that purpose, as long as at least four more encryption steps follow. In particular the $0$-th encryption step from the perspective of the trail does not have to be the first encryption step after initialization.
 
 Finally, let $x$ denote a register. Recall that register of \cipher{MORUS} are composed of four words. We now define register-wise and word-wise rotations (denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document):\\
@@ -233,9 +238,10 @@ $x \rotlxy y$ &:& circular shift of each word within $x$ by $y$ bits to the left
 \end{tabular}
 }
 
-\section{A Linear Bias in \cipher{MORUS}}
+\section{Symmetric Linear Combinations and \cipher{MiniMORUS}}
+\label{sec:introminimorus}
 
-To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Let $w$ denote the word size, i.e. 32 for \cipher{MORUS640}, and 64 for \cipher{MORUS1280}. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
+To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Let $w$ denote the word size, i.e. $w = 32$ in the case of \cipher{MORUS640}, and $w = 64$ for \cipher{MORUS1280}. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
 
 \subsection{Symmetric Linear Combinations}
 
@@ -244,11 +250,11 @@ We begin with a few observations about the \StateUpdate{} function. Beside XOR a
 \item \emph{word-wise} rotations perform a circular shift on each word within a register;
 \item \emph{register-wise} rotations perform a circular shift on a whole register.
 \end{enumerate}
-The second type of rotation always shifts registers by a multiple of the word size (i.e. 32 for \cipher{MORUS640}). This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a register-wise rotation by 32 bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
+The second type of rotation always shifts registers by a multiple of the word size $w$. This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a register-wise rotation by $w$ bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
 
 Since we want to build a linear trail, we are interested in linear combinations of bits within a register.
 \begin{definition}
-Let $w$ denote the word size in bits, and $r = 4w$ denote the register size. A linear combination of the form:
+Recall that $w$ denotes the word size in bits, and $4w$ is the size of a register. A linear combination of the form:
 \[
 S^t_{i,j(0)} \oplus S^t_{i,j(1)} \oplus \dots \oplus S^t_{i,j(k)}
 \]
@@ -273,7 +279,7 @@ This naturally leads to the idea of building a linear trail using only symmetric
 
 In fact, we can go further an consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see Figure~\ref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
 
-Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS640}. We will then extend it to the full \cipher{MORUS640} via the previous symmetry. The trail for \cipher{MORUS1280} will be essentially the same.
+Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS}. We will then extend it to the full \cipher{MORUS} via the previous symmetry.
 
 \begin{figure}[h]
   \substatesfalse
@@ -286,8 +292,7 @@ Because the trail we are going to build is relatively complex, we will first des
   \label{fig:minimorus}
 \end{figure}
 
-
-\section{Linear Trail for \cipher{MiniMORUS640}}
+\section{Linear Trail for \cipher{MiniMORUS}}
 
 \subsection{Overview of the Trail}
 
@@ -300,7 +305,7 @@ To build a linear trail on \cipher{MiniMORUS}, we combine the following five tra
     \item $\varepsilon^t_i$ approximates $S_0$ using two approximations of $S_2$ in consecutive steps.
 \end{itemize}
 
-The trail fragments are depicted on \autoref{fig:minimorusfragments}, and may be represented as follows (recall that the $b_i$'s are rotation constants):
+The trail fragments are depicted on \Cref{fig:minimorusfragments}, and may be represented as follows (recall that the $b_i$'s are rotation constants):
 \begin{alignat*}{2}
 \alpha^t_i:\quad&& C^t_i &\to S^{t+1}_{0,i+b_0} \\
 \beta^t_i:\quad&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
@@ -313,7 +318,7 @@ In all cases except $\alpha^t_i$, the trail fragment approximates a single AND g
 \[
 x \cdot y \oplus x \cdot z = x \cdot (y \oplus z).
 \]
-As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way to look at this phenomenon is that the trail holds for two different approximations of the AND gates: the alternative approximation is depicted by a dashed line on \autoref{fig:minimorusfragments}.
+As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way to look at this phenomenon is that the trail holds for two different approximations of the AND gates: the alternative approximation is depicted by a dashed line on \Cref{fig:minimorusfragments}.
 
 \begin{figure}
   \substatesfalse
@@ -422,6 +427,7 @@ However, the same bit of $S_0$ can also be approximated much more simply by usin
 Of course, the overall trail resulting from all of the previous combinations is quite complex, especially since $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$ each require two copies of the preceding trail fragment in consecutive rounds: that is, $\varepsilon^t_i$ requires two approximations of $S_2$, which requires using $\delta^t_i$ twice; and $\delta^t_i$ in turn requires using $\gamma^t_i$ twice, which itself requires using $\alpha^t_i$ and $\beta^t_i$ twice. Then $\alpha^t_i$ is used one final time to close the trail. One may naturally wonder if some components of this trail are in conflict. In particular, products of bits from registers $S_2$ and $S_3$ are approximated multiple times, by $\alpha^t_i$, $\beta^t_i$ and $\gamma^t_i$. To address this concern, and ensure that all approximations along the trail are in fact compatible, we now compute the full trail equation explicitely.
 
 \subsection{Trail Equation}
+\label{sec:minitraileq}
 
 The equation corresponding to each of the five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$ may be written explicitely as $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ as follows. For each equation, we write on the left-hand side of the equality the biased linear combination used in the trail; and on the right-hand side, the remainder of the equation, which must have non-zero bias (in all cases the bias is $2^{-1}$).
 \begin{alignat*}{2}
@@ -443,9 +449,8 @@ In order to cancel the $S^{4}_{0,0}$ term on the left-hand side, we add in the e
 &S^3_{2,0} \oplus S^{4}_{2,7} \oplus C^{3}_{0,-b_0}\\
 =\; &S^3_{3,0} \cdot S^t_{4,0} \oplus S^t_{1,-b_0} \oplus S^t_{3,-b_0} \oplus S^3_{1,-b_0} \cdot S^3_{2,-b_0} \oplus S^3_{2,-b_0} \cdot S^t_{3,-b_0}.
 \end{align*}
-We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. We do not write the whole process as it is rather tedious. Ultimately, for \cipher{MORUS640}, this yields the equation:
+We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MORUS640}, this yields the equation:
 
-\allowdisplaybreaks
 \begin{flalign*}
 &&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
 &&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
@@ -467,15 +472,18 @@ We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in 
 &&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
 \end{flalign*}
 
-\subsection{Bias of the Trail}
+The trail for \cipher{MORUS1280} is very similar, and is given in \Cref{sec:traileq}.
 
-In the equation from the previous section, each line on the right-hand side of the equality involves distinct terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a bias of $2^{-16}$.
+\subsection{Bias of the Trail}
+\label{sec:minibias}
+
+In the equation for \cipher{MORUS640} from the previous section, each line on the right-hand side of the equality involves distinct terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a bias of $2^{-16}$. The same holds for \cipher{MORUS1280} (cf. \Cref{sec:traileq}).
 
 That the bias is so high may be suprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total bias should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same round between registers $S_2$ and $S_3$. In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
 
 \subsection{Experiments}
 
-To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \autoref{tab:miniapproximations}. 
+To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}. 
 While our analysis from the previous section predicts a bias of $2^{-16}$, experiments confirm a slightly higher bias of $2^{-15.5}$ for \cipher{MORUS640}. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different rounds are not completely independent.
 
 %\noindent
@@ -529,6 +537,44 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
   }
 \end{table}
 
+\section{Trail for Full \cipher{MORUS}}
+
+\subsection{Symmetrizing the Trail}
+In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}. As explained in \Cref{sec:introminimorus}, translating a trail from one of the \cipher{MiniMORUS} ciphers to the corresponding full \cipher{MORUS} cipher just amounts to making the linear combinations symmetric---indeed, that was the point of introducing \cipher{MiniMORUS} in the first place. That is, for every $S^t_{i,j}$ (resp. $C^t_j$) term in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
+\[
+S^3_{2,0} \oplus S^3_{2,32} \oplus S^3_{2,64} \oplus S^3_{2,96}.
+\]
+
+In this way, the biased linear combination on \cipher{MiniMORUS640} given in \Cref{sec:minitraileq}, namely:
+\begin{align*}
+&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}\\
+\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}
+\end{align*}
+yields a biased linear combination on the full \cipher{MORUS640}, namely:
+\begin{align*}
+&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}\\
+\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}\\
+\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}\\
+\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}\\
+\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}\\
+\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}.
+\end{align*}
+We refer the reader to \Cref{sec:traileq} for the corresponding equation on \cipher{MORUS1280}.
+
+\subsection{Bias of the Full Trail}
+
+Due to the observations from \autoref{sec:introminimorus}, the symmetrized trail on full \cipher{MORUS} more or less consists of four copies of the original trail on \cipher{MiniMORUS}. As such, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not simply behave as four copies of the original trail.
+
+To understand why that might be the case, assume a nonlinear term $S^0_{2,0} \cdot S^0_{3,0}$ arises from some part of the trail, and another term $S^0_{2,0} \cdot S^0_{3,w}$ arises from a different part of the trail (where $w$ denotes the word size). Then when we XOR the various trail fragments together, in \cipher{MiniMORUS} these two terms are actually equal and will cancel out, since register-wise rotations by multiple of $w$ bits are ignored. However in the real \cipher{MORUS} these terms are of course distinct and do not cancel out.
+
+In the actual trail for (either version of) full \cipher{MORUS}, this exact situation occurs when combining trail fragments $\beta^t_i$ and $\gamma^t_i$. Indeed, $\beta^t_i$ involves approximating the term $S^t_{2,i} \cdot S^t_{3,i}$, while $\gamma^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t{3,i-w}$ (cf. \Cref{fig:trailcollision}). While in \cipher{MiniMORUS}, these terms cancel out, in the full \cipher{MORUS}, when adding all symmetric copies of the trail, we end up with the sum:
+\begin{align}
+&S^t_{2,i} \cdot S^t_{3,i} \oplus S^t_{3,i} \cdot S^t_{2,i+w}
+\oplus S^t_{2,i+w} \cdot S^t_{3,i+w} \oplus S^t_{3,i+w} \cdot S^t_{2,i+2w}\notag\\
+\oplus\; &S^t_{2,i+2w} \cdot S^t_{3,i+2w} \oplus S^t_{3,i+2w} \cdot S^t_{2,i+3w}
+\oplus S^t_{2,i+3w} \cdot S^t_{3,i+3w} \oplus S^t_{3,i+3w} \cdot S^t_{2,i}.\label{eq:8circle}
+\end{align}
+It may be observed that the products occuring in the equation above involve 8 terms in a circular ring. The weight of this expression can be computed by brute force, and is equal to $3$.
 
 \begin{figure}
   \substatesfalse
@@ -589,9 +635,13 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
   \end{tikzpicture}%}}}
   \caption*{\cipher{MORUS}: weight $4 \times 1$ (not $4 \times 2$)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
   \end{subfigure}
-  \caption{Weight of $\beta_i \oplus \gamma_i$ for \cipher{MiniMORUS} and \cipher{MORUS}.}
-  \label{fig:minimorusfragments}
+  \caption{Weight of $\beta^t_i \oplus \gamma^t_i$ for \cipher{MiniMORUS} and \cipher{MORUS}.}
+  \label{fig:trailcollision}
 \end{figure}
+
+In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (where 16 is the weight of the trail on \cipher{MiniMORUS1280}). Due to the complexity of the trail, we have confirmed that this bias is correct by explicitely computing the full trail equation in \Cref{sec:traileq}, and computing its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation does confirm a weight of 76 for the full trail on \cipher{MORUS1280}.
+
+In the case of \cipher{MORUS640}, collisions between rotation constants further complicate the analysis. More specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t{3,i}$ occurs. As explained previously, a quasi-collision with the term $S^t_{2,i} \cdot S^t{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However for \cipher{MORUS640}, trail fragment $\alpha^t_{i+d}$ is once used with an offest of $d = b_1+b_4-b_0-b_2 = 31+13-5-7 = 0 \;\text{mod}\; 32$ relative to $\gamma^t_i$. This creates another term $S^t_{2,i} \cdot S^t{3,i}$, and destroys one of the four occurences of \Cref{eq:8circle}. In the end, when computing the full trail equation on \cipher{MORUS640}, we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
 
 %TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
 %(maybe not relevant due to overall complexity\dots)
@@ -770,15 +820,253 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
       \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
     \end{scope}
   \end{tikzpicture}
-  \caption{\cipher{MiniMORUS}: Two approximations for $S^{2,2}_0$}
+  \caption{\cipher{MiniMORUS}: two approximations for $S^{2,2}_0$.}
+  \label{fig:twoapproximations}
 \end{figure}
 
-\clearpage
+\section{Discussion}
 
-\section{Linear Approximations for \cipher{MORUS}}
+%This is just a sketch for now...
 
-\section{Differential Attack on the Finalization}
+We emphasize that the biases we uncover between ciphertext bits are \emph{absolute}, in the sense that they do not depend on the encryption key, or the nonce. As such, they could be leveraged to mount an attack in a known-prefix, unknown-suffix scenario, similar to biases on the RC4 stream cipher. This is especially effective in a setting where the attacker is able to force multiple encryptions of the same plaintext, while controlling the length of the known prefix, such as in the BEAST attack on TLS.
 
-\section{Key-Recovery Attack in Nonce-Misuse Setting}
+The design document of \cipher{MORUS} imposes a limit of $2^{64}$ encrypted blocks for a given key. However, since our attack is independent of the encryption key, and hence immune to rekeying, the limitation does not apply: all that matters for our attack is that the same plaintext be encrypted enough times.
+
+With the trail presented in this work, the data complexity is still out of reach, since exploiting the bias would require $2^{146}$ encrypted blocks for \cipher{MORUS640}, and $2^{152}$ encrypted blocks for \cipher{MORUS1280}. The data complexity could be slightly lowered by leveraging multilinear cryptanalysis; indeed, the trail holds for any bit shift, and if we assume independence, we could run $w$ copies of the trail in parallel on the same encrypted blocks (recall that $w$ is the word size, and the trail is invariant by rotation by $w$ bits). This would save a factor $2^5$ on the data complexity for \cipher{MORUS640}, and $2^6$ for \cipher{MORUS1280}; but the resulting complexity is still out of reach.
+
+However, the existence of this trail does hint at some weakness in the design of \cipher{MORUS}. Indeed, a notable feature of the trail is that the values of rotation constants are mostly irrelevant: a similar trail would exist for most choices of the constants. That it is possible to build a trail that ignores rotation constants may be seen as surprising. This would have been prevented by adding a word-wise rotation to one of the state registers at the input of the ciphertext equation---it seems that this would defeat any trail of the type uncovered in this work.
+
+\appendix
+
+\section{Trail Equations}
+\label{sec:traileq}
+
+In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each connected connected component. By the piling-up lemma, if we assume that the state bits are uniformly random and independent, then the weight of the full equation is equal to the sum of the weights of the connected components.
+
+\subsection{Trail Equation for \cipher{MiniMORUS640}}
+
+This trail equation was already given in \Cref{sec:minitraileq}.
+
+\begin{flalign*}
+&&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
+&&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
+&&=\; &S^0_{1,27} \oplus S^0_{3,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,26} \oplus S^1_{3,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,8} \oplus S^1_{3,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,1} \oplus S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,7} \oplus S^2_{3,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,15} \oplus S^2_{3,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,27} \oplus S^2_{3,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,2} \oplus S^1_{3,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2}&&\text{weight 1}\\
+&&\oplus\; &S^3_{3,14} \oplus S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14}&&\text{weight 1}\\
+&&\oplus\; &S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; &S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; &S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
+&&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
+\end{flalign*}
+The total weight of the trail is 16.
+
+\subsection{Trail Equation for \cipher{MiniMORUS1280}}
+
+\begin{flalign*}
+&&&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}&&\\
+&&\oplus\; &C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24}&&\\
+&&=\; &S^0_{1,51} \cdot S^0_{2,51} \oplus S^0_{2,51} \cdot S^0_{3,51} \oplus S^0_{1,51} \oplus S^0_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,25} \cdot S^1_{2,25} \oplus S^1_{2,25} \cdot S^1_{3,25} \oplus S^1_{1,25} \oplus S^1_{3,25}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,33} \cdot S^1_{2,33} \oplus S^1_{2,33} \cdot S^1_{3,33} \oplus S^1_{1,33} \oplus S^1_{3,33}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,55} \cdot S^1_{2,55} \oplus S^1_{2,55} \cdot S^1_{3,55} \oplus S^1_{1,55} \oplus S^1_{3,55}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7} \oplus S^2_{1,7} \oplus S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,29} \cdot S^2_{2,29} \oplus S^2_{2,29} \cdot S^2_{3,29} \oplus S^2_{1,29} \oplus S^2_{3,29}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,37} \cdot S^2_{2,37} \oplus S^2_{2,37} \cdot S^2_{3,37} \oplus S^2_{1,37} \oplus S^2_{3,37}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,51} \cdot S^2_{2,51} \oplus S^2_{2,51} \cdot S^2_{3,51} \oplus S^2_{1,51} \oplus S^2_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,11} \cdot S^3_{2,11} \oplus S^3_{2,11} \cdot S^3_{3,11} \oplus S^3_{1,11} \oplus S^3_{3,11}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,46} \cdot S^2_{3,46}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,38} \cdot S^3_{1,38}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,50} \cdot S^3_{3,50}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,24} \cdot S^4_{3,24}&&\text{weight 1}
+\end{flalign*}
+The total weight of the trail is 16.
+
+\subsection{Trail Equation for full \cipher{MORUS640}}
+
+\begin{flalign*}
+&&&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}&&\\
+&&\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}&&\\
+&&\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}&&\\
+&&\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}&&\\
+&&\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}&&\\
+&&\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}&&\\
+%
+&&=\; &S^1_{2,0} \cdot S^1_{3,0} \oplus S^1_{2,0} \cdot S^1_{3,96} \oplus S^1_{2,32} \cdot S^1_{3,0} \oplus S^1_{2,96} \cdot S^1_{3,96}&&\\
+&&&\quad \oplus S^1_{2,96} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,32} \oplus S^1_{2,32} \cdot S^1_{3,32}&&\text{weight 3}\\
+%
+&&\oplus\; & S^2_{2,13} \cdot S^2_{3,13} \oplus S^2_{2,13} \cdot S^2_{3,109} \oplus S^2_{2,45} \cdot S^2_{3,13} \oplus S^2_{2,109} \cdot S^2_{3,109}&&\\
+&&&\quad \oplus S^2_{2,45} \cdot S^2_{3,45} \oplus S^2_{2,109} \cdot S^2_{3,77} \oplus S^2_{2,77} \cdot S^2_{3,45} \oplus S^2_{2,77} \cdot S^2_{3,77}&&\text{weight 3}\\
+%
+&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20} \oplus S^3_{2,20} \cdot S^3_{3,116} \oplus S^3_{2,52} \cdot S^3_{3,20} \oplus S^3_{2,116} \cdot S^3_{3,116}&&\\
+&&&\quad \oplus S^3_{2,52} \cdot S^3_{3,52} \oplus S^3_{2,116} \cdot S^3_{3,84} \oplus S^3_{2,84} \cdot S^3_{3,52} \oplus S^3_{2,84} \cdot S^3_{3,84}&&\text{weight 3}\\
+%
+&&\oplus\; & S^0_{1,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27} \oplus S^0_{3,27}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,59} \oplus S^0_{1,59} \cdot S^0_{2,59} \oplus S^0_{2,59} \cdot S^0_{3,59} \oplus S^0_{3,59}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,91} \oplus S^0_{1,91} \cdot S^0_{2,91} \oplus S^0_{2,91} \cdot S^0_{3,91} \oplus S^0_{3,91}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,123} \cdot S^0_{2,123} \oplus S^0_{2,123} \cdot S^0_{3,123} \oplus S^0_{1,123} \oplus S^0_{3,123}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2} \oplus S^1_{3,2}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8} \oplus S^1_{3,8}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26} \oplus S^1_{3,26}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,34} \oplus S^1_{1,34} \cdot S^1_{2,34} \oplus S^1_{2,34} \cdot S^1_{3,34} \oplus S^1_{3,34}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,40} \oplus S^1_{1,40} \cdot S^1_{2,40} \oplus S^1_{2,40} \cdot S^1_{3,40} \oplus S^1_{3,40}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,58} \oplus S^1_{1,58} \cdot S^1_{2,58} \oplus S^1_{2,58} \cdot S^1_{3,58} \oplus S^1_{3,58}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,66} \oplus S^1_{1,66} \cdot S^1_{2,66} \oplus S^1_{2,66} \cdot S^1_{3,66} \oplus S^1_{3,66}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,72} \oplus S^1_{1,72} \cdot S^1_{2,72} \oplus S^1_{2,72} \cdot S^1_{3,72} \oplus S^1_{3,72}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,90} \oplus S^1_{1,90} \cdot S^1_{2,90} \oplus S^1_{2,90} \cdot S^1_{3,90} \oplus S^1_{3,90}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,98} \oplus S^1_{1,98} \cdot S^1_{2,98} \oplus S^1_{2,98} \cdot S^1_{3,98} \oplus S^1_{3,98}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,104} \oplus S^1_{1,104} \cdot S^1_{2,104} \oplus S^1_{2,104} \cdot S^1_{3,104} \oplus S^1_{3,104}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,122} \oplus S^1_{3,122} \oplus S^1_{1,122} \cdot S^1_{2,122} \oplus S^1_{2,122} \cdot S^1_{3,122}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1} \oplus S^2_{3,1}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,103} \oplus S^2_{3,103}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15} \oplus S^2_{3,15}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27} \oplus S^2_{3,27}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,33} \oplus S^2_{1,33} \cdot S^2_{2,33} \oplus S^2_{2,33} \cdot S^2_{3,33} \oplus S^2_{3,33}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,39} \oplus S^2_{1,39} \cdot S^2_{2,39} \oplus S^2_{2,39} \cdot S^2_{3,7} \oplus S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,47} \oplus S^2_{1,47} \cdot S^2_{2,47} \oplus S^2_{2,47} \cdot S^2_{3,47} \oplus S^2_{3,47}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,59} \oplus S^2_{1,59} \cdot S^2_{2,59} \oplus S^2_{2,59} \cdot S^2_{3,59} \oplus S^2_{3,59}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,65} \oplus S^2_{1,65} \cdot S^2_{2,65} \oplus S^2_{2,65} \cdot S^2_{3,65} \oplus S^2_{3,65}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,71} \oplus S^2_{1,71} \cdot S^2_{2,71} \oplus S^2_{2,71} \cdot S^2_{3,39} \oplus S^2_{3,39}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,79} \oplus S^2_{1,79} \cdot S^2_{2,79} \oplus S^2_{2,79} \cdot S^2_{3,79} \oplus S^2_{3,79}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,91} \oplus S^2_{1,91} \cdot S^2_{2,91} \oplus S^2_{2,91} \cdot S^2_{3,91} \oplus S^2_{3,91}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,97} \oplus S^2_{1,97} \cdot S^2_{2,97} \oplus S^2_{2,97} \cdot S^2_{3,97} \oplus S^2_{3,97}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,103} \oplus S^2_{1,103} \cdot S^2_{2,103} \oplus S^2_{2,103} \cdot S^2_{3,71} \oplus S^2_{3,71}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,111} \oplus S^2_{1,111} \cdot S^2_{2,111} \oplus S^2_{2,111} \cdot S^2_{3,111} \oplus S^2_{3,111}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,123} \oplus S^2_{3,123} \oplus S^2_{2,123} \cdot S^2_{3,123} \oplus S^2_{1,123} \cdot S^2_{2,123}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14} \oplus S^3_{3,14}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,46} \oplus S^3_{1,46} \cdot S^3_{2,46} \oplus S^3_{2,46} \cdot S^3_{3,46} \oplus S^3_{3,46}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,78} \oplus S^3_{1,78} \cdot S^3_{2,78} \oplus S^3_{2,78} \cdot S^3_{3,78} \oplus S^3_{3,78}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,110} \oplus S^3_{3,110} \oplus S^3_{1,110} \cdot S^3_{2,110} \oplus S^3_{2,110} \cdot S^3_{3,110}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,32} \cdot S^2_{1,32}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,64} \cdot S^2_{1,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,96} \cdot S^2_{1,96}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,63} \cdot S^2_{3,63}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,95} \cdot S^2_{3,95}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,127} \cdot S^2_{3,127}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,32} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,64} \cdot S^2_{4,32}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,96} \cdot S^2_{4,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,0} \cdot S^2_{4,96}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,39} \cdot S^3_{1,39}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,71} \cdot S^3_{1,71}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,103} \cdot S^3_{1,103}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,38} \cdot S^3_{3,38}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,44} \cdot S^3_{3,44}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,70} \cdot S^3_{3,70}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,76} \cdot S^3_{3,76}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,102} \cdot S^3_{3,102}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,108} \cdot S^3_{3,108}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,19} \cdot S^4_{3,19}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,51} \cdot S^4_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,83} \cdot S^4_{3,83}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,115} \cdot S^4_{3,115}&&\text{weight 1}
+\end{flalign*}
+The total weight of the trail is 73.
+
+\subsection{Trail Equation for full \cipher{MORUS1280}}
+
+\begin{flalign*}
+&&&C^0_{51} \oplus C^0_{115} \oplus C^0_{179} \oplus C^0_{243} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^1_{64} \oplus C^1_{89}&&\\
+&&\oplus\; & C^1_{97} \oplus C^1_{119} \oplus C^1_{128} \oplus C^1_{153} \oplus C^1_{161} \oplus C^1_{183} \oplus C^1_{192} \oplus C^1_{217} \oplus C^1_{225} \oplus C^1_{247}&&\\
+&&\oplus\; & C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37} \oplus C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^2_{68} \oplus C^2_{71} \oplus C^2_{93}&&\\
+&&\oplus\; & C^2_{101} \oplus C^2_{102} \oplus C^2_{110} \oplus C^2_{115} \oplus C^2_{132} \oplus C^2_{135} \oplus C^2_{157} \oplus C^2_{165} \oplus C^2_{166} \oplus C^2_{174}&&\\
+&&\oplus\; & C^2_{179} \oplus C^2_{196} \oplus C^2_{199} \oplus C^2_{221} \oplus C^2_{229} \oplus C^2_{230} \oplus C^2_{238} \oplus C^2_{243} \oplus C^3_{11} \oplus C^3_{20}&&\\
+&&\oplus\; & C^3_{42} \oplus C^3_{50} \oplus C^3_{75} \oplus C^3_{84} \oplus C^3_{106} \oplus C^3_{114} \oplus C^3_{139} \oplus C^3_{148} \oplus C^3_{170} \oplus C^3_{178}&&\\
+&&\oplus\; & C^3_{203} \oplus C^3_{212} \oplus C^3_{234} \oplus C^3_{242} \oplus C^4_{24} \oplus C^4_{88} \oplus C^4_{152} \oplus C^4_{216}&&\\
+%
+&&=\; & S^1_{2,0} \cdot S^1_{3,192} \oplus S^1_{2,0} \cdot S^1_{3,0} \oplus S^1_{2,64} \cdot S^1_{3,0} \oplus S^1_{2,64} \cdot S^1_{3,64}&&\\
+&&&\quad \oplus S^1_{2,128} \cdot S^1_{3,64} \oplus S^1_{2,128} \cdot S^1_{3,128} \oplus S^1_{2,192} \cdot S^1_{3,128} \oplus S^1_{2,192} \cdot S^1_{3,192}&&\text{weight 3}\\
+%
+&&\oplus\; & S^2_{2,4} \cdot S^2_{3,4} \oplus S^2_{2,68} \cdot S^2_{3,4} \oplus S^2_{2,68} \cdot S^2_{3,68} \oplus S^2_{2,132} \cdot S^2_{3,68}&&\\
+&&&\quad \oplus S^2_{2,132} \cdot S^2_{3,132} \oplus S^2_{2,196} \cdot S^2_{3,132} \oplus S^2_{2,196} \cdot S^2_{3,196} \oplus S^2_{2,4} \cdot S^2_{3,196}&&\text{weight 3}\\
+%
+&&\oplus\; & S^2_{2,102} \cdot S^2_{3,38} \oplus S^2_{2,102} \cdot S^2_{3,102} \oplus S^2_{2,166} \cdot S^2_{3,102} \oplus S^2_{2,166} \cdot S^2_{3,166}&&\\
+&&&\quad \oplus S^2_{2,230} \cdot S^2_{3,166} \oplus S^2_{2,230} \cdot S^2_{3,230} \oplus S^2_{2,38} \cdot S^2_{3,230} \oplus S^2_{2,38} \cdot S^2_{3,38}&&\text{weight 3}\\
+%
+&&\oplus\; & S^3_{2,42} \cdot S^3_{3,42} \oplus S^3_{2,106} \cdot S^3_{3,42} \oplus S^3_{2,106} \cdot S^3_{3,106} \oplus S^3_{2,170} \cdot S^3_{3,106}&&\\
+&&&\quad \oplus S^3_{2,170} \cdot S^3_{3,170} \oplus S^3_{2,234} \cdot S^3_{3,170} \oplus S^3_{2,234} \cdot S^3_{3,234} \oplus S^3_{2,42} \cdot S^3_{3,234}&&\text{weight 3}\\
+%
+&&\oplus\; & S^0_{1,51} \cdot S^0_{2,51} \oplus S^0_{1,51} \oplus S^0_{2,51} \cdot S^0_{3,51} \oplus S^0_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,115} \cdot S^0_{2,115} \oplus S^0_{1,115} \oplus S^0_{2,115} \cdot S^0_{3,115} \oplus S^0_{3,115}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,179} \cdot S^0_{2,179} \oplus S^0_{1,179} \oplus S^0_{2,179} \cdot S^0_{3,179} \oplus S^0_{3,179}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,243} \cdot S^0_{2,243} \oplus S^0_{1,243} \oplus S^0_{2,243} \cdot S^0_{3,243} \oplus S^0_{3,243}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,25} \cdot S^1_{2,25} \oplus S^1_{1,25} \oplus S^1_{2,25} \cdot S^1_{3,25} \oplus S^1_{3,25}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,33} \cdot S^1_{2,33} \oplus S^1_{1,33} \oplus S^1_{2,33} \cdot S^1_{3,33} \oplus S^1_{3,33}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,55} \cdot S^1_{2,55} \oplus S^1_{1,55} \oplus S^1_{2,55} \cdot S^1_{3,55} \oplus S^1_{3,55}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,89} \cdot S^1_{2,89} \oplus S^1_{1,89} \oplus S^1_{2,89} \cdot S^1_{3,89} \oplus S^1_{3,89}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,97} \cdot S^1_{2,97} \oplus S^1_{1,97} \oplus S^1_{2,97} \cdot S^1_{3,97} \oplus S^1_{3,97}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,119} \cdot S^1_{2,119} \oplus S^1_{1,119} \oplus S^1_{2,119} \cdot S^1_{3,119} \oplus S^1_{3,119}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,153} \cdot S^1_{2,153} \oplus S^1_{1,153} \oplus S^1_{2,153} \cdot S^1_{3,153} \oplus S^1_{3,153}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,161} \cdot S^1_{2,161} \oplus S^1_{1,161} \oplus S^1_{2,161} \cdot S^1_{3,161} \oplus S^1_{3,161}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,183} \cdot S^1_{2,183} \oplus S^1_{1,183} \oplus S^1_{2,183} \cdot S^1_{3,183} \oplus S^1_{3,183}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,217} \cdot S^1_{2,217} \oplus S^1_{1,217} \oplus S^1_{2,217} \cdot S^1_{3,217} \oplus S^1_{3,217}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,225} \cdot S^1_{2,225} \oplus S^1_{1,225} \oplus S^1_{2,225} \cdot S^1_{3,225} \oplus S^1_{3,225}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,247} \cdot S^1_{2,247} \oplus S^1_{1,247} \oplus S^1_{2,247} \cdot S^1_{3,247} \oplus S^1_{3,247}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{1,7} \oplus S^2_{2,7} \cdot S^2_{3,7} \oplus S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,29} \cdot S^2_{2,29} \oplus S^2_{1,29} \oplus S^2_{2,29} \cdot S^2_{3,29} \oplus S^2_{3,29}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,37} \cdot S^2_{2,37} \oplus S^2_{1,37} \oplus S^2_{2,37} \cdot S^2_{3,37} \oplus S^2_{3,37}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,51} \cdot S^2_{2,51} \oplus S^2_{1,51} \oplus S^2_{2,51} \cdot S^2_{3,51} \oplus S^2_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,71} \cdot S^2_{2,71} \oplus S^2_{1,71} \oplus S^2_{2,71} \cdot S^2_{3,71} \oplus S^2_{3,71}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,93} \cdot S^2_{2,93} \oplus S^2_{1,93} \oplus S^2_{2,93} \cdot S^2_{3,93} \oplus S^2_{3,93}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,101} \cdot S^2_{2,101} \oplus S^2_{1,101} \oplus S^2_{2,101} \cdot S^2_{3,101} \oplus S^2_{3,101}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,115} \cdot S^2_{2,115} \oplus S^2_{1,115} \oplus S^2_{2,115} \cdot S^2_{3,115} \oplus S^2_{3,115}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,135} \cdot S^2_{2,135} \oplus S^2_{1,135} \oplus S^2_{2,135} \cdot S^2_{3,135} \oplus S^2_{3,135}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,157} \cdot S^2_{2,157} \oplus S^2_{1,157} \oplus S^2_{2,157} \cdot S^2_{3,157} \oplus S^2_{3,157}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,165} \cdot S^2_{2,165} \oplus S^2_{1,165} \oplus S^2_{2,165} \cdot S^2_{3,165} \oplus S^2_{3,165}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,179} \cdot S^2_{2,179} \oplus S^2_{1,179} \oplus S^2_{2,179} \cdot S^2_{3,179} \oplus S^2_{3,179}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,199} \cdot S^2_{2,199} \oplus S^2_{1,199} \oplus S^2_{2,199} \cdot S^2_{3,199} \oplus S^2_{3,199}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,221} \cdot S^2_{2,221} \oplus S^2_{1,221} \oplus S^2_{2,221} \cdot S^2_{3,221} \oplus S^2_{3,221}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,229} \cdot S^2_{2,229} \oplus S^2_{1,229} \oplus S^2_{2,229} \cdot S^2_{3,229} \oplus S^2_{3,229}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,243} \cdot S^2_{2,243} \oplus S^2_{1,243} \oplus S^2_{2,243} \cdot S^2_{3,243} \oplus S^2_{3,243}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,11} \cdot S^3_{2,11} \oplus S^3_{1,11} \oplus S^3_{2,11} \cdot S^3_{3,11} \oplus S^3_{3,11}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,75} \cdot S^3_{2,75} \oplus S^3_{1,75} \oplus S^3_{2,75} \cdot S^3_{3,75} \oplus S^3_{3,75}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,139} \cdot S^3_{2,139} \oplus S^3_{1,139} \oplus S^3_{2,139} \cdot S^3_{3,139} \oplus S^3_{3,139}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,203} \cdot S^3_{2,203} \oplus S^3_{1,203} \oplus S^3_{2,203} \cdot S^3_{3,203} \oplus S^3_{3,203}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,64} \cdot S^2_{1,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,128} \cdot S^2_{1,128}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,192} \cdot S^2_{1,192}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,230} \cdot S^3_{1,230}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,46} \cdot S^2_{3,46}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,110} \cdot S^2_{3,110}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,174} \cdot S^2_{3,174}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,238} \cdot S^2_{3,238}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,64} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,128} \cdot S^2_{4,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,192} \cdot S^2_{4,128}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,0} \cdot S^2_{4,192}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,38} \cdot S^3_{1,38}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,102} \cdot S^3_{1,102}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,166} \cdot S^3_{1,166}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,50} \cdot S^3_{3,50}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,84} \cdot S^3_{3,84}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,114} \cdot S^3_{3,114}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,148} \cdot S^3_{3,148}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,178} \cdot S^3_{3,178}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,212} \cdot S^3_{3,212}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,242} \cdot S^3_{3,242}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,24} \cdot S^4_{3,24}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,88} \cdot S^4_{3,88}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,152} \cdot S^4_{3,152}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,216} \cdot S^4_{3,216}&&\text{weight 1}
+\end{flalign*}
+The total weight of the trail is 76.
 
 \end{document}
