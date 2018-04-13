@@ -27,7 +27,7 @@
 }
 
 \usepackage{tikz}
-\usetikzlibrary{calc,math}
+\usetikzlibrary{calc,math,arrows.meta}
 
 \makeatletter
 \pgfdeclareshape{oplus}{%{{{
@@ -451,7 +451,7 @@ In order to cancel the $S^{3}_{0,0}$ term on the left-hand side, we add in the e
 &S^2_{2,0} \oplus S^3_{2,b_2} \oplus C^2_{-b_0}\\
 =\; &S^2_{3,0} \cdot S^2_{4,0} \oplus S^2_{1,-b_0} \oplus S^2_{3,-b_0} \oplus S^2_{1,-b_0} \cdot S^2_{2,-b_0} \oplus S^2_{2,-b_0} \cdot S^2_{3,-b_0}.
 \end{align*}
-We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MORUS640}, this yields the equation:
+We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MiniMORUS640}, this yields the equation:
 
 \begin{flalign*}
 &&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
@@ -474,12 +474,12 @@ We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in 
 &&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
 \end{flalign*}
 
-The equation for \cipher{MORUS1280} is very similar, and is given in \Cref{sec:traileq}.
+The equation for \cipher{MiniMORUS1280} is very similar, and is given in \Cref{sec:traileq}.
 
 \subsection{Bias of the Trail}
 \label{sec:minibias}
 
-In the equation for \cipher{MORUS640} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MORUS1280} (cf. \Cref{sec:traileq}).
+In the equation for \cipher{MiniMORUS640} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MiniMORUS1280} (cf. \Cref{sec:traileq}).
 
 That the bias is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
 
@@ -533,7 +533,7 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
     $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
              & 9    & 9     & 9 \\
     $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
-             & 16   & 16    & {??} \\
+             & 16   & 16    & 15.9 \\
     \bottomrule
   \end{tabular}
   }
@@ -611,8 +611,9 @@ It may be observed that the products occurring in the equation above involve eig
       ;
     %\draw[trail, beta,  dotted] (and-1) -- (and-1-|and1);
     %\draw[trail, gamma, dotted] (and1)  -- (and-1-|and1) node[above, black] {=};
-    \draw[trail, beta]  (xnd-1) -- ++(-.5,0) coordinate (tmp) -- (tmp|-xnd1);
-    \draw[trail, gamma] (tmp|-xnd1) node[below, black] {=} -- (xnd1);
+    \node (eq) at ($(and-1|-and1)+(-1,-2.4pt)$) {=};
+    \draw[beta,{Circle[sep=-1.8pt]}-]  ($(and-1)+(0,-2.4pt)$) -| (eq);
+    \draw[gamma,{Circle[sep=-1.8pt]}-] ($(and1)+(0,-2.4pt)$) -- (eq);
   \end{tikzpicture}%}}}
   \caption*{\cipher{MiniMORUS}: weight 0 (not 2)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
   \end{subfigure}
