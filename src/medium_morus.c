@@ -70,7 +70,7 @@ void encrypt(state_words* out, state_words message, state st)
 
 inline uint64_t gen_mask(uint64_t* mask, unsigned int i)
 {
-  *mask |= (1 << i);
+  *mask |= ((uint64_t)1 << i);
   return 0;
 }
 
