@@ -196,6 +196,7 @@ void encrypt(state_words* out, state_words message, state st)
   // permute_words(st1,96);
 
   xor_to_word(st1,message);
+  xor_to_word(st1,st[0]);
   and_xor_to_word(st1,st[2],st[3]);
 	iterate(st, mem);
   copy_state_words(*out,st1);
