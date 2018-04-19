@@ -5,7 +5,7 @@
 union Register {
 	uint32_t m32;
 	uint64_t m64;
-	// uint32_t f32[4];
+	uint32_t f32[4];
 	// uint64_t f64[4];
 };
 

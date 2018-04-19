@@ -5,6 +5,26 @@ void mini_morus_1280_print_state(state state) {
 	       state[4].m64);
 }
 
+inline void print_word(union Register *word) {
+	printf("%016lx\n", word->m64);
+}
+
+void mini_morus_1280_print(state *saved_state, union Register *saved_cipher) {
+	printf("-------------------------------------------- Ciphers\n");
+	print_word(&(saved_cipher[0]));
+	print_word(&(saved_cipher[1]));
+	print_word(&(saved_cipher[2]));
+	print_word(&(saved_cipher[3]));
+	print_word(&(saved_cipher[4]));
+	printf("-------------------------------------------- States\n");
+	mini_morus_1280_print_state(saved_state[0]);
+	mini_morus_1280_print_state(saved_state[1]);
+	mini_morus_1280_print_state(saved_state[2]);
+	mini_morus_1280_print_state(saved_state[3]);
+	mini_morus_1280_print_state(saved_state[4]);
+	mini_morus_1280_print_state(saved_state[5]);
+}
+
 void mini_morus_1280_copy_state(state to, state from) {
 	to[0].m64 = from[0].m64;
 	to[1].m64 = from[1].m64;
@@ -26,22 +46,18 @@ void mini_morus_1280_iterate(state st) {
 	st[0].m64 ^= st[3].m64;
 	st[0].m64 = rotate_left_64(st[0].m64, 13);
 
-//    st[1].m64 ^= message;
 	st[1].m64 ^= st[2].m64 & st[3].m64;
 	st[1].m64 ^= st[4].m64;
 	st[1].m64 = rotate_left_64(st[1].m64, 46);
 
-//    st[2].m64 ^= message;
 	st[2].m64 ^= st[3].m64 & st[4].m64;
 	st[2].m64 ^= st[0].m64;
 	st[2].m64 = rotate_left_64(st[2].m64, 38);
 
-//    st[3].m64 ^= message;
 	st[3].m64 ^= st[4].m64 & st[0].m64;
 	st[3].m64 ^= st[1].m64;
 	st[3].m64 = rotate_left_64(st[3].m64, 7);
 
-//    st[4].m64 ^= message;
 	st[4].m64 ^= st[0].m64 & st[1].m64;
 	st[4].m64 ^= st[2].m64;
 	st[4].m64 = rotate_left_64(st[4].m64, 4);
