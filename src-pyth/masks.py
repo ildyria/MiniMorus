@@ -1,3 +1,7 @@
+############################################################
+#                       MORUS 640
+############################################################
+
 ciphers_640 = [
 {   '[0]': [27]},               # alpha
 {   '[0]': [0]},                # beta
@@ -37,7 +41,7 @@ states_640 = [
 {}                              # full
 ]
 
-weight_640 = [
+weight_mini_640 = [
 1,              # alpha
 1,              # beta
 1,              # gamma
@@ -47,6 +51,22 @@ weight_640 = [
 9,              # appr2
 16,             # full
 ]
+
+weight_640 = [
+10,              # alpha
+10,              # beta
+10,              # gamma
+10,              # delta
+10,              # epsil
+# 14,              # appr1
+# 18,              # appr2
+# 16,             # full
+]
+
+
+############################################################
+#                       MORUS 1280
+############################################################
 
 ciphers_1280 = [
 {   '[0]': [51]},               # alpha
@@ -87,7 +107,7 @@ states_1280 = [
 {}                              # full
 ]
 
-weight_1280 = [
+weight_mini_1280 = [
 1,              # alpha
 1,              # beta
 1,              # gamma
@@ -98,7 +118,20 @@ weight_1280 = [
 16,             # full
 ]
 
+# weight_1280 = [
+# 1,              # alpha
+# 1,              # beta
+# 1,              # gamma
+# 1,              # delta
+# 1,              # epsil
+# 7,              # appr1
+# 9,              # appr2
+# 16,             # full
+# ]
+
 masks_list = [
-{'kind': 1, 'width': 32, 'states': states_640, 'ciphers': ciphers_640, 'weight': weight_640},
-{'kind': 1, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_1280},
+{'kind': 1, 'width': 32, 'states': states_640, 'ciphers': ciphers_640, 'weight': weight_mini_640},
+{'kind': 1, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_mini_1280},
+{'kind': 2, 'width': 32, 'states': states_640, 'ciphers': ciphers_640, 'weight': weight_640},
+# {'kind': 2, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_1280},
 ]

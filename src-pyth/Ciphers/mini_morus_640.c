@@ -4,6 +4,26 @@ inline void mini_morus_640_print_state(state state) {
 	printf("%08x %08x %08x %08x %08x\n", state[0].m32, state[1].m32, state[2].m32, state[3].m32, state[4].m32);
 }
 
+inline void print_word(union Register *word) {
+	printf("%08x\n", word->m32);
+}
+
+void mini_morus_640_print(state *saved_state, union Register *saved_cipher) {
+	printf("-------------------------------------------- Ciphers\n");
+	print_word(&(saved_cipher[0]));
+	print_word(&(saved_cipher[1]));
+	print_word(&(saved_cipher[2]));
+	print_word(&(saved_cipher[3]));
+	print_word(&(saved_cipher[4]));
+	printf("-------------------------------------------- States\n");
+	mini_morus_640_print_state(saved_state[0]);
+	mini_morus_640_print_state(saved_state[1]);
+	mini_morus_640_print_state(saved_state[2]);
+	mini_morus_640_print_state(saved_state[3]);
+	mini_morus_640_print_state(saved_state[4]);
+	mini_morus_640_print_state(saved_state[5]);
+}
+
 void mini_morus_640_copy_state(state to, state from) {
 	to[0].m32 = from[0].m32;
 	to[1].m32 = from[1].m32;
@@ -25,22 +45,18 @@ void mini_morus_640_iterate(state st) {
 	st[0].m32 ^= st[3].m32;
 	st[0].m32 = rotate_left_32(st[0].m32, 5);
 
-//    st[1].m32 ^= message;
 	st[1].m32 ^= st[2].m32 & st[3].m32;
 	st[1].m32 ^= st[4].m32;
 	st[1].m32 = rotate_left_32(st[1].m32, 31);
 
-//    st[2].m32 ^= message;
 	st[2].m32 ^= st[3].m32 & st[4].m32;
 	st[2].m32 ^= st[0].m32;
 	st[2].m32 = rotate_left_32(st[2].m32, 7);
 
-//    st[3].m32 ^= message;
 	st[3].m32 ^= st[4].m32 & st[0].m32;
 	st[3].m32 ^= st[1].m32;
 	st[3].m32 = rotate_left_32(st[3].m32, 22);
 
-//    st[4].m32 ^= message;
 	st[4].m32 ^= st[0].m32 & st[1].m32;
 	st[4].m32 ^= st[2].m32;
 	st[4].m32 = rotate_left_32(st[4].m32, 13);

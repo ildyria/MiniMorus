@@ -30,7 +30,6 @@ def gen_union(kind,width):
         union = 'f' + str(width)
     return union
 
-
 def gen_function(kind,width,num,states,ciphers, weight):
 
     union = gen_union(kind,width)
@@ -42,10 +41,22 @@ def gen_function(kind,width,num,states,ciphers, weight):
     z += '\tuint' + str(width) + '_t res = 0;\n'
 
     for K, C in ciphers.items():
-        z += '\tres ^= saved_ciphers' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
+        if kind == 1:
+            z += '\tres ^= saved_ciphers' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
+        else:
+            z += '\tres ^= saved_ciphers' + K + '.' + union + '[0] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_ciphers' + K + '.' + union + '[1] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_ciphers' + K + '.' + union + '[2] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_ciphers' + K + '.' + union + '[3] & ' + hex(gen_mask(C)) + ';\n'
 
     for K, C in states.items():
-         z += '\tres ^= saved_states' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
+        if kind == 1:
+            z += '\tres ^= saved_states' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
+        else:
+            z += '\tres ^= saved_states' + K + '.' + union + '[0] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_states' + K + '.' + union + '[1] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_states' + K + '.' + union + '[2] & ' + hex(gen_mask(C)) + ';\n'
+            z += '\tres ^= saved_states' + K + '.' + union + '[3] & ' + hex(gen_mask(C)) + ';\n'
 
     z += '\treturn 1 & HW' + str(width) + '(res);\n'
 
@@ -78,7 +89,7 @@ if __name__ == "__main__":
         Z = ''
         Z += main_head(file_name)
 
-        for j in range(len(masks_list[i]['ciphers'])):
+        for j in range(len(masks_list[i]['weight'])):
             Z += gen_function(masks_list[i]['kind'],
                               masks_list[i]['width'],
                               (j+1),

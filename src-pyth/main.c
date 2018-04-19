@@ -6,27 +6,51 @@ inline uint64_t linear_sample(struct RNG_state* seed)
 	state state;
 	union Register saved_cipher[5];
 
+	// printf("START SAMPLING !!! \n");
+	// PRINT(saved_state,saved_cipher);
 	RAND(state,seed);
-
 	COPY(saved_state[0], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 	ENCR(&saved_cipher[0], state);
 
 	COPY(saved_state[1], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 	ENCR(&saved_cipher[1], state);
 
 	COPY(saved_state[2], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 	ENCR(&saved_cipher[2], state);
 
 	COPY(saved_state[3], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 	ENCR(&saved_cipher[3], state);
 
 	COPY(saved_state[4], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 	ENCR(&saved_cipher[4], state);
 
 	COPY(saved_state[5], state);
-	ENCR(&saved_cipher[5], state);
+	// printf("======================================================\n");
+	// STATE(state);
+	// printf("======================================================\n");
+	// PRINT(saved_state,saved_cipher);
 
-	COPY(saved_state[6], state);
+	// printf("STOP SAMPLING !!! \n");
 
 	return MASK(saved_state, saved_cipher);
 }

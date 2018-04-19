@@ -23,6 +23,8 @@ def import_masks(masks_list):
 def defines(kind,width,test):
     name = gen_name(kind,width)
     z = ''
+    z += '#define STATE ' + name + '_print_state\n'
+    z += '#define PRINT ' + name + '_print\n'
     z += '#define RAND ' + name + '_rand_init\n'
     z += '#define ENCR ' + name + '_encrypt\n'
     z += '#define COPY ' + name + '_copy_state\n'
@@ -54,12 +56,10 @@ if __name__ == "__main__":
     for i in range(len(masks_list)):
         if (masks_list[i]['width'] == width and
             masks_list[i]['kind'] == kind and
-            test <= len(masks_list[i]['ciphers'])):
+            test <= len(masks_list[i]['weight'])):
             valid = True
 
-
     if valid :
-
         z = ''
         z += head()
         z += import_masks(masks_list)
