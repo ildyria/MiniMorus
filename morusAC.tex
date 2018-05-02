@@ -205,17 +205,17 @@ Our main result is the existence of a linear trail linking ciphertext bits spann
 
 \section{Preliminaries}
 \subsection{Specification of MORUS}
-MORUS is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits. Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively. In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter, though the designers strongly recommend using a 128-bit tag.
+MORUS is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits. Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively. In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
 
-In MORUS, the internal state is divided in two five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then, the internal state is represented as $S_0\|S_1\|S_2\|S_3\|S_4$. In MORUS, the internal state is first initialized by a key and nonce, and then updated by associated data blocks and message blocks step by step. Hence, we use a superscript to denote the step number of the state as $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is 0 before the initialization is performed.
+The state of MORUS is divided into five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then, the internal state is represented as $S_0\|S_1\|S_2\|S_3\|S_4$. The state is first initialized by a key and nonce, and then updated by associated data blocks and message blocks step by step. Hence, we use a superscript to denote the step number of the state as $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
 
-The computation of MORUS consists of the four parts; initialization, associated data process, encryption, and finalization. All parts share the core design of MORUS called the {\tt StepUpdate} function. Hereafter we explain {\tt StepUpdate}.
+The computation of MORUS consists of the four parts; initialization, associated data process, encryption, and finalization. All parts share the core design called the {\tt StepUpdate} function. Hereafter we explain {\tt StepUpdate}.
 
 \subsubsection{Step Update Function.}
 {\tt StepUpdate} takes as input the internal state $S^t = S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$ and additional register-wise value $m^t$. $m^t$ is supposed to be associated data block or message block. $m^t$ can sometimes be 0 or constant when the additional input is unnecessary.
 
 {\tt StepUpdate} is composed of 5 rounds with similar operations to update
-the state $S^t$, in which the additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round use the word-wise left circular shift, which divides a $q$-bit register value into 4 words of $q/4$ bits, and performs left circular shift operation for every $q/4$-bit word. Throughout the paper, we denote the word size by $w$, i.e. $w=32$ for \cipher{MORUS640} and $w=64$ for \cipher{MORUS1280}. The word-wise circular shift constants $b_i$ in round $i$ are defined in Table~\ref{Tbl:rcon}. Besides, the left rotation of a whole $q$-bit register is used. The register-wise circular shift constants are also listed in Table~\ref{Tbl:rcon}.
+the state $S^t$, in which the additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round uses the word-wise left circular shift, which divides a $q$-bit register value into 4 words of $q/4$ bits, and performs left circular shift operation for every $q/4$-bit word. Throughout the paper, we denote the word size by $w$, i.e. $w=32$ for \cipher{MORUS640} and $w=64$ for \cipher{MORUS1280}. The word-wise circular shift constants $b_i$ in round $i$ are defined in Table~\ref{Tbl:rcon}. Besides, the left rotation of a whole $q$-bit register is used. The register-wise circular shift constants are also listed in Table~\ref{Tbl:rcon}.
 \begin{table}[!htb]
 \centering
 \caption{Rotation Constants of MORUS} \label{Tbl:rcon}
@@ -228,23 +228,23 @@ the state $S^t$, in which the additional input $m^t$ is used in rounds 2 to 5, b
 \end{table}
 We denote those register-wise and word-wise left circular shift by $x \rotl y$ and $x \rotlxy y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document.)
 
-Let $\cdot$ denote the bit-wise AND operation. $S^{t+1} \leftarrow {\tt StateUpdate}(S^t,m^t)$ is defined as follows.
+Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow {\tt StateUpdate}(S^t,m^t)$ is defined as follows.
 \begin{align*}
 \textrm{Round 1:} &&
 S^{t+1}_0 &\leftarrow ( S_t^0 \oplus S^t_1 \cdot S^t_2 \oplus S^t_3 ) \lll_w b_0 &
 S^t_3 \leftarrow S^t_3 \lll b'_0.\\
 \textrm{Round 2:} &&
 S^{t+1}_1 &\leftarrow ( S_t^1 \oplus S^t_2 \cdot S^t_3 \oplus S^t_4 \oplus m_i ) \lll_w b_1 &
-S^t_3 \leftarrow S^t_3 \lll b'_1.\\
+S^t_4 \leftarrow S^t_3 \lll b'_1.\\
 \textrm{Round 3:} &&
 S^{t+1}_2 &\leftarrow ( S_t^2 \oplus S^t_3 \cdot S^t_4 \oplus S^t_0 \oplus m_i ) \lll_w b_2 &
-S^t_3 \leftarrow S^t_3 \lll b'_2.\\
+S^t_0 \leftarrow S^t_3 \lll b'_2.\\
 \textrm{Round 4:} &&
 S^{t+1}_3 &\leftarrow ( S_t^3 \oplus S^t_4 \cdot S^t_0 \oplus S^t_1 \oplus m_i ) \lll_w b_3 &
-S^t_3 \leftarrow S^t_3 \lll b'_3.\\
+S^t_1 \leftarrow S^t_3 \lll b'_3.\\
 \textrm{Round 5:} &&
 S^{t+1}_4 &\leftarrow ( S_t^4 \oplus S^t_0 \cdot S^t_1 \oplus S^t_2 \oplus m_i ) \lll_w b_4 &
-S^t_3 \leftarrow S^t_3 \lll b'_4.
+S^t_2 \leftarrow S^t_3 \lll b'_4.
 \end{align*}
 
 \subsubsection{Initialization.}
