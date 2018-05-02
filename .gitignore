@@ -57,6 +57,7 @@ dkms.conf
 *.fdb_latexmk
 *.fls
 morus.log
+morusAC.log
 
 # Annoying MacOS things
 .DS_Store
