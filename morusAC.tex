@@ -54,7 +54,7 @@ the state $S^t$, in which the additional input $m^t$ is used in rounds 2 to 5, b
 \cipher{MORUS1280}& 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\ \hline
 \end{tabular}
 \end{table}
-We denote those register-wise and word-wise left circular shift by $x \rotl y$ and $x \rotlxy y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document.)
+We denote those register-wise and word-wise left circular shift by $x \lll y$ and $x \lll_w y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document.)
 
 Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow {\tt StateUpdate}(S^t,m^t)$ is defined as follows.
 \begin{align*}
@@ -84,7 +84,7 @@ S^{-16}_2 = 1^{128}, &&
 S^{-16}_3 = const_0, &&
 S^{-16}_4 = const_1.
 \end{align*}
-Then the internal state is updated 16 times by  ${\tt StateUpdate}(S^t,0)$ for $t=-16,-15,\cdots,-1$. Finally, the key is xored to the state again as $S^0_1 \leftarrow S^0_1 \oplus K$.
+Then the internal state is updated 16 times by  ${\tt StateUpdate}(S^t,0)$ for $t=-16,-15,\ldots,-1$. Finally, the key is xored to the state again as $S^0_1 \leftarrow S^0_1 \oplus K$.
 
 The initialization of \cipher{MORUS1280} is slightly different from that of \cipher{MORUS640} due to the different register size. The state is initialized as
 \begin{align*}
@@ -98,16 +98,16 @@ After updating the state 16 times as \cipher{MORUS640}, the state is updated by 
 
 
 \subsubsection{Associated Data Processing.}
-After the initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block, use `0' bits to pad it to 128 bits and 256 bits for \cipher{MORUS640} and \cipher{MORUS1280}, respectively, and the padded full block is used to update the state. Note that if the length of $A$ dented by `$adlen$' is 0, the associated data processing is skipped.
+After the initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block, use `0' bits to pad it to 128 bits and 256 bits for \cipher{MORUS640} and \cipher{MORUS1280}, respectively, and the padded full block is used to update the state. Note that if the length of $A$ denoted by `$adlen$' is 0, the associated data processing is skipped.
 
-Then, state is updated by $S^{t+1} \leftarrow {\tt StateUpdate}(S^t, A^t)$ for $t=0,1,\cdots,\ell$ where $\ell = \lceil \frac{adlen}{128} \rceil -1$ and $\ell = \lceil \frac{adlen}{256} \rceil -1$ for \cipher{MORUS640} and \cipher{MORUS1280}, respectively.
+Then, state is updated by $S^{t+1} \leftarrow {\tt StateUpdate}(S^t, A^t)$ for $t=0,1,\ldots,\ell$ where $\ell = \lceil \frac{adlen}{128} \rceil -1$ and $\ell = \lceil \frac{adlen}{256} \rceil -1$ for \cipher{MORUS640} and \cipher{MORUS1280}, respectively.
 
 \subsubsection{Encryption.}
 At each step of the encryption, a 16-byte (resp. 32-byte) message block $M_i$ is used to update the state, and $M_t$ is encrypted to $C_t$ in \cipher{MORUS640} (resp. \cipher{MORUS1280}).
 
 If the last message block is not a full block, use `0' bits to pad it to 128 and 256 bits for \cipher{MORUS640} and \cipher{MORUS1280}, respectively, and the padded full block is used to update the state. But only the partial block is encrypted. Note that if the message length denoted by `$msglen$' is 0, encryption is skipped.
 
-In \cipher{MORUS640}, Let $u = \lceil \frac{adlen}{128} \rceil$ and $v = \lceil \frac{msglen}{128} \rceil$. The following is performed for $t=0, 1, \cdots, v-1$;
+In \cipher{MORUS640}, Let $u = \lceil \frac{adlen}{128} \rceil$ and $v = \lceil \frac{msglen}{128} \rceil$. The following is performed for $t=0, 1, \ldots, v-1$;
 \begin{align*}
 C^t &\leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 96) \oplus (S^{u+t}_2 \cdot S^{u+t}_3),\\
 S^{u+t+1} &\leftarrow {\tt StateUpdate}(S^{u+t},M^t).
@@ -120,7 +120,7 @@ The finalization generates the authentication tag $T$ using 10 more steps. We on
 \begin{enumerate}
 \item $tmp \leftarrow adlen\|msglen$ for \cipher{MORUS640} and $tmp \leftarrow adlen\|msglen\|0^{128}$ for \cipher{MORUS1280}, where $adlen$ and $msglen$ are represented as 64-bit integers.
 \item $S^{u+v}_4 \leftarrow S^{u+v}_4 \oplus S^{u+v}_0.$
-\item For $t = u+v, u+v+1, \cdots, u+v+9,$ compute
+\item For $t = u+v, u+v+1, \ldots, u+v+9,$ compute
 %\begin{equation*}
 $S^{t+1} \leftarrow {\tt StateUpdate} (S^t, tmp)$.
 %\end{equation*}
@@ -184,7 +184,7 @@ To simplify the description of the attack, we assume all plaintext blocks are ze
 
 \subsection{Symmetric Linear Combinations}
 
-We begin with a few observations about the \StateUpdate{} function. Beside XOR and AND operations, the \StateUpdate{} function uses two types of bit rotations:
+We begin with a few observations about the \StateUpdate{} function. Besides XOR and AND operations, the \StateUpdate{} function uses two types of bit rotations:
 \begin{enumerate}
 \item \emph{word-wise} rotations perform a circular shift on each word within a register;
 \item \emph{register-wise} rotations perform a circular shift on a whole register.
@@ -585,7 +585,7 @@ It may be observed that the products occurring in the equation above involve eig
   \label{fig:trailcollision}
 \end{figure}
 
-In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \cipher{MiniMORUS1280} is 16). We have confirmed this bias by explicitly computing the full trail equation in \Cref{sec:traileq}, and evaluating its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation given in \Cref{sec:traileq} yields a weight of 76 for the full trail on \cipher{MORUS1280}.
+In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \cipher{MiniMORUS1280} is 16). We have confirmed this bias by explicitly computing the full trail equation in \Cref{sec:traileq}, and evaluating its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation given in \Cref{sec:traileq} yields a weight of 76 for the full trail on \cipher{MORUS1280}.
 
 In the case of \cipher{MORUS640}, collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used in the course of the full trail with an offset of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case \cipher{MORUS640} is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurrences of \Cref{eq:8circle}. In the end, when computing the full trail equation on \cipher{MORUS640}, we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
 
