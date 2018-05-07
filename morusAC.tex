@@ -597,6 +597,7 @@ In the case of \cipher{MORUS640}, collisions between rotation constants further 
   \newcommand{\C}[1]{-.1,-.25-1.5*#1}
   \renewcommand{\S}[2]{.25+.25*#2,-1.5*#1}
   \centering
+  \resizebox{!}{0.95\textheight}{
   \begin{tikzpicture}[xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
     \begin{scope}
       \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
@@ -765,7 +766,8 @@ In the case of \cipher{MORUS640}, collisions between rotation constants further 
 
       \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
     \end{scope}
-  \end{tikzpicture}
+  \end{tikzpicture}}
+
   \caption{\cipher{MiniMORUS}: two approximations for $S^{2,2}_0$.}
   \label{fig:twoapproximations}
 \end{figure}
@@ -789,7 +791,7 @@ The bias discussed in the previous sections analysed the encryption part of the 
 \subsection{Forgery with Reduced Finalization}
 We present forgery attacks on 3 out of 10 steps of \cipher{MORUS1280} that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respect setting. As far as we know, this is the first attempt to evaluate integrity of MORUS in the nonce-respect setting.
 
-\subsubsection{Overview.} 
+\subsubsection{Overview.}
 A general strategy of forgery attacks in the nonce-respect setting is to inject some difference in a message block and to propagate the difference so that it can be canceled by difference in another message block. However this approach does not work well against MORUS because its large state size prevents the attackers from controlling the difference to be canceled by another message difference.
 
 Here we focus on the property that the padding for an associated data $A$ and a message $M$ is the zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ will make the result identical for the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, because $A,A'$ (resp. $M,M'$) have different lengths, the corresponding $adlen$s (resp. $msglen$s) are different, which appears as $\Delta adlen$ (resp. $\Delta msglen$), and is injected from the message input. Our strategy is to propagate this difference to 128-bit tag $T$ and $T'$ such that their difference $\Delta T$ appears higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained, in other words, the attackers do not have to cancel the state difference, which is the main advantage of attacking the finalization.
@@ -816,7 +818,7 @@ Round & \multicolumn{4}{c}{State Difference} & Weight & Accumulated \\
 Ini   & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $-$ \\
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
-      
+
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
 1     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
@@ -828,7 +830,7 @@ Ini   & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000}
 2     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
-      
+
       & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
       & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & \\
 3     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & $1$\\
