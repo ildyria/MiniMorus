@@ -35,9 +35,9 @@ Our main result is the existence of a linear trail linking ciphertext bits spann
 \subsection{Specification of MORUS}
 MORUS is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits. Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively. In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
 
-The state of MORUS is divided into five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then, the internal state is represented as $S_0\|S_1\|S_2\|S_3\|S_4$. The state is first initialized by a key and nonce, and then updated by associated data blocks and message blocks step by step. Hence, we use a superscript to denote the step number of the state as $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
+The state of MORUS is divided into five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then, the state is represented as $S_0\|S_1\|S_2\|S_3\|S_4$. The state is first initialized by a key and nonce, and then updated by associated data blocks and message blocks step by step. Hence, we use a superscript to denote the step number of the state as $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
 
-The computation of MORUS consists of the four parts; initialization, associated data process, encryption, and finalization. All parts share the core design called the {\tt StepUpdate} function. Hereafter we explain {\tt StepUpdate}.
+The computation of MORUS consists of four parts; initialization, associated data process, encryption, and finalization. All parts share the core design called the {\tt StepUpdate} function. %Hereafter we explain {\tt StepUpdate}.
 
 \subsubsection{Step Update Function.}
 {\tt StepUpdate} takes as input the internal state $S^t = S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$ and additional register-wise value $m^t$. $m^t$ is supposed to be associated data block or message block. $m^t$ can sometimes be 0 or constant when the additional input is unnecessary.
@@ -88,13 +88,13 @@ Then the internal state is updated 16 times by  ${\tt StateUpdate}(S^t,0)$ for $
 
 The initialization of \cipher{MORUS1280} is slightly different from that of \cipher{MORUS640} due to the different register size. The state is initialized as
 \begin{align*}
-S^{-16}_0 = \textrm{IV}_{128} \| 0^{128}, &&
-S^{-16}_1 = K_{128}\|K_{128}, &&
+S^{-16}_0 &= \textrm{IV}_{128} \| 0^{128}, &
+S^{-16}_1 &= K_{128}\|K_{128}, &
 S^{-16}_2 = 1^{256}, \\
-S^{-16}_3 = 0^{256}, &&
-S^{-16}_4 = const_1\|const_0.
+S^{-16}_3 &= 0^{256}, &
+S^{-16}_4 &= const_1\|const_0.
 \end{align*}
-After updating the state 16 times as \cipher{MORUS640}, the state is updated by $S^0_1 \leftarrow S^0_1 \oplus K_{128}\|K_{128}$.
+After updating the state 16 times, the state is updated by $S^0_1 \leftarrow S^0_1 \oplus K_{128}\|K_{128}$.
 
 
 \subsubsection{Associated Data Processing.}
@@ -784,9 +784,19 @@ However, the existence of this trail does hint at some weakness in the design of
 
 
 \section{Analysis on Initialization and Finalization of Reduced MORUS}
+The bias discussed in the previous sections analysed the encryption part of the MORUS. In this section, for comprehensive security analysis of MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threat any security claim by the designers. However, we believe that investigating all parts of the design in new approaches provide better understanding of the design and will be useful especially when the design will be tweaked in future.
 
 \subsection{Forgery with Reduced Finalization}
-\subsubsection{Overview.}
+We present forgery attacks on 3 out of 10 steps of \cipher{MORUS1280} that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respect setting As far as we know, this is the first attempt to evaluate integrity of MORUS in the nonce-respect setting.
+
+\subsubsection{Overview.} 
+A general strategy of forgery attacks in the nonce-respect setting is to inject some difference in a message block and to propagate the difference so that the difference can be canceled by another difference in another message block. However this approach does not work well against MORUS because its large state size prevents the attackers from controlling the difference to be canceled by another message difference.
+
+Here we focus on the property that the padding scheme for the associated data $A$ and the message $M$ is zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ will make the result identical for the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, because $A,A'$ (resp. $M,M'$) have different lengths, the corresponding $adlen$s (resp. $msglen$s) are different, which appears as $\Delta adlen$ (resp. $\Delta msglen$), and is injected from the message input. Our strategy is propagating this difference to the 128-bit value tag $T$ and $T'$ such that their difference $\Delta T$ appears higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained, in other words, the attackers do not have to cancel out the state difference, which is the main advantage of attacking the finalization.
+
+Note that if the attacker uses different messages $M,M'$, not only the new tag $T'$ but also new ciphertext $C'$ must be guessed correctly. Because the encryption of MORUS is a simple XOR of the key stream, $C'$ can be easily guessed. For this purpose, the attacker should first query a longer message $M'=M\|0^*$ to obtain $C'$. Then, $C$ can be obtained by truncating $C'$.
+
+
 \subsubsection{Differential Trails.}
 
 \subsection{Extending State Recovery to Key Recovery}
