@@ -124,7 +124,7 @@ The finalization generates the authentication tag $T$ using 10 more steps. We on
 %\begin{equation*}
 $S^{t+1} \leftarrow {\tt StateUpdate} (S^t, tmp)$.
 %\end{equation*}
-\item $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ for \cipher{MORUS640} and $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ for \cipher{MORUS1280}.
+\item For \cipher{MORUS640}, $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$. For \cipher{MORUS1280}, $S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ is computed and the least significant 128 bits are produced as a tag $T$.
 \end{enumerate}
 
 \subsubsection{Security.}
@@ -784,142 +784,137 @@ However, the existence of this trail does hint at some weakness in the design of
 
 
 \section{Analysis on Initialization and Finalization of Reduced MORUS}
-The bias discussed in the previous sections analysed the encryption part of the MORUS. In this section, for comprehensive security analysis of MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threat any security claim by the designers. However, we believe that investigating all parts of the design in new approaches provide better understanding of the design and will be useful especially when the design will be tweaked in future.
+The bias discussed in the previous sections analysed the encryption part of the MORUS. In this section, for comprehensive security analysis of MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threat any security claim by the designers. However, we believe that investigating all parts of the design with new approaches provides better understanding of the design and will be useful especially when the design will be tweaked in future.
 
 \subsection{Forgery with Reduced Finalization}
-We present forgery attacks on 3 out of 10 steps of \cipher{MORUS1280} that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respect setting As far as we know, this is the first attempt to evaluate integrity of MORUS in the nonce-respect setting.
+We present forgery attacks on 3 out of 10 steps of \cipher{MORUS1280} that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respect setting. As far as we know, this is the first attempt to evaluate integrity of MORUS in the nonce-respect setting.
 
 \subsubsection{Overview.} 
-A general strategy of forgery attacks in the nonce-respect setting is to inject some difference in a message block and to propagate the difference so that the difference can be canceled by another difference in another message block. However this approach does not work well against MORUS because its large state size prevents the attackers from controlling the difference to be canceled by another message difference.
+A general strategy of forgery attacks in the nonce-respect setting is to inject some difference in a message block and to propagate the difference so that it can be canceled by difference in another message block. However this approach does not work well against MORUS because its large state size prevents the attackers from controlling the difference to be canceled by another message difference.
 
-Here we focus on the property that the padding scheme for the associated data $A$ and the message $M$ is zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ will make the result identical for the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, because $A,A'$ (resp. $M,M'$) have different lengths, the corresponding $adlen$s (resp. $msglen$s) are different, which appears as $\Delta adlen$ (resp. $\Delta msglen$), and is injected from the message input. Our strategy is propagating this difference to the 128-bit value tag $T$ and $T'$ such that their difference $\Delta T$ appears higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained, in other words, the attackers do not have to cancel out the state difference, which is the main advantage of attacking the finalization.
+Here we focus on the property that the padding for an associated data $A$ and a message $M$ is the zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ will make the result identical for the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, because $A,A'$ (resp. $M,M'$) have different lengths, the corresponding $adlen$s (resp. $msglen$s) are different, which appears as $\Delta adlen$ (resp. $\Delta msglen$), and is injected from the message input. Our strategy is to propagate this difference to 128-bit tag $T$ and $T'$ such that their difference $\Delta T$ appears higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained, in other words, the attackers do not have to cancel the state difference, which is the main advantage of attacking the finalization.
 
 Note that if the attacker uses different messages $M,M'$, not only the new tag $T'$ but also new ciphertext $C'$ must be guessed correctly. Because the encryption of MORUS is a simple XOR of the key stream, $C'$ can be easily guessed. For this purpose, the attacker should first query a longer message $M'=M\|0^*$ to obtain $C'$. Then, $C$ can be obtained by truncating $C'$.
 
 \subsubsection{Differential Trails.}
-Recall that the message input during the finalization of \cipher{MORUS1280} is $adlen\|msglen\|0^{128}$ where $adlen$ and $msglen$ are 64-bit strings. We set $\Delta adlen$ to be low Hamming weight, namely {\tt 0x0000000000000001}. Hereafter, we use {\tt typefont} denote hexadecimal numbers. This difference propagates during the subsequent 3 steps as specified in Table~\ref{Tbl:fin_diff}.
+Recall that the message input during the finalization of \cipher{MORUS1280} is $adlen\|msglen\|0^{128}$ where $adlen$ and $msglen$ are 64-bit strings. We set $\Delta adlen$ to be low Hamming weight, e.g.~{\tt 0x0000000000000001}. 
+%Hereafter, we use {\tt typefont} denote hexadecimal numbers.
+This difference propagates during 3 steps is specified in Table~\ref{Tbl:fin_diff}.
+
+Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in Table~\ref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1-bit to control each active AND gate. The probability evaluation for round 15 can be ignored because in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only in those bits. As shown in Table~\ref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
 
 \begin{table}[!tb]
 \begin{center}
-\caption{Differential Propagation through 3 Steps in the Finalization.}
+\caption{Differential Propagation through Three Steps in the Finalization. $i$ Five lines for round $i$ denote the state difference $S_0, \cdots, S_4$ after the the round $i$ transformation. Weight is a Hamming weight of the state difference and accumulated probability is a probability to satisfy the trail from the beginning.}
 \label{Tbl:fin_diff}
 {\tiny
-\begin{tabular}{cccccc}
-Round & \multicolumn{4}{c}{State Difference} & Weight \\ \hline
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-PT    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\ \hline
+\begin{tabular}{ccccccc} \hline
+Round & \multicolumn{4}{c}{State Difference} & Weight & Accumulated \\
+      & & & &                                &        & probability \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+Ini   & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $-$ \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
       
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-1     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+1     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
 
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1 \\
-2     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & \\
+2     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
       
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1 \\
-3     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & \\
+3     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
 
-%Weight: 0
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1 \\
-4     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1 \\
-      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \\
+4     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & $1$\\
+      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
 
-%Weight: 1
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1 \\
-5     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1 \\
-      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \\
+5     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1  & $2^{-1}$\\
+      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\ \hline
 
-%Weight: 3
-      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1 \\
-6     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2 \\
-      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\ \hline
+      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \\
+6     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1  & $2^{-3}$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\ \hline
 
-%Weight: 6
-      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4 \\
-7     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2 \\ \hline
+      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4  & \\
+7     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1  & $2^{-6}$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
 
-%Weight: 10
-      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4 \\
-8     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4  & \\
+8     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4  & $2^{-10}$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
 
-%Weight: 14
-      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4 \\
-9     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4 \\
-      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7 \\
-      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  & \\
+9     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4  & $2^{-14}$\\
+      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
 
-%Weight: 20
-      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2 \\
-      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4 \\
-10    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4 \\
-      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7 \\
-      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7 \\ \hline
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  & \\
+10    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & $2^{-20}$\\
+      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7  & \\
+      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7  & \\ \hline
 
-%Weight: 28
-      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9 \\
-      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4 \\
-11    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4 \\
-      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7 \\
-      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7 \\ \hline
+      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  & \\
+11    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & $2^{-28}$\\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7  & \\ \hline
 
-%Weight: 39
-      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9 \\
-      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 \\
-12    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4 \\
-      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7 \\
-      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7 \\ \hline
+      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9  & \\
+      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 & \\
+12    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & $2^{-39}$\\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
 
-%Weight: 53
-      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9 \\
-      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 \\
-13    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 \\
-      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7 \\
-      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7 \\ \hline
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 & \\
+13    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 & $2^{-53}$\\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
+
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 & \\
+14    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 & $2^{-69}$\\
+      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
 
 %Weight: 69
-      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9 \\
-      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 \\
-14    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 \\
-      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 \\
-      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7 \\ \hline
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 & \\
+15    & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & {\tt 0400114000040000} & 14 & $-$\\
+      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
 
-%Weight: 69
-      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9 \\
-      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 \\
-15    & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & {\tt 0400114000040000} & 14 \\
-      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 \\
-      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7 \\ \hline
-
-%Weight: 98
+$\Delta T$ &                   &                        & {\tt 600080830020f00a} & {\tt 1405414005044421} & & $2^{-88}$ \\ \hline
 \end{tabular}
 }
 \end{center}
 \end{table}
 
+\subsubsection{Remarks.} The fact that $S_4$ updated in the last round is not used to compute a tag implies that the MORUS finalization generally includes unnecessary computations. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in Table~\ref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2-round before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
 
 \subsection{Extending State Recovery to Key Recovery}
 \subsubsection{Overview.}
