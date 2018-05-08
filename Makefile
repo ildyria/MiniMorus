@@ -1,11 +1,21 @@
-LATEXMK = latexmk -pdf
+LATEXMK = ./latexrun.py 
 LATEX = pdflatex
 READ = evince
 TIKZ := $(wildcard tikz/*.tex)
-SOURCES := $(wildcard morus*.tex)
+SOURCES := morusAC.tex Note_on_Linear_Biases_in_MORUS.tex
 PDFS := $(notdir $(SOURCES:.tex=.pdf))
 PNGS := $(notdir $(SOURCES:.tex=.png))
 
+NO_COLOR="\033[0m"
+RED = "\033[31m"
+BRIGHTRED = "\033[91m"
+YELLOW = "\033[93m"
+ORANGE = "\033[33m"
+GRAY = "\033[37m"
+GREEN = "\033[32m"
+BOLD = "\033[1m"
+
+.PHONY: FORCE
 
 all: $(PDFS)
 
@@ -13,11 +23,10 @@ cleanpdf:
 	@rm png/*.png 2> /dev/null || true
 	@rm *.pdf 2> /dev/null || true
 
-force: cleanpdf $(PDFS)
-
-%.pdf: %.tex $(TIKZ)
-	echo $*.tex
-	$(LATEXMK) $*.tex
+%.pdf: FORCE %.tex $(TIKZ)
+	@echo ""
+	@echo $(BOLD)$(YELLOW)"Building $*.tex"$(NO_COLOR)
+	@$(LATEXMK) $*.tex
 
 open: $(PDFS)
 	${READ} $(PDFS)
@@ -25,6 +34,7 @@ open: $(PDFS)
 
 clean:
 	@echo cleaning...
+	@rm -r latex.out
 	@rm *.aux 2> /dev/null || true
 	@rm *.bbl 2> /dev/null || true
 	@rm *.blg 2> /dev/null || true

@@ -29,24 +29,24 @@ We denote those register-wise and word-wise left circular shift by $x \lll y$ an
 Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow {\tt StateUpdate}(S^t,m^t)$ is defined as follows.
 \begin{align*}
 \textrm{Round 1:} &&
-S^{t+1}_0 &\leftarrow ( S_t^0 \oplus S^t_1 \cdot S^t_2 \oplus S^t_3 ) \lll_w b_0 &
+S^{t+1}_0 &\leftarrow ( S^t_0 \oplus (S^t_1 \cdot S^t_2) \oplus S^t_3 ) \lll_w b_0 &
 S^t_3 \leftarrow S^t_3 \lll b'_0.\\
 \textrm{Round 2:} &&
-S^{t+1}_1 &\leftarrow ( S_t^1 \oplus S^t_2 \cdot S^t_3 \oplus S^t_4 \oplus m_i ) \lll_w b_1 &
-S^t_4 \leftarrow S^t_3 \lll b'_1.\\
+S^{t+1}_1 &\leftarrow ( S^t_1 \oplus (S^t_2 \cdot S^t_3) \oplus S^t_4 \oplus m_i ) \lll_w b_1 &
+S^t_4 \leftarrow S^t_4 \lll b'_1.\\
 \textrm{Round 3:} &&
-S^{t+1}_2 &\leftarrow ( S_t^2 \oplus S^t_3 \cdot S^t_4 \oplus S^t_0 \oplus m_i ) \lll_w b_2 &
-S^t_0 \leftarrow S^t_3 \lll b'_2.\\
+S^{t+1}_2 &\leftarrow ( S^t_2 \oplus (S^t_3 \cdot S^t_4) \oplus S^t_0 \oplus m_i ) \lll_w b_2 &
+S^t_0 \leftarrow S^t_0 \lll b'_2.\\
 \textrm{Round 4:} &&
-S^{t+1}_3 &\leftarrow ( S_t^3 \oplus S^t_4 \cdot S^t_0 \oplus S^t_1 \oplus m_i ) \lll_w b_3 &
-S^t_1 \leftarrow S^t_3 \lll b'_3.\\
+S^{t+1}_3 &\leftarrow ( S^t_3 \oplus (S^t_4 \cdot S^t_0) \oplus S^t_1 \oplus m_i ) \lll_w b_3 &
+S^t_1 \leftarrow S^t_1 \lll b'_3.\\
 \textrm{Round 5:} &&
-S^{t+1}_4 &\leftarrow ( S_t^4 \oplus S^t_0 \cdot S^t_1 \oplus S^t_2 \oplus m_i ) \lll_w b_4 &
-S^t_2 \leftarrow S^t_3 \lll b'_4.
+S^{t+1}_4 &\leftarrow ( S^t_4 \oplus (S^t_0 \cdot S^t_1) \oplus S^t_2 \oplus m_i ) \lll_w b_4 &
+S^t_2 \leftarrow S^t_2 \lll b'_4.
 \end{align*}
 
 \subsubsection{Initialization.}
-The initialization of \cipher{MORUS640} consists of loading a 128-bit key $K$ and a 128-bit nonce IV into the state, and running the {\tt StateUpdate} for 16 steps. The key and IV are loaded into the state as follows:
+The initialization of \cipher{MORUS640} consists of loading a 128-bit key $K_{128}$ and a 128-bit nonce $IV_{128}$ into the state, and running the {\tt StateUpdate} for 16 steps. The key and nonce are loaded into the state as follows:
 \begin{align*}
 S^{-16}_0 = \textrm{IV}_{128}, &&
 S^{-16}_1 = K_{128}, &&
@@ -54,17 +54,22 @@ S^{-16}_2 = 1^{128}, &&
 S^{-16}_3 = const_0, &&
 S^{-16}_4 = const_1.
 \end{align*}
-Then the internal state is updated 16 times by  ${\tt StateUpdate}(S^t,0)$ for $t=-16,-15,\ldots,-1$. Finally, the key is xored to the state again as $S^0_1 \leftarrow S^0_1 \oplus K$.
+Then the internal state is updated 16 times by  ${\tt StateUpdate}(S^t,0)$ for $t=-16,-15,\ldots,-1$. Finally, the key is xored to the state again as $S^0_1 \leftarrow S^0_1 \oplus K_{128}$.
 
-The initialization of \cipher{MORUS1280} is slightly different from that of \cipher{MORUS640} due to the different register size. The state is initialized as
+The initialization of \cipher{MORUS1280} is slightly different from that of \cipher{MORUS640} due to the different register size and the two possible key size:
+\begin{itemize}
+  \item[-] When the key size is 128 bits, $K = K_{128} \|K_{128}$
+  \item[-] When the key size is 256 bits, $K = K_{256}$
+\end{itemize}
+The state is initialized as
 \begin{align*}
 S^{-16}_0 &= \textrm{IV}_{128} \| 0^{128}, &
-S^{-16}_1 &= K_{128}\|K_{128}, &
+S^{-16}_1 &= K, &
 S^{-16}_2 = 1^{256}, \\
 S^{-16}_3 &= 0^{256}, &
 S^{-16}_4 &= const_1\|const_0.
 \end{align*}
-After updating the state 16 times, the state is updated by $S^0_1 \leftarrow S^0_1 \oplus K_{128}\|K_{128}$.
+After updating the state 16 times, the state is updated by $S^0_1 \leftarrow S^0_1 \oplus K$.
 
 
 \subsubsection{Associated Data Processing.}

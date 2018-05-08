@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 
 # LaTeX
+latex.out
 *.aux
 *.synctex.gz
 *.fdb_latexmk
