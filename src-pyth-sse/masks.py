@@ -53,14 +53,14 @@ weight_mini_640 = [
 ]
 
 weight_640 = [
-10,              # alpha
-10,              # beta
-10,              # gamma
-10,              # delta
-10,              # epsil
-# 14,              # appr1
-# 18,              # appr2
-# 16,             # full
+4,              # alpha
+4,              # beta
+4,              # gamma
+4,              # delta
+4,              # epsil
+28,             # appr1
+36,             # appr2
+73,             # full
 ]
 
 
