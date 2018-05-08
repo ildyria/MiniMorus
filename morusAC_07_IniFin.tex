@@ -4,6 +4,7 @@
 The bias discussed in the previous sections analysed the encryption part of the MORUS. In this section, for comprehensive security analysis of MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threat any security claim by the designers. However, we believe that investigating all parts of the design with new approaches provides better understanding of the design and will be useful especially when the design will be tweaked in future.
 
 \subsection{Forgery with Reduced Finalization}
+\label{subsec/Fin}
 We present forgery attacks on 3 out of 10 steps of \cipher{MORUS1280} that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respect setting. As far as we know, this is the first attempt to evaluate integrity of MORUS in the nonce-respect setting.
 
 \subsubsection{Overview.}
@@ -133,8 +134,45 @@ $\Delta T$ &                   &                        & {\tt 600080830020f00a}
 
 \subsubsection{Remarks.} The fact that $S_4$ updated in the last round is not used to compute a tag implies that the MORUS finalization generally includes unnecessary computations. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in Table~\ref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2-round before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
 
+
+
+
 \subsection{Extending State Recovery to Key Recovery}
-Kales et al. \cite{cryptoeprint:2017:1137} showed that internal state recovery of \cipher{MORUS640} can be recovered under the nonce-misuse scenario only with $2^7$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \cipher{MORUS1280} though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount universal forgery attack under the same nonce, whereas the key still cannot be recovered.
+\label{subsec/Ini}
+Kales et al.~\cite{cryptoeprint:2017:1137} showed that internal state of \cipher{MORUS640} can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \cipher{MORUS1280} though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the finalization, which prevents the attacker to back track the state value to the initial state. In this section, we show that meet-in-the-middle attacks can allow the attacker to recover the key faster than the exhaustive search for a relatively large number of steps, i.e.~10 out of 16 steps in \cipher{MORUS1280}. 
 
 \subsubsection{Overview.}
+We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e.~$S^{-10} = (IV\|0^{128},0^{256},1^{256},0^{256},const_0\|const_1)$. Also let $S^0$ be 1280-bit state value after the finalization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
+\begin{align*}
+F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K\|K, 0, 0, 0)\bigr) \oplus (0,K\|K,0,0,0) = S^0.
+\end{align*}
+
+Here, our strategy is to recover $K$ by independently processing $F_0$ and $F_1^{-1}$ to find the following match.
+\begin{align*}
+F_0 (S^{-10} \oplus (0, K\|K, 0, 0, 0)) \stackrel{?}{=} F_1^{-1} (S^0 \oplus (0,K\|K,0,0,0)).
+\end{align*}
+
+To evaluate the attack complexity, we consider the following configuration of the attack parameters.
+\begin{itemize}
+\item $G_0$: a set of bits of $K$ that are guessed for computing $F_0$.
+\item $G_1$: a set of bits of $K$ that are guessed for computing $F_1^{-1}$.
+\item $G_2$: a set of bits in the intersection of $G_0$ and $G_1$.
+\item $x$ bits can match after processing $F_0$ and $F_1^{-1}$.
+\end{itemize}
+Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K$. The attack exhaustively guesses $G_2$ and performs the following procedure for each guess.
+\begin{enumerate}
+\item $F_0$ is computed $2^{|G_0|-|G_2|}$ times and the results are stored in a table $T$. (Because $|G_1|-|G_2|$ bits are unknown, only a part of the state is computed.)
+\item $F_1^{-1}$ is computed $2^{|G_1|-|G_2|}$ times and for each result we check the match with any entry in $T$.
+\item There are $2^{|G_0|-|G_2| + |G_1|-|G_2|}$ combinations, and the number of valid matches reduces to $2^{|G_0|-|G_2| + |G_1|-|G_2| - x}$ after matching the $x$ bits.
+\item Check the correctness of the guess by using one plaintext-ciphertext pair.
+\end{enumerate}
+
+In the end,
+$F_0$ is computed $2^{|G_2|} \cdot 2^{|G_0|-|G_2|} = 2^{|G_0|}$ times.
+Similarly, $F_1^{-1}$ is computed $2^{|G_1|}$ times. The number of the total candidates after the $x$-bit match is $2^{|G_2|} \cdot 2^{|G_0|-|G_2| + |G_1|-|G_2| - x} = 2^{|G_0| + |G_1| - |G_2| - x}$. Hence, the key $K$ is recovered with complexity $$\max( 2^{|G_0|}, 2^{|G_1|}, 2^{|G_0| + |G_1| - |G_2| - x}).$$
+Suppose that we choose $|G_0|$ and $|G_1|$ to be balanced i.e. $|G_0|=|G_1|$. Then, the complexity is $$\max( 2^{|G_0|}, 2^{2|G_0| - |G_2| - x}).$$
+Two terms are balanced when $x = |G_0| - |G_2|$, namely, the number of matched bits in the middle of two functions must be equal to the number of independently guessed bits to compute $F_0$ and $F_1^{-1}$.
+
+In the attack below, we choose $|G_0|=|G_1|=127$ and $|G_2|=126$ (equivalently $|G_2|-|G_0| = |G_2|-|G_1| = 1$) in order to aim $x=1$-bit match in the middle, which maximizes the number of attacked rounds.
+
 \subsubsection{Full Diffusion Rounds.}
