@@ -13,7 +13,7 @@ GRAY = "\033[37m"
 GREEN = "\033[32m"
 BOLD = "\033[1m"
 
-GEN = Masks/masks_mini_morus_640.c Masks/masks_mini_morus_1280.c Masks/masks_morus_640.c
+GEN = Masks/masks_mini_morus_640.c Masks/masks_mini_morus_1280.c Masks/masks_morus_640.c Masks/masks_morus_1280.c
 GEN_H = $(GEN:%.c=%.h) main.h
 MAINS_C = $(wildcard Ciphers/*.c) main.c $(GEN)
 UTILITIES_C = $(wildcard Utilities/*.c)
@@ -58,6 +58,15 @@ epsil_32_2: clean gen_masks gen_epsil_32_2 $(MAIN)
 appr1_32_2: clean gen_masks gen_appr1_32_2 $(MAIN)
 appr2_32_2: clean gen_masks gen_appr2_32_2 $(MAIN)
 
+full_64_2: clean gen_masks gen_full_64_2 $(MAIN)
+alpha_64_2: clean gen_masks gen_alpha_64_2 $(MAIN)
+beta_64_2: clean gen_masks gen_beta_64_2 $(MAIN)
+gamma_64_2: clean gen_masks gen_gamma_64_2 $(MAIN)
+delta_64_2: clean gen_masks gen_delta_64_2 $(MAIN)
+epsil_64_2: clean gen_masks gen_epsil_64_2 $(MAIN)
+appr1_64_2: clean gen_masks gen_appr1_64_2 $(MAIN)
+appr2_64_2: clean gen_masks gen_appr2_64_2 $(MAIN)
+
 print_default:
 	@echo $(ORANGE)"Possible build targets:"
 	@echo $(YELLOW)
@@ -90,6 +99,16 @@ print_default:
 	@echo				 "\t make epsil_32_2"
 	@echo				 "\t make appr1_32_2"
 	@echo				 "\t make appr2_32_2"
+	@echo $(YELLOW)
+	@echo "\tMorus_1280"
+	@echo	$(GRAY)"\t make full_64_2"
+	@echo				 "\t make alpha_64_2"
+	@echo				 "\t make beta_64_2"
+	@echo				 "\t make gamma_64_2"
+	@echo				 "\t make delta_64_2"
+	@echo				 "\t make epsil_64_2"
+	@echo				 "\t make appr1_64_2"
+	@echo				 "\t make appr2_64_2"
 	@echo 			 "I will build default target in 3."
 	@sleep 1
 	@echo 			 "                               2."
@@ -162,6 +181,25 @@ gen_appr1_32_2: gen_main.py
 	python3 gen_main.py appr1 32 2
 gen_appr2_32_2: gen_main.py
 	python3 gen_main.py appr2 32 2
+
+# morus_1280
+
+gen_full_64_2: gen_main.py
+	python3 gen_main.py full 64 2
+gen_alpha_64_2: gen_main.py
+	python3 gen_main.py alpha 64 2
+gen_beta_64_2: gen_main.py
+	python3 gen_main.py beta 64 2
+gen_gamma_64_2: gen_main.py
+	python3 gen_main.py gamma 64 2
+gen_delta_64_2: gen_main.py
+	python3 gen_main.py delta 64 2
+gen_epsil_64_2: gen_main.py
+	python3 gen_main.py epsil 64 2
+gen_appr1_64_2: gen_main.py
+	python3 gen_main.py appr1 64 2
+gen_appr2_64_2: gen_main.py
+	python3 gen_main.py appr2 64 2
 
 # not required because this is already a dependency.
 $(GEN) : $(MASKS_DIR) gen_masks.py
