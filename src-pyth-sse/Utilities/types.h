@@ -6,8 +6,9 @@ union Register {
 	uint32_t m32;
 	uint64_t m64;
 	__m128i f32;
-	// uint32_t f32[4];
-	// uint64_t f64[4];
+#ifdef __AVX2__
+	__m256i f64;
+#endif
 };
 
 struct RNG_state {

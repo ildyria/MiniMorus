@@ -118,20 +118,20 @@ weight_mini_1280 = [
 16,             # full
 ]
 
-# weight_1280 = [
-# 1,              # alpha
-# 1,              # beta
-# 1,              # gamma
-# 1,              # delta
-# 1,              # epsil
-# 7,              # appr1
-# 9,              # appr2
-# 16,             # full
-# ]
+weight_1280 = [
+4,              # alpha
+4,              # beta
+4,              # gamma
+4,              # delta
+4,              # epsil
+28,              # appr1
+36,              # appr2
+76,             # full
+]
 
 masks_list = [
 {'kind': 1, 'width': 32, 'states': states_640, 'ciphers': ciphers_640, 'weight': weight_mini_640},
 {'kind': 1, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_mini_1280},
 {'kind': 2, 'width': 32, 'states': states_640, 'ciphers': ciphers_640, 'weight': weight_640},
-# {'kind': 2, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_1280},
+{'kind': 2, 'width': 64, 'states': states_1280, 'ciphers': ciphers_1280, 'weight': weight_1280},
 ]

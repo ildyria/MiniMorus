@@ -6,4 +6,3 @@
 #include "maths.h"
 #include "printing.h"
 #include "args.h"
-#include "sse.h"

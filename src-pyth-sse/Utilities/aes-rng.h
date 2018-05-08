@@ -18,3 +18,9 @@ uint64_t aesrand_int64_r(struct RNG_state *rng);
 uint8_t aesrand_int8_r(struct RNG_state *rng);
 
 __m128i aesrand_m128i_r(struct RNG_state *rng);
+
+#ifdef __AVX2__
+
+__m256i aesrand_m256i_r(struct RNG_state *rng);
+
+#endif

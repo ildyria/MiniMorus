@@ -81,6 +81,37 @@ __m128i aesrand_m128i_r(struct RNG_state *rng) {
 		return rng->t;
 }
 
+#ifdef __AVX2__
+
+__m256i aesrand_m256i_r(struct RNG_state *rng) {
+		__m128i t;
+		// Increment counter
+		rng->count = _mm_add_epi64(rng->count, _mm_setr_epi32(0, 0, 1, 0));
+
+		// 6 AES rounds
+		t = rng->count;
+		t = _mm_aesenc_si128(t, rng->k);
+		t = _mm_aesenc_si128(t, rng->k);
+		t = _mm_aesenc_si128(t, rng->k);
+		t = _mm_aesenc_si128(t, rng->k);
+		t = _mm_aesenc_si128(t, rng->k);
+		t = _mm_aesenc_si128(t, rng->k);
+
+		// Increment counter
+		rng->count = _mm_add_epi64(rng->count, _mm_setr_epi32(0, 0, 1, 0));
+		// 6 AES rounds
+		rng->t = rng->count;
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+		rng->t = _mm_aesenc_si128(rng->t, rng->k);
+
+		return _mm256_set_i128(t,rng->t);
+}
+
+#endif
 
 uint8_t aesrand_int8_r(struct RNG_state *rng) {
 	switch (rng->next++) {

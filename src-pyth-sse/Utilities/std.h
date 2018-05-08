@@ -12,4 +12,5 @@
 // for AES
 #include <smmintrin.h>
 #include <wmmintrin.h>
+#include <immintrin.h>
 #include <assert.h>

@@ -46,21 +46,40 @@ def gen_function(kind,width,num,states,ciphers, weight):
         if kind == 1:
             z += '\tres ^= saved_ciphers' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
         else:
-            z += '\tt = (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 0);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 1);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 2);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 3);\n'
-            z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+            if width == 32:
+                z += '\tt = (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 0);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 1);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 2);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_ciphers' + K + '.' + union + ', 3);\n'
+                z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+            else:
+                z += '#ifdef __AVX2__\n'
+                z += '\tt = (uint64_t) _mm256_extract_epi64(saved_ciphers' + K + '.' + union + ', 0);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_ciphers' + K + '.' + union + ', 1);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_ciphers' + K + '.' + union + ', 2);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_ciphers' + K + '.' + union + ', 3);\n'
+                z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+                z += '#endif\n'
+
 
     for K, C in states.items():
         if kind == 1:
             z += '\tres ^= saved_states' + K + '.' + union + ' & ' + hex(gen_mask(C)) + ';\n'
         else:
-            z += '\tt = (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 0);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 1);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 2);\n'
-            z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 3);\n'
-            z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+            if width == 32:
+                z += '\tt = (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 0);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 1);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 2);\n'
+                z += '\tt ^= (uint32_t) _mm_extract_epi32(saved_states' + K + '.' + union + ', 3);\n'
+                z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+            else:
+                z += '#ifdef __AVX2__\n'
+                z += '\tt = (uint64_t) _mm256_extract_epi64(saved_states' + K + '.' + union + ', 0);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_states' + K + '.' + union + ', 1);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_states' + K + '.' + union + ', 2);\n'
+                z += '\tt ^= (uint64_t) _mm256_extract_epi64(saved_states' + K + '.' + union + ', 3);\n'
+                z += '\tres ^= t &' + hex(gen_mask(C)) + ';\n'
+                z += '#endif\n'
 
     z += '\treturn 1 & HW' + str(width) + '(res);\n'
 
