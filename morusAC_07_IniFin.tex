@@ -176,3 +176,104 @@ Two terms are balanced when $x = |G_0| - |G_2|$, namely, the number of matched b
 In the attack below, we choose $|G_0|=|G_1|=127$ and $|G_2|=126$ (equivalently $|G_2|-|G_0| = |G_2|-|G_1| = 1$) in order to aim $x=1$-bit match in the middle, which maximizes the number of attacked rounds.
 
 \subsubsection{Full Diffusion Rounds.}
+We found that {\tt StepUpdate} was designed to have good diffusion in the forward direction. Thus, once the state is recovered, the attacker can perform the partial computation in the backward direction longer than the forward direction. We set $G_0$ and $G_1$ as follows.
+\begin{align*}
+G_0 &= \{1, 2, \cdots, 127\} & \textrm {Bit position 0 is unknown.}\\
+G_1 &= \{0, 1, \cdots, 7, 9, 10, \cdots, 127\} & \textrm {Bit position 8 is unknown.}
+\end{align*}
+Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in Table~\ref{Tbl:ini_diffuse}. In the end, $K$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
+
+\begin{table}[!tb]
+\begin{center}
+\caption{Analysis of the diffusion and matching bits over 10 steps. `0' and `1' denote that the state bit can be computed from a partial knowledge of $K$. After the partial computations from each direction, 4 bits of $S^{-6}$ can match.} 
+\label{Tbl:ini_diffuse}
+{\tiny
+\begin{tabular}{ccccc} \hline
+Round & \multicolumn{4}{c}{State Difference}\\ \hline
+                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                  & {\tt 0000000000000000} & {\tt 0000000000000001} & {\tt 0000000000000000} & {\tt 0000000000000001} \\
+$S^{-10}\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+
+      & {\tt 0000000000002000} & {\tt 0000000000000000} & {\tt 0000000000002000} & {\tt 0000000000000000} \\
+      & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} \\
+1     & {\tt 0008000000000000} & {\tt 0000000000000000} & {\tt 0008000000000000} & {\tt 0000000000000000} \\
+      & {\tt 0000000000100000} & {\tt 0020000000000000} & {\tt 0000000000100000} & {\tt 0020000000000000} \\
+      & {\tt 0000000000020000} & {\tt 0084000000000000} & {\tt 0000000000020000} & {\tt 0084000000000000} \\ \hline
+
+      & {\tt 0800000000000004} & {\tt 0000000204000001} & {\tt 0800000000000004} & {\tt 0000000204000001} \\
+      & {\tt 8000000a00000000} & {\tt 0000002110000004} & {\tt 8000000a00000000} & {\tt 0000002110000004} \\
+2     & {\tt 0400010221000000} & {\tt 008000400a000081} & {\tt 0400010221000000} & {\tt 008000400a000081} \\
+      & {\tt 1000050001000244} & {\tt 4200118a08000280} & {\tt 1000050001000244} & {\tt 4200118a08000280} \\
+      & {\tt 880004a0a0200858} & {\tt 4840123350000050} & {\tt 880004a0a0200858} & {\tt 4840123350000050} \\ \hline
+
+      & {\tt 023d63c00050a850} & {\tt 00a1442000489380} & {\tt 023d63c00050a850} & {\tt 00a1442000489380} \\
+      & {\tt 02b63380056aaa48} & {\tt 00b5563005dcd6c0} & {\tt 02b63380056aaa48} & {\tt 00b5563005dcd6c0} \\
+3     & {\tt d42ab556bf5dfcd6} & {\tt 5a26f633a8556aaa} & {\tt d42ab556bf5dfcd6} & {\tt 5a26f633a8556aaa} \\
+      & {\tt 5fbbf556bd556c65} & {\tt 7aab99aaee6bea2c} & {\tt 5fbbf556bd556c65} & {\tt 7aab99aaee6bea2c} \\
+      & {\tt abff7f3ad7feafad} & {\tt cfff777ffddffd6d} & {\tt abff7f3ad7feafad} & {\tt cfff777ffddffd6d} \\ \hline
+
+      & {\tt fff77dfffffdcf57} & {\tt fefad7efffdffbf7} & {\tt fff77dfffffdcf57} & {\tt fefad7efffdffbf7} \\
+      & {\tt ffffffffffffbfff} & {\tt fffbf7fffddfff77} & {\tt ffffffffffffbfff} & {\tt fffbf7fffddfff77} \\
+4     & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt ffffffffffffffff} & {\tt fffbffffefffffff} & {\tt ffffffffffffffff} & {\tt fffbffffefffffff} \\
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\ \hline 
+%
+%      
+      &                        & 2-bits match           & {\tt                 } & 2-bits match            \\ \hline
+%
+%
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+5     & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} \\
+      & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} \\ \hline
+      
+      & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} \\
+      & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} \\
+6     & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} \\
+      & {\tt 7ffd75b6cdfff357} & {\tt fffbf5a6ccfcfb73} & {\tt 7ffd75b6cdfff357} & {\tt fffbf5a6ccfcfb73} \\
+      & {\tt 7ffbf5a6ccfcf373} & {\tt 7ff975b6ccfff353} & {\tt 7ffbf5a6ccfcf373} & {\tt 7ff975b6ccfff353} \\ \hline
+
+      & {\tt 7efbf5a6cc7cf353} & {\tt 7fd975a6cceff353} & {\tt 7efbf5a6cc7cf353} & {\tt 7fd975a6cceff353} \\
+      & {\tt 7eb950a4cc78e353} & {\tt 7dd07184cced7153} & {\tt 7eb950a4cc78e353} & {\tt 7dd07184cced7153} \\
+7     & {\tt 7eb950a4cc78e353} & {\tt 7dd07184ccec7153} & {\tt 7eb950a4cc78e353} & {\tt 7dd07184ccec7153} \\
+      & {\tt 7cd051044c6c3153} & {\tt 3e985024cc48a313} & {\tt 7cd051044c6c3153} & {\tt 3e985024cc48a313} \\
+      & {\tt 3c905004cc482313} & {\tt 7c9051044c6c2113} & {\tt 3c905004cc482313} & {\tt 7c9051044c6c2113} \\ \hline
+
+      & {\tt 2c905004c4482113} & {\tt 7c9050040c682113} & {\tt 2c905004c4482113} & {\tt 7c9050040c682113} \\
+      & {\tt 2810100444082112} & {\tt 5c1010040c402113} & {\tt 2810100444082112} & {\tt 5c1010040c402113} \\
+8     & {\tt 2810100444082112} & {\tt 1c1010040c402113} & {\tt 2810100444082112} & {\tt 1c1010040c402113} \\
+      & {\tt 0c00100404400113} & {\tt 2800000404082112} & {\tt 0c00100404400113} & {\tt 2800000404082112} \\
+      & {\tt 0800000404002112} & {\tt 0800100404400113} & {\tt 0800000404002112} & {\tt 0800100404400113} \\ \hline
+
+      & {\tt 0800000404002112} & {\tt 0800100004000112} & {\tt 0800000404002112} & {\tt 0800100004000112} \\
+      & {\tt 0000000404000102} & {\tt 0000100004000110} & {\tt 0000000404000102} & {\tt 0000100004000110} \\
+9     & {\tt 0000000404000102} & {\tt 0000000004000110} & {\tt 0000000404000102} & {\tt 0000000004000110} \\
+      & {\tt 0000000004000110} & {\tt 0000000000000102} & {\tt 0000000004000110} & {\tt 0000000000000102} \\
+      & {\tt 0000000000000100} & {\tt 0000000004000110} & {\tt 0000000000000100} & {\tt 0000000004000110} \\ \hline
+
+      & {\tt 0000000000000100} & {\tt 0000000004000100} & {\tt 0000000000000100} & {\tt 0000000004000100} \\
+      & {\tt 0000000000000000} & {\tt 0000000004000100} & {\tt 0000000000000000} & {\tt 0000000004000100} \\
+10    & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
+      & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} \\
+      & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\ \hline
+
+              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+              & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
+$S^0\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+
+\end{tabular}
+}
+\end{center}
+\end{table}
+
+
+
+\subsubsection{Remarks.}
+The matching state does not have te be a border of a step. It can be defined on a border of a round (or even some complicated way). We did not find the extension of the number of attacked steps even with this way. 
+
+As can be seen in Table~\ref{Tbl:ini_diffuse}, the updated register in step $i$ is independent of the update function in step $i+1$ in the forward direction, and starts to impact from step $i+2$. By modifying this point, the diffusion speed can increase faster, which makes this attack harder.
