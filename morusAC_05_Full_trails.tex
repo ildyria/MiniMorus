@@ -1,0 +1,295 @@
+\section{Trail for Full \cipher{MORUS}}
+
+\subsection{Symmetrizing the Trail}
+In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}.
+In order to build a trail on the full \cipher{MORUS}, we proceed exactly like we did for \cipher{MiniMORUS}, following the exact same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \cipher{MiniMORUS} to the four-word registers of full \cipher{MORUS}, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec:introminimorus}.
+That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
+\[
+S^3_{2,0} \oplus S^3_{2,32} \oplus S^3_{2,64} \oplus S^3_{2,96}.
+\]
+
+Thus, translating the trail from one of the \cipher{MiniMORUS} ciphers to the corresponding full \cipher{MORUS} cipher amounts to making every linear combination symmetric---indeed, that was the point of introducing \cipher{MiniMORUS} in the first place.
+Concretely, in order to build the full trail equation for \cipher{MORUS}, we write symmetric versions of equations $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ from \Cref{sec:minitraileq}, and then combine them in exactly the same way as before.
+In this way, the biased linear combination on \cipher{MiniMORUS640} given in \Cref{sec:minitraileq}, namely:
+\begin{align*}
+&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}\\
+\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}
+\end{align*}
+ultimately yields the following biased symmetrized linear combination on the full \cipher{MORUS640}:
+\begin{align*}
+&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}\\
+\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}\\
+\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}\\
+\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}\\
+\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}\\
+\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}.
+\end{align*}
+We refer the reader to \Cref{sec:traileq} for the corresponding linear combination on \cipher{MORUS1280}.
+
+\subsection{Bias of the Full Trail}
+
+The symmetrized trail on full \cipher{MORUS} may be intuitively understood as consisting of four copies of the original trail on \cipher{MiniMORUS}. Indeed, the only difference between full \cipher{MORUS} (for either version of \cipher{MORUS}) and four independent copies of \cipher{MiniMORUS} comes from register-wise rotations, which permute words within a register. But as observed in \Cref{sec:introminimorus}, register-wise rotations leave symmetric linear combinations invariant; and so, insofar as we only ever use symmetric linear combinations on all registers along the trail, register-wise rotations have no effect.
+
+Following the previous intuition, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
+
+To understand why that might be the case, assume a nonlinear term $S^0_{2,0} \cdot S^0_{3,0}$ arises from some part of the trail, and another term $S^0_{2,0} \cdot S^0_{3,w}$ arises from a different part of the trail (where $w$ denotes the word size). Then when we XOR the various trail fragments together, in \cipher{MiniMORUS} these two terms are actually equal and will cancel out, since register-wise rotations by multiples of $w$ bits are ignored. However in the real \cipher{MORUS} these terms are of course distinct and do not cancel each other.
+
+In the actual trail for (either version of) full \cipher{MORUS}, this exact situation occurs when combining trail fragments $\beta^t_i$ and $\gamma^t_i$. Indeed, $\beta^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i}$, while $\gamma^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i-w}$ (cf. \Cref{fig:trailcollision}). While in \cipher{MiniMORUS}, these terms cancel out, in the full \cipher{MORUS}, when adding all symmetric copies of the trail, we end up with the sum:
+\begin{align}
+&S^t_{2,i} \cdot S^t_{3,i} \oplus S^t_{3,i} \cdot S^t_{2,i+w}
+\oplus S^t_{2,i+w} \cdot S^t_{3,i+w} \oplus S^t_{3,i+w} \cdot S^t_{2,i+2w}\notag\\
+\oplus\; &S^t_{2,i+2w} \cdot S^t_{3,i+2w} \oplus S^t_{3,i+2w} \cdot S^t_{2,i+3w}
+\oplus S^t_{2,i+3w} \cdot S^t_{3,i+3w} \oplus S^t_{3,i+3w} \cdot S^t_{2,i}.\label{eq:8circle}
+\end{align}
+It may be observed that the products occurring in the equation above involve eight terms forming a ring. The weight of this expression can be computed by brute force, and is equal to $3$.
+
+\begin{figure}
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      %(xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      %(xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    %\draw[trail, beta,  dotted] (and-1) -- (and-1-|and1);
+    %\draw[trail, gamma, dotted] (and1)  -- (and-1-|and1) node[above, black] {=};
+    \node (eq) at ($(and-1|-and1)+(-1,-2.4pt)$) {=};
+    \draw[beta,{Circle[sep=-1.8pt]}-]  ($(and-1)+(0,-2.4pt)$) -| (eq);
+    \draw[gamma,{Circle[sep=-1.8pt]}-] ($(and1)+(0,-2.4pt)$) -- (eq);
+  \end{tikzpicture}%}}}
+  \caption*{\cipher{MiniMORUS}: weight 0 (not 2)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \qquad
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    \draw[trail, beta,  dashed] (and-1.east|-tanB-1) -- (tanB-1);
+    \draw[trail, gamma, dashed] (tanB-1)  -- (tanB1) -- (tanB1-|and1.east);
+  \end{tikzpicture}%}}}
+  \caption*{\cipher{MORUS}: weight $4 \times 1$ (not $4 \times 2$)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \caption{Weight of $\beta^t_i \oplus \gamma^t_i$ for \cipher{MiniMORUS} and \cipher{MORUS}.}
+  \label{fig:trailcollision}
+\end{figure}
+
+In the end, for \cipher{MORUS1280}, since the trail fragment $\gamma^t_i$ is used four times, the phenomenon we just described adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \cipher{MiniMORUS1280} is 16). We have confirmed this bias by explicitly computing the full trail equation in \Cref{sec:traileq}, and evaluating its exact weight like we did for \cipher{MiniMORUS} in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the bias of each connected component separately by brute force, and then add up the weights of all components per the piling-up lemma. In the end, the full trail equation given in \Cref{sec:traileq} yields a weight of 76 for the full trail on \cipher{MORUS1280}.
+
+In the case of \cipher{MORUS640}, collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used in the course of the full trail with an offset of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case \cipher{MORUS640} is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurrences of \Cref{eq:8circle}. In the end, when computing the full trail equation on \cipher{MORUS640}, we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
+
+%TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
+%(maybe not relevant due to overall complexity\dots)
+
+\begin{figure}
+  \newcommand{\M}[2]{1.65,-1.5*#1-.25-.25*#2}
+  \newcommand{\C}[1]{-.1,-.25-1.5*#1}
+  \renewcommand{\S}[2]{.25+.25*#2,-1.5*#1}
+  \centering
+  \resizebox{!}{0.95\textheight}{
+  \begin{tikzpicture}[xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
+    \begin{scope}
+      \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+      \foreach \r in {0,...,4} { \draw (\S{0}{\r}) node[above] {$S^{\r}$}; }
+      \draw (\C{0}|-\S{0}{0}) node[above] {$C$};
+
+      \draw[alpha] (\C{0}) node[left] {27} -| (\S{1}{0}) node[above right] {0}
+                   (\M{0}{0}) node[right] {$\alpha_{27}$};
+
+      \draw[beta]  (\C{1}) node[above left] {0} -| (\S{1}{0}) node[below right] {0}
+                   (\C{1}-|\S{1}{0}) -| ([xshift=-1pt]\S{1}{1}) node[above] {0\,}
+                   (\M{1}{0}) node[right] {$\beta_0$};
+      \draw[alpha] ([yshift=-1.5pt]\C{1}) node[left] {8} -| (\S{2}{0}) node[above right] {\!\!13}
+                   (\M{1}{1}) node[right] {$\alpha_{8,26}$};
+      \draw[alpha] ([yshift=-3.0pt]\C{1}) node[below left] {26} -| ([xshift=-1pt]\S{2}{0}) node[above left] {31\!};
+      \draw[gamma] (\S{1}{1}) node[above] {\,0} -- (\S{2}{1}) node[above left] {31\!\!}
+                   (\S{1}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{1}{4}) node[above] {0\,}
+                   (\M{1}{2}) node[right] {$\gamma_0$};
+      \draw[delta] (\S{1}{4}) node[above] {\,0} -- (\S{2}{4}) node[above right] {13}
+                   (\S{1}{4}) ++(0,-1.25) -| ([xshift=2pt]\S{2}{2}) node[below] {0} node[black] {$\times$}
+                   (\M{1}{3}) node[right] {$\delta_0$};
+
+      \draw[beta]  (\C{2}) node[above left] {31} -| ([xshift=-1pt]\S{2}{0}) node[below left] {31\!}
+                   ([xshift=-1pt]\C{2}-|\S{2}{0}) -| (\S{2}{1}) node[below left] {31\!\!}
+                   (\M{2}{0}) node[right] {$\beta_{13,31}$};
+      \draw[beta]  ([yshift=-1.5pt]\C{2}) node[left] {13} -| (\S{2}{0}) node[below right] {\!\!13}
+                   ([yshift=-1.5pt]\C{2}-|\S{2}{0}) -| ([xshift=1pt]\S{2}{1}) node[above] {\,\,\,13};
+      \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {7} -| (\S{3}{0}) node[above right] {12}
+                   (\M{2}{1}) node[right] {$\alpha_7$};
+      \draw[gamma] ([xshift=2pt]\S{2}{1}) node[below right] {13} -- ([xshift=2pt]\S{3}{1}) node[above right] {12}
+                   ([xshift=2pt]\S{2}{1}) ++(0,-.75) -| (\S{2}{4}) node[below right] {13}
+                   (\M{2}{2}) node[right] {$\gamma_{13}$};
+
+      \draw[beta]  (\C{3}) node[left] {12} -| (\S{3}{0}) node[below right] {12}
+                   (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {12}
+                   (\M{3}{0}) node[right] {$\beta_{12}$};
+
+      \draw (\S{4}{2}) node[above] {\normalsize $\chi_1$: weight 7 (not 11)};
+    \end{scope}
+
+    \begin{scope}[xshift=2.5cm]
+      \foreach \r in {1,...,4} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+      \foreach \r in {0,...,4} { \draw (\S{1}{\r}) node[above] {$S^{\r}$}; }
+      \draw (\C{0}|-\S{1}{0}) node[above] {$C$};
+
+      \draw[alpha] (\C{1}) node[left] {2} -| (\S{2}{0}) node[above right] {7}
+                   (\M{1}{0}) node[right] {$\alpha_{2}$};
+
+      \draw[beta]  (\C{2}) node[above left] {7} -| (\S{2}{0}) node[below right] {7}
+                   (\C{2}-|\S{2}{0}) -| ([xshift=-1pt]\S{2}{1}) node[above] {7\,}
+                   (\M{2}{0}) node[right] {$\beta_7$};
+      \draw[alpha] ([yshift=-1.5pt]\C{2}) node[left] {15} -| (\S{3}{0}) node[above right] {\!20}
+                   (\M{2}{1}) node[right] {$\alpha_{15,1,27}$};
+      \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {1} -| ([xshift=-1pt]\S{3}{0}) node[above left] {6\!};
+      \draw[alpha] ([yshift=-4.5pt]\C{2}) node[below] {\,\,\,\,27} -| ([xshift=-3pt]\S{3}{0}) node[below] {0\,\,};
+      \draw[gamma] (\S{2}{1}) node[above] {\,7} -- (\S{3}{1}) node[above left] {6\!}
+                   (\S{2}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{2}{4}) node[above] {7\,}
+                   (\M{2}{2}) node[right] {$\gamma_7$};
+      \draw[delta] (\S{2}{4}) node[above] {\,7} -- (\S{3}{4}) node[above right] {20}
+                   (\S{2}{4}) ++(0,-1.25) -| ([xshift=1pt]\S{3}{2}) node[below] {\,7}
+                   (\M{2}{4}) node[right] {$\delta_7$};
+      \draw[epsil] (\S{2}{2}) node[above] {0} node[black] {$\times$} -- (\S{3}{2}) node[below] {7\,}
+                   (\S{2}{2}) ++(0,-1.00) -| ([xshift=-4pt]\S{3}{0}) node[above left] {0}
+                   (\M{2}{3}) node[right] {$\varepsilon_0$};
+
+      \draw[beta]  (\C{3}) node[above left] {6} -| ([xshift=-1pt]\S{3}{0}) node[below left] {6\!}
+                   ([xshift=-1pt]\C{3}-|\S{3}{0}) -| (\S{3}{1}) node[below left] {6\!}
+                   (\M{3}{0}) node[right] {$\beta_{20,6}$};
+      \draw[beta]  ([yshift=-1.5pt]\C{3}) node[left] {20} -| (\S{3}{0}) node[below right] {\!20}
+                   ([yshift=-1.5pt]\C{3}-|\S{3}{0}) -| ([xshift=1pt]\S{3}{1}) node[above] {\,\,\,\,20};
+      \draw[alpha] ([yshift=-3.0pt]\C{3}) node[below left] {14} -| (\S{4}{0}) node[above right] {19}
+                   (\M{3}{1}) node[right] {$\alpha_{14}$};
+      \draw[gamma] ([xshift=2pt]\S{3}{1}) node[below right] {20} -- ([xshift=2pt]\S{4}{1}) node[above right] {19}
+                   ([xshift=2pt]\S{3}{1}) ++(0,-.75) -| (\S{3}{4}) node[below right] {20}
+                   (\M{3}{2}) node[right] {$\gamma_{20}$};
+
+      \draw[beta]  (\C{4}) node[left] {19} -| (\S{4}{0}) node[below right] {19}
+                   (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {19}
+                   (\M{4}{0}) node[right] {$\beta_{19}$};
+
+      \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
+      \draw (\S{0}{2}) node[below] {\normalsize \cipher{MiniMORUS-640}};
+    \end{scope}
+
+    \draw[dashed] (\S{4.25}{-1}) -- (\S{4.25}{7}) -- ++(\S{1}{-1}) -- ++(\S{0}{7});
+
+    \begin{scope}[yshift=-7.0cm]
+      \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+      \foreach \r in {0,...,4} { \draw (\S{0}{\r}) node[above] {$S^{\r}$}; }
+      \draw (\C{0}|-\S{0}{0}) node[above] {$C$};
+
+      \draw[alpha] (\C{0}) node[left] {51} -| (\S{1}{0}) node[above right] {0}
+                   (\M{0}{0}) node[right] {$\alpha_{51}$};
+
+      \draw[beta]  (\C{1}) node[above left] {0} -| (\S{1}{0}) node[below right] {0}
+                   (\C{1}-|\S{1}{0}) -| ([xshift=-1pt]\S{1}{1}) node[above] {0\,}
+                   (\M{1}{0}) node[right] {$\beta_0$};
+      \draw[alpha] ([yshift=-1.5pt]\C{1}) node[left] {55} -| (\S{2}{0}) node[above right] {\!4}
+                   (\M{1}{1}) node[right] {$\alpha_{55,33}$};
+      \draw[alpha] ([yshift=-3.0pt]\C{1}) node[below left] {33} -| ([xshift=-1pt]\S{2}{0}) node[above left] {46\!};
+      \draw[gamma] (\S{1}{1}) node[above] {\,0} -- (\S{2}{1}) node[above left] {46\!}
+                   (\S{1}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{1}{4}) node[above] {0\,}
+                   (\M{1}{2}) node[right] {$\gamma_0$};
+      \draw[delta] (\S{1}{4}) node[above] {\,0} -- (\S{2}{4}) node[above right] {4}
+                   (\S{1}{4}) ++(0,-1.25) -| ([xshift=2pt]\S{2}{2}) node[below] {0} node[black] {$\times$}
+                   (\M{1}{3}) node[right] {$\delta_0$};
+
+      \draw[beta]  (\C{2}) node[above left] {46} -| ([xshift=-1pt]\S{2}{0}) node[below left] {46\!}
+                   ([xshift=-1pt]\C{2}-|\S{2}{0}) -| (\S{2}{1}) node[below left] {46\!}
+                   (\M{2}{0}) node[right] {$\beta_{4,46}$};
+      \draw[beta]  ([yshift=-1.5pt]\C{2}) node[left] {4} -| (\S{2}{0}) node[below right] {\!4}
+                   ([yshift=-1.5pt]\C{2}-|\S{2}{0}) -| ([xshift=1pt]\S{2}{1}) node[above] {\,\,\,4};
+      \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {37} -| (\S{3}{0}) node[above right] {50}
+                   (\M{2}{1}) node[right] {$\alpha_{37}$};
+      \draw[gamma] ([xshift=2pt]\S{2}{1}) node[below right] {4} -- ([xshift=2pt]\S{3}{1}) node[above right] {50}
+                   ([xshift=2pt]\S{2}{1}) ++(0,-.75) -| (\S{2}{4}) node[below right] {4}
+                   (\M{2}{2}) node[right] {$\gamma_{4}$};
+
+      \draw[beta]  (\C{3}) node[left] {50} -| (\S{3}{0}) node[below right] {50}
+                   (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {50}
+                   (\M{3}{0}) node[right] {$\beta_{50}$};
+
+      \draw (\S{4}{2}) node[above] {\normalsize $\chi_1$: weight 7 (not 11)};
+      \draw (\S{5}{2}) node[above] {\normalsize \cipher{MiniMORUS-1280}};
+    \end{scope}
+
+    \begin{scope}[xshift=2.5cm,yshift=-7.0cm]
+      \foreach \r in {1,...,4} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+      \foreach \r in {0,...,4} { \draw (\S{1}{\r}) node[above] {$S^{\r}$}; }
+      \draw (\C{0}|-\S{1}{0}) node[above] {$C$};
+
+      \draw[alpha] (\C{1}) node[left] {25} -| (\S{2}{0}) node[above right] {38}
+                   (\M{1}{0}) node[right] {$\alpha_{25}$};
+
+      \draw[beta]  (\C{2}) node[above left] {38} -| (\S{2}{0}) node[below right] {38}
+                   (\C{2}-|\S{2}{0}) -| ([xshift=-1pt]\S{2}{1}) node[above] {38\,}
+                   (\M{2}{0}) node[right] {$\beta_{38}$};
+      \draw[alpha] ([yshift=-1.5pt]\C{2}) node[left] {7} -| (\S{3}{0}) node[above right] {\!20}
+                   (\M{2}{1}) node[right] {$\alpha_{7,1,51}$};
+      \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {29} -| ([xshift=-1pt]\S{3}{0}) node[above left] {42\!};
+      \draw[alpha] ([yshift=-4.5pt]\C{2}) node[below] {\,\,\,\,51} -| ([xshift=-4pt]\S{3}{0}) node[below] {0\,\,\,};
+      \draw[gamma] (\S{2}{1}) node[above right] {38} -- (\S{3}{1}) node[above left] {20\!}
+                   (\S{2}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{2}{4}) node[above left] {38}
+                   (\M{2}{2}) node[right] {$\gamma_{38}$};
+      \draw[delta] (\S{2}{4}) node[above] {\,38} -- (\S{3}{4}) node[above right] {42}
+                   (\S{2}{4}) ++(0,-1.25) -| ([xshift=1pt]\S{3}{2}) node[below right] {38}
+                   (\M{2}{4}) node[right] {$\delta_{38}$};
+      \draw[epsil] (\S{2}{2}) node[above] {0} node[black] {$\times$} -- (\S{3}{2}) node[below] {38}
+                   (\S{2}{2}) ++(0,-1.00) -| ([xshift=-5pt]\S{3}{0}) node[above left] {0}
+                   (\M{2}{3}) node[right] {$\varepsilon_0$};
+
+      \draw[beta]  (\C{3}) node[above left] {42} -| ([xshift=-1pt]\S{3}{0}) node[below left] {42\!}
+                   ([xshift=-1pt]\C{3}-|\S{3}{0}) -| (\S{3}{1}) node[below left] {42\!}
+                   (\M{3}{0}) node[right] {$\beta_{20,42}$};
+      \draw[beta]  ([yshift=-1.5pt]\C{3}) node[left] {20} -| (\S{3}{0}) node[below right] {\!20}
+                   ([yshift=-1.5pt]\C{3}-|\S{3}{0}) -| ([xshift=1pt]\S{3}{1}) node[above] {\,\,\,\,20};
+      \draw[alpha] ([yshift=-3.0pt]\C{3}) node[below left] {11} -| (\S{4}{0}) node[above right] {24}
+                   (\M{3}{1}) node[right] {$\alpha_{11}$};
+      \draw[gamma] ([xshift=2pt]\S{3}{1}) node[below right] {42} -- ([xshift=2pt]\S{4}{1}) node[above right] {24}
+                   ([xshift=2pt]\S{3}{1}) ++(0,-.75) -| (\S{3}{4}) node[below right] {42}
+                   (\M{3}{2}) node[right] {$\gamma_{42}$};
+
+      \draw[beta]  (\C{4}) node[left] {24} -| (\S{4}{0}) node[below right] {24}
+                   (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {24}
+                   (\M{4}{0}) node[right] {$\beta_{24}$};
+
+      \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
+    \end{scope}
+  \end{tikzpicture}}
+
+  \caption{\cipher{MiniMORUS}: two approximations for $S^{2,2}_0$.}
+  \label{fig:twoapproximations}
+\end{figure}

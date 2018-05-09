@@ -1,0 +1,11 @@
+\section{Discussion}
+
+%This is just a sketch for now...
+
+We emphasize that the biases we uncover between ciphertext bits are \emph{absolute}, in the sense that they do not depend on the encryption key, or the nonce. As such, they could be leveraged to mount an attack in a known-prefix, unknown-suffix scenario, similar to biases on the RC4 stream cipher. This is especially effective in a setting where the attacker is able to force multiple encryptions of the same plaintext, while controlling the length of the known prefix, such as in the BEAST attack on TLS.
+
+The design document of \cipher{MORUS} imposes a limit of $2^{64}$ encrypted blocks for a given key. However, since our attack is independent of the encryption key, and hence immune to rekeying, this limitation does not apply: all that matters for our attack is that the same plaintext be encrypted enough times.
+
+With the trail presented in this work, the data complexity is still out of reach, since exploiting the bias would require $2^{146}$ encrypted blocks for \cipher{MORUS640}, and $2^{152}$ encrypted blocks for \cipher{MORUS1280}. The data complexity could be slightly lowered by leveraging multilinear cryptanalysis; indeed, the trail holds for any bit shift, and if we assume independence, we could run $w$ copies of the trail in parallel on the same encrypted blocks (recall that $w$ is the word size, and the trail is invariant by rotation by $w$ bits). This would save a factor $2^5$ on the data complexity for \cipher{MORUS640}, and $2^6$ for \cipher{MORUS1280}; but the resulting complexity is still out of reach.
+
+However, the existence of this trail does hint at some weakness in the design of \cipher{MORUS}. Indeed, a notable feature of the trail is that the values of rotation constants are mostly irrelevant: a similar trail would exist for most choices of the constants. That it is possible to build a trail that ignores rotation constants may be surprising. This would have been prevented by adding a word-wise rotation to one of the state registers at the input of the ciphertext equation.

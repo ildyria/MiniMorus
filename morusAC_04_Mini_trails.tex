@@ -1,0 +1,244 @@
+\section{Linear Trail for \cipher{MiniMORUS}}
+
+\subsection{Overview of the Trail}
+
+To build a linear trail on \cipher{MiniMORUS}, we combine the following five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$, where the subscript $i$ denotes a bit position, and the superscript $t$ denotes a step number:
+\begin{itemize}
+    \item $\alpha^t_i$ approximates (one bit of) state word $S_0$ using the ciphertext;
+    \item $\beta^t_i$ approximates $S_1$ using $S_0$ and the ciphertext;
+    \item $\gamma^t_i$ approximates $S_4$ using two approximations of $S_1$ in consecutive steps;
+    \item $\delta^t_i$ approximates $S_2$ using two approximations of $S_4$ in consecutive steps;
+    \item $\varepsilon^t_i$ approximates $S_0$ using two approximations of $S_2$ in consecutive steps.
+\end{itemize}
+
+The trail fragments are depicted on \Cref{fig:minimorusfragments}. In all cases except $\alpha^t_i$, the trail fragment approximates a single AND gate by zero, which holds with probability 3/4, and hence the trail fragment has weight 1. In the case of $\alpha^t_i$, two AND gates are involved; however the two gates share an entry in common, and in both cases the other entry also has a linear contribution to the trail, which results in an overall contribution of the form:
+\[
+x \cdot y \oplus x \cdot z \oplus y \oplus z= (x \oplus 1) \cdot (y \oplus z).
+\]
+As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way of looking at this phenomenon is that the trail holds for two different approximations of the AND gates: the alternative approximation is depicted by a dashed line on \Cref{fig:minimorusfragments}.
+
+\begin{figure}
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, alpha]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) -- (tanB0-|and0.east)
+      (and0) -- (xnd0) (xnd0) -- (tlll-1) (xnd0) -- (xor0)
+      (and-1.east|-tanA-1) -- (tanA-1) (tanA-1) -- (txor0) (txor0) -- (xor0)
+      (xor0) -- (lll0) (lll0) -- (W40) node[below] {$i+b_0$}
+      ;
+    \draw[trail, alpha, dashed]
+      (and-1.east|-tanB-1) -- (tanB-1) (tanB-1) -- (tanA0) (tanA0) -- (tanA0-|and0.east)
+      ;
+  \end{tikzpicture}%}}}
+  \caption*{$\alpha^t_i$: weight 1 (not 2)} %$C^j_i, S^{j-1,0}_{i+5}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.32\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) (txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+  \end{tikzpicture}%}}}
+  \caption*{$\beta^t_i$: weight 1} %$C^j_i, S^{j,0}_i, S^{j,1}_i$ ($w\!=\!0$)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.32\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, gamma]
+      (W-21) node[above] {$i$} -- (xnd1) (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption*{$\gamma^t_i$: weight 1} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \bigskip
+
+  \begin{subfigure}{.32\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, delta]
+      (W-24) node[above] {$i$} -- (xnd4) (xnd4) -- (xor4) (xnd4) -- (and4)
+      (xor4) -- (lll4) (xor4) -- (txor4) (txor4) -- (W42) node[below] {$i$}
+      (lll4) -- (W44) node[below] {$i+b_4$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption*{$\delta^t_i$: weight 1} %$S^{j,4_i}, S^{j+1,2}_i, S^{j+1,4}_{i+13}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.32\textwidth}
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, epsil]
+      (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
+      (xor2) -- (lll2) (xor2) -- (txor2) (txor2) -- (W40) node[below] {$i$}
+      (lll2) -- (W42) node[below] {$i+b_2$}
+      ;
+  \end{tikzpicture}%}}}
+  \caption*{$\varepsilon^t_i$: weight 1} %$S^{j,2}_i, S^{j+1,0}_i, S^{j+1,2}_{i+7}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.32\textwidth}
+    \small
+    \begin{align*}
+      \intertext{\cipher{MiniMORUS-640}:}
+\alpha^t_i:&& C^t_i &\to S^{t+1}_{0,i+5} \\
+\beta^t_i:&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
+\gamma^t_i:&& S^t_{1,i}, S^{t+1}_{1,i+31} &\to S^t_{4,i} \\
+\delta^t_i:&& S^t_{4,i}, S^{t+1}_{4,i+13} &\to S^{t+1}_{2,i} \\
+\varepsilon^t_i:&& S^t_{2,i}, S^{t+1}_{2,i+7} &\to S^{t+1}_{0,i}.
+      \intertext{\cipher{MiniMORUS-1280}:}
+\alpha^t_i:&& C^t_i &\to S^{t+1}_{0,i+13} \\
+\beta^t_i:&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
+\gamma^t_i:&& S^t_{1,i}, S^{t+1}_{1,i+46} &\to S^t_{4,i} \\
+\delta^t_i:&& S^t_{4,i}, S^{t+1}_{4,i+4} &\to S^{t+1}_{2,i} \\
+\varepsilon^t_i:&& S^t_{2,i}, S^{t+1}_{2,i+38} &\to S^{t+1}_{0,i}.
+    \end{align*}
+    \caption*{\cipher{MiniMORUS} instances}
+  \end{subfigure}
+  \caption{\cipher{MiniMORUS} linear trail fragments.}
+  \label{fig:minimorusfragments}
+\end{figure}
+
+The way we are going to use each trail fragment may be summarized as follows, where in each case, elements to the left of the arrow $\to$ are used to approximate the element on the right of the arrow:
+\begin{alignat*}{2}
+\alpha^t_i:\quad&& C^t_i &\to S^{t+1}_{0,i+b_0} \\
+\beta^t_i:\quad&& C^t_i, S^t_{0,i} &\to S^t_{1,i} \\
+\gamma^t_i:\quad&& S^t_{1,i}, S^{t+1}_{1,i+b_1} &\to S^t_{4,i} \\
+\delta^t_i:\quad&& S^t_{4,i}, S^{t+1}_{4,i+b_4} &\to S^{t+1}_{2,i} \\
+\varepsilon^t_i:\quad&& S^t_{2,i}, S^{t+1}_{2,i+b_2} &\to S^{t+1}_{0,i}.
+\end{alignat*}
+
+In more detail, the idea is that by using $\alpha^t_i$, we are able to approximate a bit of $S_0$ using only a ciphertext bit. By combining $\alpha^t_i$ with $\beta^{t+1}_{i+b_0}$, we are then able to approximate a bit of $S_1$ (at step $t+1$) using only ciphertext bits from two consecutive steps. Likewise, $\gamma^t_i$ allows us to ``jump'' from $S_1$ to $S_4$, i.e. by combining $\alpha^t_i$ with $\beta^t_i$ and $\gamma^t_i$ with appropriate choices of parameters $t$ and $i$ for each, we are able to approximate one bit of $S_4$ using only ciphertext bits. Notice however that $\gamma^t_i$ requires approximating $S_1$ in two consecutive steps; and so the previous combination requires using $\alpha^t_i$ and $\beta^t_i$ \emph{twice} at different steps. In the same way, $\delta^t_i$ allows us to jump from $S_4$ to $S_2$; and $\varepsilon^t_i$ allows jumping from $S_2$ back to $S_0$. In the end, we are able to approximate a bit of $S_0$ using only ciphertext bits via the combination of all trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$.
+
+However, the same bit of $S_0$ can also be approximated directly by using $\alpha^t_i$ at the corresponding step. Thus that bit can be linearly approximated from two different sides: the first approximation uses a combination of all trail fragments, and involves successive approximations of all state registers (except $S_3$) spanning several encryption steps, as explained in the previous paragraph. The second approximation only involves using $\alpha^t_i$ at the final step reached by the previous trail. By XORing up these two approximations, we are left with only ciphertext bits, spanning five consecutive encryption steps.
+
+Of course, the overall trail resulting from all of the previous combinations is quite complex, especially since $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$ each require two copies of the preceding trail fragment in consecutive steps: that is, $\varepsilon^t_i$ requires two approximations of $S_2$, which requires using $\delta^t_i$ twice; and $\delta^t_i$ in turn requires using $\gamma^t_i$ twice, which itself requires using $\alpha^t_i$ and $\beta^t_i$ twice. Then $\alpha^t_i$ is used one final time to close the trail. One may naturally wonder if some components of this trail are in conflict. In particular, products of bits from registers $S_2$ and $S_3$ are approximated multiple times, by $\alpha^t_i$, $\beta^t_i$ and $\gamma^t_i$. To address this concern, and ensure that all approximations along the trail are in fact compatible, we now compute the full trail equation explicitly.
+
+\subsection{Trail Equation}
+\label{sec:minitraileq}
+
+The equation corresponding to each of the five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$ may be written explicitly as $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ as follows. For each equation, we write on the left-hand side of the equality the biased linear combination used in the trail; and on the right-hand side, the remainder of the equation, which must have non-zero bias (in all cases the bias is $2^{-1}$).
+\begin{alignat*}{2}
+A^t_i:\quad&& C^t_i \oplus S^{t+1}_{0,i+b_0} &= S^t_{1,i} \oplus S^t_{3,i} \oplus S^t_{1,i} \cdot S^t_{2,i} \oplus S^t_{2,i} \cdot S^t_{3,i}\\
+B^t_i:\quad&& C^t_i \oplus S^t_{0,i} \oplus S^t_{1,i} &= S^t_{2,i} \cdot S^t_{3,i} \\
+C^t_i:\quad&& S^t_{1,i} \oplus S^{t+1}_{1,i+b_1} \oplus S^t_{4,i} &= S^t_{2,i} \cdot S^t_{3,i}\\
+D^t_i:\quad&& S^t_{4,i} \oplus S^{t+1}_{4,i+b_4} \oplus S^{t+1}_{2,i} &= S^{t+1}_{0,i} \cdot S^{t+1}_{1,i}\\
+E^t_i:\quad&& S^t_{2,i} \oplus S^{t+1}_{2,i+b_2} \oplus S^{t+1}_{0,i} &= S^t_{3,i} \cdot S^t_{4,i}
+\end{alignat*}
+
+From an algebraic point of view, building the full trail amounts to adding up copies of the previous equations for various choices of $t$ and $i$, so that eventually all $S^x_{y,z}$ terms on the left-hand side cancel out. Then we are left with only ciphertext terms on the left-hand side, while the right-hand side consists of a sum of biased expressions. By measuring the bias of the right-hand side expression, we will then be able to deduce the same bias on the linear combination of ciphertext bits on the left-hand side. We now set out to do so.
+
+In order to build the equation for the full trail, we start with $E^2_0$:
+\[
+S^2_{2,0} \oplus S^{3}_{2,b_2} \oplus S^{3}_{0,0} = S^2_{3,0} \cdot S^2_{4,0}.
+\]
+In order to cancel the $S^{3}_{0,0}$ term on the left-hand side, we add in the equation $A^2_{-b_0}$ (where the sum of two equations of the form $a = b$ and $c = d$ is defined to be $a+c = b+d$). This yields:
+\begin{align*}
+&S^2_{2,0} \oplus S^3_{2,b_2} \oplus C^2_{-b_0}\\
+=\; &S^2_{3,0} \cdot S^2_{4,0} \oplus S^2_{1,-b_0} \oplus S^2_{3,-b_0} \oplus S^2_{1,-b_0} \cdot S^2_{2,-b_0} \oplus S^2_{2,-b_0} \cdot S^2_{3,-b_0}.
+\end{align*}
+We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MiniMORUS640}, this yields the equation:
+
+\begin{flalign*}
+&&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
+&&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
+&&=\; &S^0_{1,27} \oplus S^0_{3,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,26} \oplus S^1_{3,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,8} \oplus S^1_{3,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,1} \oplus S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,7} \oplus S^2_{3,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,15} \oplus S^2_{3,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,27} \oplus S^2_{3,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,2} \oplus S^1_{3,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2}&&\text{weight 1}\\
+&&\oplus\; &S^3_{3,14} \oplus S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14}&&\text{weight 1}\\
+&&\oplus\; &S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; &S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; &S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
+&&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
+\end{flalign*}
+
+The equation for \cipher{MiniMORUS1280} is very similar, and is given in \Cref{sec:traileq}.
+
+\subsection{Bias of the Trail}
+\label{sec:minibias}
+
+In the equation for \cipher{MiniMORUS640} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MiniMORUS1280} (cf. \Cref{sec:traileq}).
+
+That the bias is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
+
+\subsection{Experimental Verification}
+
+To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
+While our analysis from the previous section predicts a bias of $2^{-16}$, experiments indicate a slightly higher bias of $2^{-15.5}$ for \cipher{MORUS640}. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
+
+%\noindent
+%2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-640}:
+%\begin{align*}
+%  S^{2,2}_0 &= C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12} \tag{corr. $2^{-7}$} \\
+%  S^{2,2}_0 &= C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19} \tag{corr. $2^{-9}$} \\
+%\intertext{Combined ciphertext-only approximation:}
+%  0 &= C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus
+%  C^3_{6,12,14,20} \oplus C^4_{19} \tag{corr. $\approx 2^{-15.5}$}
+%\end{align*}
+%\bigskip
+%
+%\noindent
+%2 approximations for $S^{2,2}_{0}$ of \cipher{MiniMORUS-1280}:
+%\begin{align*}
+%  S^{2,2}_0 &= C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50} \tag{corr. $2^{-7}$} \\
+%  S^{2,2}_0 &= C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24} \tag{corr. $2^{-9}$} \\
+%\intertext{Combined ciphertext-only approximation:}
+%  0 &= C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24} \tag{corr. $\approx 2^{-??}$}
+%\end{align*}
+
+\begin{table}[h!]
+  \caption{Experimental verification of trail biases.}
+  \label{tab:miniapproximations}
+  \centerline{
+  \begin{tabular}{@{}llSSS@{}}
+    \toprule
+    & & \multicolumn{3}{@{}c@{}}{Weight} \\
+    \cmidrule{3-5}
+    \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS640}}
+             & {Exp.} & {Bool.} & {Meas.} \\
+    \midrule
+    $\chi_1$ & $S^{2,2}_0 = C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12}$
+             & 7    & 7     & 7 \\
+    $\chi_2$ & $S^{2,2}_0 = C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19}$
+             & 9    & 9     & 9 \\
+    $\chi$   & $0 = C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus C^3_{6,12,14,20} \oplus C^4_{19}$
+             & 16   & 16    & 15.5 \\
+    \midrule
+    \multicolumn{2}{@{}l}{Approximations for \cipher{MiniMORUS1280}} \\
+    \midrule
+    $\chi_1$ & $S^{2,2}_0 = C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50}$
+             & 7    & 7     & 7 \\
+    $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
+             & 9    & 9     & 9 \\
+    $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
+             & 16   & 16    & 15.9 \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{table}

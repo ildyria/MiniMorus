@@ -1,0 +1,53 @@
+\section{Symmetric Linear Combinations and \cipher{MiniMORUS}}
+\label{sec:introminimorus}
+
+To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
+
+\subsection{Symmetric Linear Combinations}
+
+We begin with a few observations about the \StateUpdate{} function. Besides XOR and AND operations, the \StateUpdate{} function uses two types of bit rotations:
+\begin{enumerate}
+\item \emph{word-wise} rotations perform a circular shift on each word within a register;
+\item \emph{register-wise} rotations perform a circular shift on a whole register.
+\end{enumerate}
+The second type of rotation always shifts registers by a multiple of the word size $w$. This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a register-wise rotation by $w$ bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
+
+Since we want to build a linear trail, we are interested in linear combinations of bits within a register.
+\begin{definition}
+Recall that $w$ denotes the word size in bits, and $4w$ is the size of a register. A linear combination of the form:
+\[
+S^t_{i,j(0)} \oplus S^t_{i,j(1)} \oplus \dots \oplus S^t_{i,j(k)}
+\]
+is said to be \emph{symmetric} iff the set of bits $S^t_{i,j(0)}, \dots, S^t_{i,j(k)}$ is left invariant by a circular shift by $w$ bits; that is, iff:
+\[
+\{j(i) : i\leq k\} = \{j(i) + w \text{\rm{} mod } 4w : i\leq k\}.
+\]
+\end{definition}
+\emph{Example.} The following linear combination is symmetric for \cipher{MORUS640}, i.e. $w = 32$:
+\begin{equation}
+S^t_{0,0} \oplus S^t_{0,32} \oplus S^t_{0,64} \oplus S^t_{0,96}.
+\label{eq:symmetric}
+\end{equation}
+
+This definition naturally extends to a linear combination across multiple registers, and also across ciphertext blocks.
+The value of such a linear combination is unaffected by register-wise rotations, since those rotations always shift registers by a multiple of the word size.
+On the other hand, since word-wise rotations always shift all four words within a register by the same amount, word-wise rotations preserve the symmetry property. Moreover, the XOR of two symmetric linear combinations is also symmetric.%; and the same holds for the AND operation (if we extend the symmetric property to non-linear combinations in the natural way).
+
+This naturally leads to the idea of building a linear trail using only symmetric linear combinations, which is what we are going to do. As a result, the effect of register-wise rotations can be ignored. Moreover, since all linear combinations we consider are going to be symmetric, they can be described by truncating the linear combination to the first word of a register. Indeed, an equivalent way of saying a linear combination is symmetric, is that it involves the same bits in each word within a register. For example, in the case of (\ref{eq:symmetric}) above, the four bits involved are the first bit of each of the four words.
+
+\subsection{\cipher{MiniMORUS}}
+
+In fact, we can go further and consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see Figure~\ref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
+
+Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS}. We will then extend it to the full \cipher{MORUS} via the previous symmetry.
+
+\begin{figure}[h]
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
+    \printstate
+  \end{tikzpicture}%}}}
+  \caption{\cipher{MiniMORUS} state update function.}
+  \label{fig:minimorus}
+\end{figure}
