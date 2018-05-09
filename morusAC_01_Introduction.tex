@@ -26,18 +26,41 @@ The competition attracted 57 first-round submissions, 7 of which were recently s
 \todo[inline]{Related designs; Analysis of related designs; discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}}
 
 \subsubsection*{Our Contributions.}
-% Paragraph: We have 3 results, the main one is on full MORUS
+We analyze the security of \morus and present a keystream distinguisher based on
+linear approximations for full \morus[1280].
+In addition, we provide results for round-reduced \morus with reduced initialization or finalization.
 
 % Paragraph: Details on keystream bias
-Our main result is the existence of a linear trail linking ciphertext bits spanning five consecutive encryption steps. As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps. Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design. Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
-\todo{somewhere: linear cryptanalysis \cite{eurocryptMatsui93,eurocryptMatsuiY92}}
+Our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking ciphertext bits of five consecutive encryption blocks.
+%As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps.
+%Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design.
+%Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
+More precisely, we show that when encrypting a fixed plaintext block multiple times, a linear correlation exists between some output bits of the cipher.
+Moreover, the bias depends purely on the plaintext, and not on the secret key of the cipher.
+In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is known.
+For \morus[1280], the \morus family member with 256-bit security, the linear bias is $2^{-73}$
+\todo{double-check bias vs. correlation everywhere}
+and can be exploited using about $2^{152}$ encrypted blocks.
+\todo{double-check}
+We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key, and can be exploited as long as a given plaintext block is encrypted sufficiently often, regardless of whether each encryption uses a different key.
 
-% Paragraph: Details on Section 7
+To obtain this result, we propose a simplified abstraction of \morus, called \minimorus, which takes advantage of certain rotational symmetries in \morus.
+We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
+To confirm the validity of our analysis,
+we practically verified the bias of the linear approximation for \minimorus and of partial approximations for \morus.
+In addition, we symbolically evaluated the relevant equations.
+
+In addition to this attack on full \morus, we also analyze the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
+While this analysis does not threaten full \morus, it complements the main result to provide a better understanding of the \morus design approach.
+We present a forgery attack for round-reduced \morus[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 rounds. This nonce-respecting attack is based on a differential analysis of the padding rule.
+The second result targets a round-reduced initialization with 10 out of 16 steps, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
 
 \subsubsection*{Paper Outline.}
-This paper is organized as follows, we first provide a brief introduction of how Morus operates (Sect. \ref{sec/Preliminaries}).
-By showing existance of a certain class of rotational symmetries, we provide a reduction of Morus namely MiniMorus (Sect. \ref{sec/introminimorus}).
-We analysed this simplified scheme in section \ref{sec/minitrails}, building a ciphertext-only trail with a weight of 16.
-We then extend our result to the full scheme, showing a bias in the keystream over 5 rounds (Sec. \ref{sec/fulltrails}).
-In section \ref{sec/Discussion} we discuss about the implication of such weakness.
-In section \ref{sec/IniFin} we provide new attacks on reduced version of the initialization and the finalization.
+This paper is organized as follows.
+We first provide a brief description of \morus in \autoref{sec/Preliminaries}.
+In \autoref{sec/introminimorus}, we introduce \minimorus, an abstraction of \morus based on a certain class of rotational symmetries.
+We analyze this simplified scheme in \autoref{sec/minitrails} and provide a ciphertext-only linear approximation with a weight of 16.
+We then extend our result to the full scheme in \autoref{sec/fulltrails}, showing a bias in the keystream over 5 rounds,
+and discuss the implications of our observation for the security of \morus in \autoref{sec/Discussion}.
+In \autoref{sec/IniFin}, we present our results on the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
+Finally, we conclude in \autoref{TODO}.
