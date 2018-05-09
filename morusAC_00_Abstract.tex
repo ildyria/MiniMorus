@@ -1,19 +1,68 @@
 \begin{abstract}
-This paper presents linear biases in the output of an authenticated encryption scheme \cipher{MORUS} that is one of the seven finalists in CAESAR. The bias allows an attacker to distinguish it from an ideal cipher, thus breaks the designer's confidentiality claim.
+  \morus is a high-performance authenticated encryption algorithm
+  submitted to the CAESAR competition, and recently selected as a
+  finalist.  There are three version of \morus: \morus[640] with a
+  640-bit state and a 128-bit key, and \morus[1280] with a 1280-bit
+  state and a 128-bit or 256-bit key; for all versions the security
+  claim for confidentiality matches the key size.  In this paper, we
+  analyze the components of this algorithm (initialization, state
+  update and tag generation), and report several results.
+
+  Our main result is on the full state update of \morus: we found a
+  linear bias in the keystream that can be used to distinguish the
+  output from random, and to recover some plaintext bits in the
+  broadcast setting.  For \morus[1280], the bias is $2^{-76}$,
+  which can be identified after around $2^{152}$ encryptions, less than
+  would be expected for a 256-bit secure cipher.  On the other hand, for
+  \morus[640], the bias is $2^{-73}$, which does not threaten
+  the security of the cipher.
+
+% More precisely, we show that a linear correlation exists between some bits of the plaintext and ciphertext. Moreover the bias depends purely on the plaintext, and not on the secret key nor the nonce, hence restricting the single use of nonce or even rekeying does not prevent the attacks.
 %
-More precisely, we show that a linear correlation exists between some bits of the plaintext and ciphertext. Moreover the bias depends purely on the plaintext, and not on the secret key nor the nonce, hence restricting the single use of nonce or even rekeying does not prevent the attacks.
+% From the nature of the linear cryptanalysis, the attack works in the known plaintext attacks. Moreover, if a fixed plaintext is encrypted multiple times, the correlation can be used to recover a 1-bit information of the plaintext. The attack principally has larger impact because it can be used to recover more unknown bits of the plaintext, provided an initial segment of the plaintext is known. 
 %
-From the nature of the linear cryptanalysis, the attack works in the known plaintext attacks. Moreover, if a fixed plaintext is encrypted multiple times, the correlation can be used to recover a 1-bit information of the plaintext. The attack principally has larger impact because it can be used to recover more unknown bits of the plaintext, provided an initial segment of the plaintext is known. 
-%
-The bias for \cipher{MORUS1280}, claiming a security level of 256 bits, is $2^{-76}$, would thus be identified by around $2^{152}$ encryptions.
-%
-To identify the bias, the self-similarity of the \cipher{MORUS1280} operation is exploited. More precisely, \cipher{MORUS1280} operates on 256-bit registers that are further divided into four 64-bit words. Many operations of \cipher{MORUS1280} work in a symmetric-way. This motivates us to introduce word-oriented version of \cipher{MORUS} called \cipher{MiniMORUS}, which helps the analysis. The attack is implemented and verified on \cipher{MiniMORUS} having a bias of $2^{-16}$. 
+  To identify the bias, we exploit rotational symmetries in \morus
+  using linear masks that are invariants by word-rotations of the
+  state.  This motivates us to introduce word-oriented versions of
+  \morus called \minimorus, which help the
+  analysis. The attack has been implemented and verified on
+  \minimorus, having a bias of $2^{-16}$.
 
 %The bias for \cipher{MORUS1280} is slightly worse than the 4 copies of \cipher{MiniMORUS}, and the mechanism behind is explained.
 %
 %Towards the better understanding of \cipher{MORUS}, several other properties are investigated though these do not break any security claim by the designers. Those include the bias for \cipher{MORUS640} requiring $2^{146}$ encryption against 128-bit security, and analyses on initialization and finalization of the step-reduced version of \cipher{MORUS1280}.
 
 
-%In this note, we show the existence of linear biases in the output of the authenticated encryption scheme MORUS. More precisely, we show that when encrypting a fixed plaintext multiple times, a linear correlation exists between some bits at the output of the cipher. Moreover the bias depends purely on the plaintext, and not on the secret key of the cipher. In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is known. However, the biases are quite small: for the smaller MORUS640 variant, claiming a security level of 128 bits, the bias is $2^{-73}$, and would thus require around $2^{146}$ encryptions to be exploited directly; for MORUS1280, claiming a security level of 256 bits, the bias is $2^{-76}$, corresponding to a data requirement of $2^{152}$ encryptions. We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key, and can be exploited as long as a given plaintext is encrypted enough times, regardless of whether each encryption uses a different key.
+%In this note, we show the existence of linear biases in the output of
+%the authenticated encryption scheme MORUS. More precisely, we show
+%that when encrypting a fixed plaintext multiple times, a linear
+%correlation exists between some bits at the output of the
+%cipher. Moreover the bias depends purely on the plaintext, and not on
+%the secret key of the cipher. In principle, this property could be
+%used to recover unknown bits of a plaintext encrypted a large number
+%of times, provided an initial segment of the plaintext is
+%known. However, the biases are quite small: for the smaller MORUS640
+%variant, claiming a security level of 128 bits, the bias is
+%$2^{-73}$, and would thus require around $2^{146}$ encryptions to be
+%exploited directly; for MORUS1280, claiming a security level of 256
+%bits, the bias is $2^{-76}$, corresponding to a data requirement of
+%$2^{152}$ encryptions. We note that rekeying does not prevent the
+%attack: the biases are independent of the secret encryption key, and
+%can be exploited as long as a given plaintext is encrypted enough
+%times, regardless of whether each encryption uses a different key.
+
+  We also study reduced versions of the initialization and
+  finalization of \morus to evaluate the security margin of these
+  components.  We show a forgery attack when the finalization is
+  reduced from 10 rounds to 3, and a key-recovery attack in the
+  nonce-misue setting when the initialization is reduced from 16 to 10
+  steps.  These additional results do not threaten the full \morus but
+  studying all aspects of the design is useful to understand its
+  strengths and weaknesses.
+
 \keywords{MORUS, CAESAR, Authenticated Encryption, Nonce Respect, Linear Cryptanalysis, Confidentiality.}
 \end{abstract}
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:
