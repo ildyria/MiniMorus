@@ -1,0 +1,9 @@
+Please insert your name, affiliation and email for the submission.
+
+Tomer Ashur, KULeuven, Belgium: tomer.ashur@esat.kuleuven.be
+Maria Eichlseder. TUGraz, Austria: maria.eichlseder@iaik.tugraz.at
+Gaëtan Leurent, Inria, France: gaetan.leurent@inria.fr
+Brice Minaud, RHUL, UK: brice.minaud@gmail.com
+Yann Rotella, Inria, France: yann.rotella@inria.fr
+Yu Sasaki, NTT, Japan: sasaki.yu@lab.ntt.co.jp
+Benoît Viguier, Radboud University, Netherlands: b.viguier@science.ru.nl
