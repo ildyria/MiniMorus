@@ -12,4 +12,8 @@ COI:
 - Gaëtan Leurent 
 - Stefan Mangard
 - Brice Minaud
+- Lejla Batina
+- Bart Mennink
+- Gilles Van Assche
 - ...
+
