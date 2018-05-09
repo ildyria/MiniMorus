@@ -5,7 +5,7 @@ Authenticated Encryption (AE) schemes combine the functionality of symmetric enc
 Based on a shared secret key $K$, they encrypt a plaintext message $M$ to a ciphertext $C$ and authentication tag $T$ in order to protect both the confidentiality and the authenticity of $M$.
 Most modern authenticated encryption algorithms are nonce-based schemes with associated data (AEAD),
 where $(C, T)$ additionally depends on a unique nonce $N$ (or initialization value IV) and optional associated metadata $A$.
-One of the most prominent standardized AEAD designs is \cipher{AES-GCM} \cite{TODOMV05,TODONIST},
+One of the most prominent standardized AEAD designs is \cipher{AES-GCM} \cite{indocryptMcGrewV04,nistDworkin07},
 which is widely deployed in protocols such as \cipher{TLS v1.3}.
 
 To address the growing need for modern authenticated encryption designs for different application scenarios, 
@@ -41,7 +41,7 @@ Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
 independently proposed state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
 
-\todo[inline]{Related designs; Analysis of related designs; discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}}
+\todo[inline]{Related designs. Brice, do you want to add a sentence to discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}?}
 
 \subsubsection*{Our Contributions.}
 We analyze the security of \morus and present a keystream distinguisher based on

@@ -88,8 +88,10 @@
 \newcommand{\cipher}[1]{\textsf{#1}}
 
 \usepackage{xspace}
-\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
-\newcommand{\minimorus}[1][]{\cipher{MiniMORUS#1}\xspace}
+%\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
+\newcommand{\morus}[1][]{\ifx&#1&\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
+%\newcommand{\minimorus}[1][]{\cipher{MiniMORUS#1}\xspace}
+\newcommand{\minimorus}[1][]{\ifx&#1&\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
 
 \newif\ifsubstates\substatesfalse
 
