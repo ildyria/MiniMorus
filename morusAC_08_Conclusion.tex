@@ -1,0 +1,27 @@
+\section{Conclusion}
+\label{sec/Conclusion}
+
+This work provides a comprehensive analysis of the components of
+\morus.  In particular we show that the state update has important
+weaknesses with a linear bias of $2^{-76}$ between ciphertext bits and
+plaintext bits in \morus[1280].  This enables a plaintext recovery
+attack in the broadcast setting, using about $2^{152}$ blocs of data.
+While the amount of data required is impractical, this seems to
+violate the security claims of \morus[1280] because the attack works
+even if the key is refreshed regularly.  Moreover, the broadcast
+setting is practically relevant, as was shown with attacks aginst RC4
+as used in TLS~\cite{DBLP:conf/uss/AlFardanBPPS13}.
+
+We have shared an earlier version of this paper with the authors of
+\morus and they agree with the technical details of the keystream
+bias.  However they consider that it is not a significant weakness in
+practice because it requires more than $2^{64}$ ciphertexts bits.  In
+the context of the CAESAR competition, we believe that certificational
+attacks such as this one should be taken into account, in order to
+select a portfolio of candidates that reflect the state of the art in
+terms of cryptographic design.
+
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

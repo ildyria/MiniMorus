@@ -6,7 +6,7 @@ Based on a shared secret key $K$, they encrypt a plaintext message $M$ to a ciph
 Most modern authenticated encryption algorithms are nonce-based schemes with associated data (AEAD),
 where $(C, T)$ additionally depends on a unique nonce $N$ (or initialization value IV) and optional associated metadata $A$.
 One of the most prominent standardized AEAD designs is \cipher{AES-GCM} \cite{indocryptMcGrewV04,nistDworkin07},
-which is widely deployed in protocols such as \cipher{TLS v1.3}.
+which is widely deployed in protocols such as \cipher{TLS} (since v1.2).
 
 To address the growing need for modern authenticated encryption designs for different application scenarios, 
 the CAESAR competition was launched in 2013 \cite{CAESAR}.
@@ -81,4 +81,4 @@ We analyze this simplified scheme in \autoref{sec/minitrails} and provide a ciph
 We then extend our result to the full scheme in \autoref{sec/fulltrails}, showing a bias in the keystream over 5 rounds,
 and discuss the implications of our observation for the security of \morus in \autoref{sec/Discussion}.
 In \autoref{sec/IniFin}, we present our results on the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
-Finally, we conclude in \autoref{TODO}.
+Finally, we conclude in \autoref{sec/Conclusion}.
