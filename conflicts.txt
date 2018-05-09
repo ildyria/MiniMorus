@@ -1,0 +1,19 @@
+Please insert your ASIACRYPT committee conflicts of interest.
+Reasons:
+- advisor/supervisor relationship;
+- shared affiliation in the last 2 years;
+- 2 or more joint papers in the last 3 years;
+- family.
+
+Committee list on https://asiacrypt.iacr.org/2018/callforpapers.html
+
+COI:
+- Virginie Lallemend
+- Gaëtan Leurent 
+- Stefan Mangard
+- Brice Minaud
+- Lejla Batina
+- Bart Mennink
+- Gilles Van Assche
+- ...
+
