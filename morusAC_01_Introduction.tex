@@ -10,5 +10,9 @@ The CAESAR\cite{CAESAR} Competition aims to provide with a portfolio of authenti
 Our main result is the existence of a linear trail linking ciphertext bits spanning five consecutive encryption steps. As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps. Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design. Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
 
 \subsubsection*{Paper Outline.}
-This paper is organized as follows, we first provide a brief introduction of how Morus operates\ref{sec/Preliminaries}. By showing existance of a certain class of rotational symmetries, we provide with a reduction of Morus namely MiniMorus\ref{sec/introminimorus}. We analysed this simplified scheme in \ref{sec/minitrails}, building a ciphertext-only trail with a weight of 16.
-We then extend our result to the full scheme, showing a bias in the keystream over 5 rounds. In \ref{sec/IniFin} we provide new attacks on reduced version of the initialization and the finalization.
+This paper is organized as follows, we first provide a brief introduction of how Morus operates (Sect. \ref{sec/Preliminaries}).
+By showing existance of a certain class of rotational symmetries, we provide a reduction of Morus namely MiniMorus (Sect. \ref{sec/introminimorus}).
+We analysed this simplified scheme in section \ref{sec/minitrails}, building a ciphertext-only trail with a weight of 16.
+We then extend our result to the full scheme, showing a bias in the keystream over 5 rounds (Sec. \ref{sec/fulltrails}).
+In section \ref{sec/Discussion} we discuss about the implication of such weakness.
+In section \ref{sec/IniFin} we provide new attacks on reduced version of the initialization and the finalization.
