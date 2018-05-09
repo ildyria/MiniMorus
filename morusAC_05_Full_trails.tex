@@ -1,8 +1,10 @@
 \section{Trail for Full \cipher{MORUS}}
+\label{sec/fulltrails}
+
+In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}.
 
 \subsection{Symmetrizing the Trail}
-In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}.
-In order to build a trail on the full \cipher{MORUS}, we proceed exactly like we did for \cipher{MiniMORUS}, following the exact same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \cipher{MiniMORUS} to the four-word registers of full \cipher{MORUS}, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec:introminimorus}.
+In order to build a trail on the full \cipher{MORUS}, we proceed exactly like we did for \cipher{MiniMORUS}, following the exact same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \cipher{MiniMORUS} to the four-word registers of full \cipher{MORUS}, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec/introminimorus}.
 That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
 \[
 S^3_{2,0} \oplus S^3_{2,32} \oplus S^3_{2,64} \oplus S^3_{2,96}.
@@ -28,7 +30,7 @@ We refer the reader to \Cref{sec:traileq} for the corresponding linear combinati
 
 \subsection{Bias of the Full Trail}
 
-The symmetrized trail on full \cipher{MORUS} may be intuitively understood as consisting of four copies of the original trail on \cipher{MiniMORUS}. Indeed, the only difference between full \cipher{MORUS} (for either version of \cipher{MORUS}) and four independent copies of \cipher{MiniMORUS} comes from register-wise rotations, which permute words within a register. But as observed in \Cref{sec:introminimorus}, register-wise rotations leave symmetric linear combinations invariant; and so, insofar as we only ever use symmetric linear combinations on all registers along the trail, register-wise rotations have no effect.
+The symmetrized trail on full \cipher{MORUS} may be intuitively understood as consisting of four copies of the original trail on \cipher{MiniMORUS}. Indeed, the only difference between full \cipher{MORUS} (for either version of \cipher{MORUS}) and four independent copies of \cipher{MiniMORUS} comes from register-wise rotations, which permute words within a register. But as observed in \Cref{sec/introminimorus}, register-wise rotations leave symmetric linear combinations invariant; and so, insofar as we only ever use symmetric linear combinations on all registers along the trail, register-wise rotations have no effect.
 
 Following the previous intuition, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
 

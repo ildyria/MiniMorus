@@ -1,10 +1,10 @@
 \section{Preliminaries}
-\label{Sec/Preliminaries}
+\label{sec/Preliminaries}
+
+MORUS \cite{MORUS} is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits. Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively. In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
 
 \subsection{Specification of MORUS}
 \label{subsec/Spec}
-MORUS \cite{MORUS} is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits. Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively. In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
-
 The state of MORUS is divided into five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then, the state is represented as $S_0\|S_1\|S_2\|S_3\|S_4$. The state is first initialized by a key and nonce, and then updated by associated data blocks and message blocks step by step. Hence, we use a superscript to denote the step number of the state as $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
 
 The computation of MORUS consists of four parts; initialization, associated data process, encryption, and finalization. All parts share the core design called the {\tt StepUpdate} function. %Hereafter we explain {\tt StepUpdate}.
