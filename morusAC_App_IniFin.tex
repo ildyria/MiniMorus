@@ -3,33 +3,9 @@
 
 In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each of these connected component. By the piling-up lemma, if we assume that the state bits are uniformly random and independent, then the weight of the full equation is equal to the sum of the weights of the connected components.
 
-\subsection{Trail Equation for \cipher{MiniMORUS640}}
+\subsection{Trail Equation for \cipher{MiniMORUS1280}}
 
 This trail equation was already given in \Cref{sec:minitraileq}.
-
-\begin{flalign*}
-&&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
-&&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
-&&=\; &S^0_{1,27} \oplus S^0_{3,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,26} \oplus S^1_{3,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,8} \oplus S^1_{3,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8}&&\text{weight 1}\\
-&&\oplus\; &S^2_{3,1} \oplus S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,7} \oplus S^2_{3,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,15} \oplus S^2_{3,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,27} \oplus S^2_{3,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,2} \oplus S^1_{3,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2}&&\text{weight 1}\\
-&&\oplus\; &S^3_{3,14} \oplus S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14}&&\text{weight 1}\\
-&&\oplus\; &S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
-&&\oplus\; &S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
-&&\oplus\; &S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
-&&\oplus\; &S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
-&&\oplus\; &S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
-&&\oplus\; &S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
-&&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
-\end{flalign*}
-The total weight of the trail is 16.
-
-\subsection{Trail Equation for \cipher{MiniMORUS1280}}
 
 \begin{flalign*}
 &&&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}&&\\
@@ -53,91 +29,29 @@ The total weight of the trail is 16.
 \end{flalign*}
 The total weight of the trail is 16.
 
-\subsection{Trail Equation for full \cipher{MORUS640}}
+\subsection{Trail Equation for \cipher{MiniMORUS640}}
 
 \begin{flalign*}
-&&&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}&&\\
-&&\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}&&\\
-&&\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}&&\\
-&&\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}&&\\
-&&\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}&&\\
-&&\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}&&\\
-%
-&&=\; &S^1_{2,0} \cdot S^1_{3,0} \oplus S^1_{2,0} \cdot S^1_{3,96} \oplus S^1_{2,32} \cdot S^1_{3,0} \oplus S^1_{2,96} \cdot S^1_{3,96}&&\\
-&&&\quad \oplus S^1_{2,96} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,32} \oplus S^1_{2,32} \cdot S^1_{3,32}&&\text{weight 3}\\
-%
-&&\oplus\; & S^2_{2,13} \cdot S^2_{3,13} \oplus S^2_{2,13} \cdot S^2_{3,109} \oplus S^2_{2,45} \cdot S^2_{3,13} \oplus S^2_{2,109} \cdot S^2_{3,109}&&\\
-&&&\quad \oplus S^2_{2,45} \cdot S^2_{3,45} \oplus S^2_{2,109} \cdot S^2_{3,77} \oplus S^2_{2,77} \cdot S^2_{3,45} \oplus S^2_{2,77} \cdot S^2_{3,77}&&\text{weight 3}\\
-%
-&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20} \oplus S^3_{2,20} \cdot S^3_{3,116} \oplus S^3_{2,52} \cdot S^3_{3,20} \oplus S^3_{2,116} \cdot S^3_{3,116}&&\\
-&&&\quad \oplus S^3_{2,52} \cdot S^3_{3,52} \oplus S^3_{2,116} \cdot S^3_{3,84} \oplus S^3_{2,84} \cdot S^3_{3,52} \oplus S^3_{2,84} \cdot S^3_{3,84}&&\text{weight 3}\\
-%
-&&\oplus\; & S^0_{1,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27} \oplus S^0_{3,27}&&\text{weight 1}\\
-&&\oplus\; & S^0_{1,59} \oplus S^0_{1,59} \cdot S^0_{2,59} \oplus S^0_{2,59} \cdot S^0_{3,59} \oplus S^0_{3,59}&&\text{weight 1}\\
-&&\oplus\; & S^0_{1,91} \oplus S^0_{1,91} \cdot S^0_{2,91} \oplus S^0_{2,91} \cdot S^0_{3,91} \oplus S^0_{3,91}&&\text{weight 1}\\
-&&\oplus\; & S^0_{1,123} \cdot S^0_{2,123} \oplus S^0_{2,123} \cdot S^0_{3,123} \oplus S^0_{1,123} \oplus S^0_{3,123}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2} \oplus S^1_{3,2}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8} \oplus S^1_{3,8}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26} \oplus S^1_{3,26}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,34} \oplus S^1_{1,34} \cdot S^1_{2,34} \oplus S^1_{2,34} \cdot S^1_{3,34} \oplus S^1_{3,34}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,40} \oplus S^1_{1,40} \cdot S^1_{2,40} \oplus S^1_{2,40} \cdot S^1_{3,40} \oplus S^1_{3,40}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,58} \oplus S^1_{1,58} \cdot S^1_{2,58} \oplus S^1_{2,58} \cdot S^1_{3,58} \oplus S^1_{3,58}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,66} \oplus S^1_{1,66} \cdot S^1_{2,66} \oplus S^1_{2,66} \cdot S^1_{3,66} \oplus S^1_{3,66}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,72} \oplus S^1_{1,72} \cdot S^1_{2,72} \oplus S^1_{2,72} \cdot S^1_{3,72} \oplus S^1_{3,72}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,90} \oplus S^1_{1,90} \cdot S^1_{2,90} \oplus S^1_{2,90} \cdot S^1_{3,90} \oplus S^1_{3,90}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,98} \oplus S^1_{1,98} \cdot S^1_{2,98} \oplus S^1_{2,98} \cdot S^1_{3,98} \oplus S^1_{3,98}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,104} \oplus S^1_{1,104} \cdot S^1_{2,104} \oplus S^1_{2,104} \cdot S^1_{3,104} \oplus S^1_{3,104}&&\text{weight 1}\\
-&&\oplus\; & S^1_{1,122} \oplus S^1_{3,122} \oplus S^1_{1,122} \cdot S^1_{2,122} \oplus S^1_{2,122} \cdot S^1_{3,122}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1} \oplus S^2_{3,1}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,103} \oplus S^2_{3,103}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15} \oplus S^2_{3,15}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27} \oplus S^2_{3,27}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,33} \oplus S^2_{1,33} \cdot S^2_{2,33} \oplus S^2_{2,33} \cdot S^2_{3,33} \oplus S^2_{3,33}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,39} \oplus S^2_{1,39} \cdot S^2_{2,39} \oplus S^2_{2,39} \cdot S^2_{3,7} \oplus S^2_{3,7}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,47} \oplus S^2_{1,47} \cdot S^2_{2,47} \oplus S^2_{2,47} \cdot S^2_{3,47} \oplus S^2_{3,47}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,59} \oplus S^2_{1,59} \cdot S^2_{2,59} \oplus S^2_{2,59} \cdot S^2_{3,59} \oplus S^2_{3,59}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,65} \oplus S^2_{1,65} \cdot S^2_{2,65} \oplus S^2_{2,65} \cdot S^2_{3,65} \oplus S^2_{3,65}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,71} \oplus S^2_{1,71} \cdot S^2_{2,71} \oplus S^2_{2,71} \cdot S^2_{3,39} \oplus S^2_{3,39}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,79} \oplus S^2_{1,79} \cdot S^2_{2,79} \oplus S^2_{2,79} \cdot S^2_{3,79} \oplus S^2_{3,79}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,91} \oplus S^2_{1,91} \cdot S^2_{2,91} \oplus S^2_{2,91} \cdot S^2_{3,91} \oplus S^2_{3,91}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,97} \oplus S^2_{1,97} \cdot S^2_{2,97} \oplus S^2_{2,97} \cdot S^2_{3,97} \oplus S^2_{3,97}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,103} \oplus S^2_{1,103} \cdot S^2_{2,103} \oplus S^2_{2,103} \cdot S^2_{3,71} \oplus S^2_{3,71}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,111} \oplus S^2_{1,111} \cdot S^2_{2,111} \oplus S^2_{2,111} \cdot S^2_{3,111} \oplus S^2_{3,111}&&\text{weight 1}\\
-&&\oplus\; & S^2_{1,123} \oplus S^2_{3,123} \oplus S^2_{2,123} \cdot S^2_{3,123} \oplus S^2_{1,123} \cdot S^2_{2,123}&&\text{weight 1}\\
-&&\oplus\; & S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14} \oplus S^3_{3,14}&&\text{weight 1}\\
-&&\oplus\; & S^3_{1,46} \oplus S^3_{1,46} \cdot S^3_{2,46} \oplus S^3_{2,46} \cdot S^3_{3,46} \oplus S^3_{3,46}&&\text{weight 1}\\
-&&\oplus\; & S^3_{1,78} \oplus S^3_{1,78} \cdot S^3_{2,78} \oplus S^3_{2,78} \cdot S^3_{3,78} \oplus S^3_{3,78}&&\text{weight 1}\\
-&&\oplus\; & S^3_{1,110} \oplus S^3_{3,110} \oplus S^3_{1,110} \cdot S^3_{2,110} \oplus S^3_{2,110} \cdot S^3_{3,110}&&\text{weight 1}\\
-&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
-&&\oplus\; & S^2_{0,32} \cdot S^2_{1,32}&&\text{weight 1}\\
-&&\oplus\; & S^2_{0,64} \cdot S^2_{1,64}&&\text{weight 1}\\
-&&\oplus\; & S^2_{0,96} \cdot S^2_{1,96}&&\text{weight 1}\\
-&&\oplus\; & S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
-&&\oplus\; & S^2_{2,63} \cdot S^2_{3,63}&&\text{weight 1}\\
-&&\oplus\; & S^2_{2,95} \cdot S^2_{3,95}&&\text{weight 1}\\
-&&\oplus\; & S^2_{2,127} \cdot S^2_{3,127}&&\text{weight 1}\\
-&&\oplus\; & S^2_{3,32} \cdot S^2_{4,0}&&\text{weight 1}\\
-&&\oplus\; & S^2_{3,64} \cdot S^2_{4,32}&&\text{weight 1}\\
-&&\oplus\; & S^2_{3,96} \cdot S^2_{4,64}&&\text{weight 1}\\
-&&\oplus\; & S^2_{3,0} \cdot S^2_{4,96}&&\text{weight 1}\\
-&&\oplus\; & S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
-&&\oplus\; & S^3_{0,39} \cdot S^3_{1,39}&&\text{weight 1}\\
-&&\oplus\; & S^3_{0,71} \cdot S^3_{1,71}&&\text{weight 1}\\
-&&\oplus\; & S^3_{0,103} \cdot S^3_{1,103}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,38} \cdot S^3_{3,38}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,44} \cdot S^3_{3,44}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,70} \cdot S^3_{3,70}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,76} \cdot S^3_{3,76}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,102} \cdot S^3_{3,102}&&\text{weight 1}\\
-&&\oplus\; & S^3_{2,108} \cdot S^3_{3,108}&&\text{weight 1}\\
-&&\oplus\; & S^4_{2,19} \cdot S^4_{3,19}&&\text{weight 1}\\
-&&\oplus\; & S^4_{2,51} \cdot S^4_{3,51}&&\text{weight 1}\\
-&&\oplus\; & S^4_{2,83} \cdot S^4_{3,83}&&\text{weight 1}\\
-&&\oplus\; & S^4_{2,115} \cdot S^4_{3,115}&&\text{weight 1}
+&&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
+&&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
+&&=\; &S^0_{1,27} \oplus S^0_{3,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,26} \oplus S^1_{3,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,8} \oplus S^1_{3,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,1} \oplus S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,7} \oplus S^2_{3,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,15} \oplus S^2_{3,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15}&&\text{weight 1}\\
+&&\oplus\; &S^2_{1,27} \oplus S^2_{3,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27}&&\text{weight 1}\\
+&&\oplus\; &S^1_{1,2} \oplus S^1_{3,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2}&&\text{weight 1}\\
+&&\oplus\; &S^3_{3,14} \oplus S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14}&&\text{weight 1}\\
+&&\oplus\; &S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; &S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
+&&\oplus\; &S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; &S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
+&&\oplus\; &S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
+&&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
 \end{flalign*}
-The total weight of the trail is 73.
+The total weight of the trail is 16.
 
 \subsection{Trail Equation for full \cipher{MORUS1280}}
 
@@ -228,3 +142,90 @@ The total weight of the trail is 73.
 &&\oplus\; & S^4_{2,216} \cdot S^4_{3,216}&&\text{weight 1}
 \end{flalign*}
 The total weight of the trail is 76.
+
+\subsection{Trail Equation for full \cipher{MORUS640}}
+
+\begin{flalign*}
+&&&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}&&\\
+&&\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}&&\\
+&&\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}&&\\
+&&\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}&&\\
+&&\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}&&\\
+&&\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}&&\\
+%
+&&=\; &S^1_{2,0} \cdot S^1_{3,0} \oplus S^1_{2,0} \cdot S^1_{3,96} \oplus S^1_{2,32} \cdot S^1_{3,0} \oplus S^1_{2,96} \cdot S^1_{3,96}&&\\
+&&&\quad \oplus S^1_{2,96} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,64} \oplus S^1_{2,64} \cdot S^1_{3,32} \oplus S^1_{2,32} \cdot S^1_{3,32}&&\text{weight 3}\\
+%
+&&\oplus\; & S^2_{2,13} \cdot S^2_{3,13} \oplus S^2_{2,13} \cdot S^2_{3,109} \oplus S^2_{2,45} \cdot S^2_{3,13} \oplus S^2_{2,109} \cdot S^2_{3,109}&&\\
+&&&\quad \oplus S^2_{2,45} \cdot S^2_{3,45} \oplus S^2_{2,109} \cdot S^2_{3,77} \oplus S^2_{2,77} \cdot S^2_{3,45} \oplus S^2_{2,77} \cdot S^2_{3,77}&&\text{weight 3}\\
+%
+&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20} \oplus S^3_{2,20} \cdot S^3_{3,116} \oplus S^3_{2,52} \cdot S^3_{3,20} \oplus S^3_{2,116} \cdot S^3_{3,116}&&\\
+&&&\quad \oplus S^3_{2,52} \cdot S^3_{3,52} \oplus S^3_{2,116} \cdot S^3_{3,84} \oplus S^3_{2,84} \cdot S^3_{3,52} \oplus S^3_{2,84} \cdot S^3_{3,84}&&\text{weight 3}\\
+%
+&&\oplus\; & S^0_{1,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27} \oplus S^0_{3,27}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,59} \oplus S^0_{1,59} \cdot S^0_{2,59} \oplus S^0_{2,59} \cdot S^0_{3,59} \oplus S^0_{3,59}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,91} \oplus S^0_{1,91} \cdot S^0_{2,91} \oplus S^0_{2,91} \cdot S^0_{3,91} \oplus S^0_{3,91}&&\text{weight 1}\\
+&&\oplus\; & S^0_{1,123} \cdot S^0_{2,123} \oplus S^0_{2,123} \cdot S^0_{3,123} \oplus S^0_{1,123} \oplus S^0_{3,123}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2} \oplus S^1_{3,2}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8} \oplus S^1_{3,8}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26} \oplus S^1_{3,26}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,34} \oplus S^1_{1,34} \cdot S^1_{2,34} \oplus S^1_{2,34} \cdot S^1_{3,34} \oplus S^1_{3,34}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,40} \oplus S^1_{1,40} \cdot S^1_{2,40} \oplus S^1_{2,40} \cdot S^1_{3,40} \oplus S^1_{3,40}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,58} \oplus S^1_{1,58} \cdot S^1_{2,58} \oplus S^1_{2,58} \cdot S^1_{3,58} \oplus S^1_{3,58}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,66} \oplus S^1_{1,66} \cdot S^1_{2,66} \oplus S^1_{2,66} \cdot S^1_{3,66} \oplus S^1_{3,66}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,72} \oplus S^1_{1,72} \cdot S^1_{2,72} \oplus S^1_{2,72} \cdot S^1_{3,72} \oplus S^1_{3,72}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,90} \oplus S^1_{1,90} \cdot S^1_{2,90} \oplus S^1_{2,90} \cdot S^1_{3,90} \oplus S^1_{3,90}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,98} \oplus S^1_{1,98} \cdot S^1_{2,98} \oplus S^1_{2,98} \cdot S^1_{3,98} \oplus S^1_{3,98}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,104} \oplus S^1_{1,104} \cdot S^1_{2,104} \oplus S^1_{2,104} \cdot S^1_{3,104} \oplus S^1_{3,104}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,122} \oplus S^1_{3,122} \oplus S^1_{1,122} \cdot S^1_{2,122} \oplus S^1_{2,122} \cdot S^1_{3,122}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1} \oplus S^2_{3,1}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,103} \oplus S^2_{3,103}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15} \oplus S^2_{3,15}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27} \oplus S^2_{3,27}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,33} \oplus S^2_{1,33} \cdot S^2_{2,33} \oplus S^2_{2,33} \cdot S^2_{3,33} \oplus S^2_{3,33}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,39} \oplus S^2_{1,39} \cdot S^2_{2,39} \oplus S^2_{2,39} \cdot S^2_{3,7} \oplus S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,47} \oplus S^2_{1,47} \cdot S^2_{2,47} \oplus S^2_{2,47} \cdot S^2_{3,47} \oplus S^2_{3,47}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,59} \oplus S^2_{1,59} \cdot S^2_{2,59} \oplus S^2_{2,59} \cdot S^2_{3,59} \oplus S^2_{3,59}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,65} \oplus S^2_{1,65} \cdot S^2_{2,65} \oplus S^2_{2,65} \cdot S^2_{3,65} \oplus S^2_{3,65}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,71} \oplus S^2_{1,71} \cdot S^2_{2,71} \oplus S^2_{2,71} \cdot S^2_{3,39} \oplus S^2_{3,39}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,79} \oplus S^2_{1,79} \cdot S^2_{2,79} \oplus S^2_{2,79} \cdot S^2_{3,79} \oplus S^2_{3,79}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,91} \oplus S^2_{1,91} \cdot S^2_{2,91} \oplus S^2_{2,91} \cdot S^2_{3,91} \oplus S^2_{3,91}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,97} \oplus S^2_{1,97} \cdot S^2_{2,97} \oplus S^2_{2,97} \cdot S^2_{3,97} \oplus S^2_{3,97}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,103} \oplus S^2_{1,103} \cdot S^2_{2,103} \oplus S^2_{2,103} \cdot S^2_{3,71} \oplus S^2_{3,71}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,111} \oplus S^2_{1,111} \cdot S^2_{2,111} \oplus S^2_{2,111} \cdot S^2_{3,111} \oplus S^2_{3,111}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,123} \oplus S^2_{3,123} \oplus S^2_{2,123} \cdot S^2_{3,123} \oplus S^2_{1,123} \cdot S^2_{2,123}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14} \oplus S^3_{3,14}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,46} \oplus S^3_{1,46} \cdot S^3_{2,46} \oplus S^3_{2,46} \cdot S^3_{3,46} \oplus S^3_{3,46}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,78} \oplus S^3_{1,78} \cdot S^3_{2,78} \oplus S^3_{2,78} \cdot S^3_{3,78} \oplus S^3_{3,78}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,110} \oplus S^3_{3,110} \oplus S^3_{1,110} \cdot S^3_{2,110} \oplus S^3_{2,110} \cdot S^3_{3,110}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,32} \cdot S^2_{1,32}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,64} \cdot S^2_{1,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,96} \cdot S^2_{1,96}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,63} \cdot S^2_{3,63}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,95} \cdot S^2_{3,95}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,127} \cdot S^2_{3,127}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,32} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,64} \cdot S^2_{4,32}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,96} \cdot S^2_{4,64}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,0} \cdot S^2_{4,96}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,39} \cdot S^3_{1,39}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,71} \cdot S^3_{1,71}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,103} \cdot S^3_{1,103}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,38} \cdot S^3_{3,38}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,44} \cdot S^3_{3,44}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,70} \cdot S^3_{3,70}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,76} \cdot S^3_{3,76}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,102} \cdot S^3_{3,102}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,108} \cdot S^3_{3,108}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,19} \cdot S^4_{3,19}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,51} \cdot S^4_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,83} \cdot S^4_{3,83}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,115} \cdot S^4_{3,115}&&\text{weight 1}
+\end{flalign*}
+The total weight of the trail is 73.
+

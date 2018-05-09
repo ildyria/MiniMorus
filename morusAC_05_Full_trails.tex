@@ -1,38 +1,39 @@
 \section{Trail for Full \cipher{MORUS}}
 \label{sec/fulltrails}
 
-In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. We now turn to the full ciphers \cipher{MORUS640} and \cipher{MORUS1280}.
+In the previous section, we have exhibited a linear trail on the reduced ciphers \cipher{MiniMORUS1280} and \cipher{MiniMORUS640}. We now turn to the full ciphers \cipher{MORUS1280} and \cipher{MORUS640}.
 
 \subsection{Symmetrizing the Trail}
 In order to build a trail on the full \cipher{MORUS}, we proceed exactly like we did for \cipher{MiniMORUS}, following the exact same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \cipher{MiniMORUS} to the four-word registers of full \cipher{MORUS}, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec/introminimorus}.
-That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=32$ (for \cipher{MORUS640}), the term $S^3_{2,0}$ is symmetrized into:
+That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=64$ (for \cipher{MORUS1280}), the term $S^3_{2,0}$ is symmetrized into:
 \[
-S^3_{2,0} \oplus S^3_{2,32} \oplus S^3_{2,64} \oplus S^3_{2,96}.
+S^3_{2,0} \oplus S^3_{2,64} \oplus S^3_{2,128} \oplus S^3_{2,192}.
 \]
 
 Thus, translating the trail from one of the \cipher{MiniMORUS} ciphers to the corresponding full \cipher{MORUS} cipher amounts to making every linear combination symmetric---indeed, that was the point of introducing \cipher{MiniMORUS} in the first place.
 Concretely, in order to build the full trail equation for \cipher{MORUS}, we write symmetric versions of equations $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ from \Cref{sec:minitraileq}, and then combine them in exactly the same way as before.
-In this way, the biased linear combination on \cipher{MiniMORUS640} given in \Cref{sec:minitraileq}, namely:
+In this way, the biased linear combination on \cipher{MiniMORUS1280} given in \Cref{sec:minitraileq}, namely:
 \begin{align*}
-&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}\\
-\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}
+&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}\\
+\oplus\; &C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24}
 \end{align*}
-ultimately yields the following biased symmetrized linear combination on the full \cipher{MORUS640}:
+ultimately yields the following biased symmetrized linear combination on the full \cipher{MORUS1280}:
 \begin{align*}
-&C^0_{27} \oplus C^0_{59} \oplus C^0_{91} \oplus C^0_{123} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^1_{32} \oplus C^1_{34}\\
-\oplus\; & C^1_{40} \oplus C^1_{58} \oplus C^1_{64} \oplus C^1_{66} \oplus C^1_{72} \oplus C^1_{90} \oplus C^1_{96} \oplus C^1_{98} \oplus C^1_{104} \oplus C^1_{122}\\
-\oplus\; & C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus C^2_{27} \oplus C^2_{31} \oplus C^2_{33} \oplus C^2_{45} \oplus C^2_{47} \oplus C^2_{59} \oplus C^2_{63}\\
-\oplus\; & C^2_{65} \oplus C^2_{77} \oplus C^2_{79} \oplus C^2_{91} \oplus C^2_{95} \oplus C^2_{97} \oplus C^2_{109} \oplus C^2_{111} \oplus C^2_{123} \oplus C^2_{127}\\
-\oplus\; & C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^3_{38} \oplus C^3_{44} \oplus C^3_{46} \oplus C^3_{52} \oplus C^3_{70} \oplus C^3_{76}\\
-\oplus\; & C^3_{78} \oplus C^3_{84} \oplus C^3_{102} \oplus C^3_{108} \oplus C^3_{110} \oplus C^3_{116} \oplus C^4_{19} \oplus C^4_{51} \oplus C^4_{83} \oplus C^4_{115}.
+&C^0_{51} \oplus C^0_{115} \oplus C^0_{179} \oplus C^0_{243} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^1_{64} \oplus C^1_{89}\\
+\oplus\; & C^1_{97} \oplus C^1_{119} \oplus C^1_{128} \oplus C^1_{153} \oplus C^1_{161} \oplus C^1_{183} \oplus C^1_{192} \oplus C^1_{217} \oplus C^1_{225} \oplus C^1_{247}\\
+\oplus\; & C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37} \oplus C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^2_{68} \oplus C^2_{71} \oplus C^2_{93}\\
+\oplus\; & C^2_{101} \oplus C^2_{102} \oplus C^2_{110} \oplus C^2_{115} \oplus C^2_{132} \oplus C^2_{135} \oplus C^2_{157} \oplus C^2_{165} \oplus C^2_{166} \oplus C^2_{174}\\
+\oplus\; & C^2_{179} \oplus C^2_{196} \oplus C^2_{199} \oplus C^2_{221} \oplus C^2_{229} \oplus C^2_{230} \oplus C^2_{238} \oplus C^2_{243} \oplus C^3_{11} \oplus C^3_{20}\\
+\oplus\; & C^3_{42} \oplus C^3_{50} \oplus C^3_{75} \oplus C^3_{84} \oplus C^3_{106} \oplus C^3_{114} \oplus C^3_{139} \oplus C^3_{148} \oplus C^3_{170} \oplus C^3_{178}\\
+\oplus\; & C^3_{203} \oplus C^3_{212} \oplus C^3_{234} \oplus C^3_{242} \oplus C^4_{24} \oplus C^4_{88} \oplus C^4_{152} \oplus C^4_{216}
 \end{align*}
-We refer the reader to \Cref{sec:traileq} for the corresponding linear combination on \cipher{MORUS1280}.
+We refer the reader to \Cref{sec:traileq} for the corresponding linear combination on \cipher{MORUS640}.
 
 \subsection{Bias of the Full Trail}
 
 The symmetrized trail on full \cipher{MORUS} may be intuitively understood as consisting of four copies of the original trail on \cipher{MiniMORUS}. Indeed, the only difference between full \cipher{MORUS} (for either version of \cipher{MORUS}) and four independent copies of \cipher{MiniMORUS} comes from register-wise rotations, which permute words within a register. But as observed in \Cref{sec/introminimorus}, register-wise rotations leave symmetric linear combinations invariant; and so, insofar as we only ever use symmetric linear combinations on all registers along the trail, register-wise rotations have no effect.
 
-Following the previous intuition, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS640} and \cipher{MORUS1280}. However, reality is a little more complex, as the symmetrized trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
+Following the previous intuition, one may expect that the weight of the symmetrized trail should simply be four times the weight of the corresponding \cipher{MiniMORUS} trail, namely 64 for both \cipher{MORUS1280} and \cipher{MORUS640}. However, reality is a little more complex, as the symmetrized trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
 
 To understand why that might be the case, assume a nonlinear term $S^0_{2,0} \cdot S^0_{3,0}$ arises from some part of the trail, and another term $S^0_{2,0} \cdot S^0_{3,w}$ arises from a different part of the trail (where $w$ denotes the word size). Then when we XOR the various trail fragments together, in \cipher{MiniMORUS} these two terms are actually equal and will cancel out, since register-wise rotations by multiples of $w$ bits are ignored. However in the real \cipher{MORUS} these terms are of course distinct and do not cancel each other.
 
@@ -295,3 +296,7 @@ In the case of \cipher{MORUS640}, collisions between rotation constants further 
   \caption{\cipher{MiniMORUS}: two approximations for $S^{2,2}_0$.}
   \label{fig:twoapproximations}
 \end{figure}
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

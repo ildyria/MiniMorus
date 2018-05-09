@@ -26,7 +26,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
   \centering
   \begin{subfigure}{.32\textwidth}
   \centering
-  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+  \begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
     \printstate
     \draw[trail, alpha]
       (C) -- node[right] {$i$} (lll-1)
@@ -45,7 +45,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
   \hfill
   \begin{subfigure}{.32\textwidth}
   \centering
-  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+  \begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
     \printstate
     \draw[trail, beta]
       (C) -- node[right] {$i$} (lll-1)
@@ -60,7 +60,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
-  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+  \begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
     \printstate
     \draw[trail, gamma]
       (W-21) node[above] {$i$} -- (xnd1) (xnd1) -- (xor1) (xor1) -- (lll1)
@@ -75,7 +75,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
   \bigskip
 
   \begin{subfigure}{.32\textwidth}
-  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+  \begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
     \printstate
     \draw[trail, delta]
       (W-24) node[above] {$i$} -- (xnd4) (xnd4) -- (xor4) (xnd4) -- (and4)
@@ -87,7 +87,7 @@ As a result, the trail fragment $\alpha^t_i$ also has a weight of 1. Another way
   \end{subfigure}
   \hfill
   \begin{subfigure}{.32\textwidth}
-  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+  \begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
     \printstate
     \draw[trail, epsil]
       (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
@@ -158,41 +158,40 @@ In order to cancel the $S^{3}_{0,0}$ term on the left-hand side, we add in the e
 &S^2_{2,0} \oplus S^3_{2,b_2} \oplus C^2_{-b_0}\\
 =\; &S^2_{3,0} \cdot S^2_{4,0} \oplus S^2_{1,-b_0} \oplus S^2_{3,-b_0} \oplus S^2_{1,-b_0} \cdot S^2_{2,-b_0} \oplus S^2_{2,-b_0} \cdot S^2_{3,-b_0}.
 \end{align*}
-We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MiniMORUS640}, this yields the equation:
-
+We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \cipher{MiniMORUS1280}, this yields the equation:
 \begin{flalign*}
-&&&C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15}&&\\
-&&\oplus\; &C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19}&&\\
-&&=\; &S^0_{1,27} \oplus S^0_{3,27} \oplus S^0_{1,27} \cdot S^0_{2,27} \oplus S^0_{2,27} \cdot S^0_{3,27}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,26} \oplus S^1_{3,26} \oplus S^1_{1,26} \cdot S^1_{2,26} \oplus S^1_{2,26} \cdot S^1_{3,26}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,8} \oplus S^1_{3,8} \oplus S^1_{1,8} \cdot S^1_{2,8} \oplus S^1_{2,8} \cdot S^1_{3,8}&&\text{weight 1}\\
-&&\oplus\; &S^2_{3,1} \oplus S^2_{1,1} \oplus S^2_{1,1} \cdot S^2_{2,1} \oplus S^2_{2,1} \cdot S^2_{3,1}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,7} \oplus S^2_{3,7} \oplus S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,15} \oplus S^2_{3,15} \oplus S^2_{1,15} \cdot S^2_{2,15} \oplus S^2_{2,15} \cdot S^2_{3,15}&&\text{weight 1}\\
-&&\oplus\; &S^2_{1,27} \oplus S^2_{3,27} \oplus S^2_{1,27} \cdot S^2_{2,27} \oplus S^2_{2,27} \cdot S^2_{3,27}&&\text{weight 1}\\
-&&\oplus\; &S^1_{1,2} \oplus S^1_{3,2} \oplus S^1_{1,2} \cdot S^1_{2,2} \oplus S^1_{2,2} \cdot S^1_{3,2}&&\text{weight 1}\\
-&&\oplus\; &S^3_{3,14} \oplus S^3_{1,14} \oplus S^3_{1,14} \cdot S^3_{2,14} \oplus S^3_{2,14} \cdot S^3_{3,14}&&\text{weight 1}\\
-&&\oplus\; &S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
-&&\oplus\; &S^2_{2,31} \cdot S^2_{3,31}&&\text{weight 1}\\
-&&\oplus\; &S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
-&&\oplus\; &S^3_{0,7} \cdot S^3_{1,7}&&\text{weight 1}\\
-&&\oplus\; &S^3_{2,6} \cdot S^3_{3,6}&&\text{weight 1}\\
-&&\oplus\; &S^3_{2,12} \cdot S^3_{3,12}&&\text{weight 1}\\
-&&\oplus\; &S^4_{2,19} \cdot S^4_{3,19}.&&\text{weight 1}
+&&&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}&&\\
+&&\oplus\; &C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24}&&\\
+&&=\; &S^0_{1,51} \cdot S^0_{2,51} \oplus S^0_{2,51} \cdot S^0_{3,51} \oplus S^0_{1,51} \oplus S^0_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,25} \cdot S^1_{2,25} \oplus S^1_{2,25} \cdot S^1_{3,25} \oplus S^1_{1,25} \oplus S^1_{3,25}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,33} \cdot S^1_{2,33} \oplus S^1_{2,33} \cdot S^1_{3,33} \oplus S^1_{1,33} \oplus S^1_{3,33}&&\text{weight 1}\\
+&&\oplus\; & S^1_{1,55} \cdot S^1_{2,55} \oplus S^1_{2,55} \cdot S^1_{3,55} \oplus S^1_{1,55} \oplus S^1_{3,55}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,7} \cdot S^2_{2,7} \oplus S^2_{2,7} \cdot S^2_{3,7} \oplus S^2_{1,7} \oplus S^2_{3,7}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,29} \cdot S^2_{2,29} \oplus S^2_{2,29} \cdot S^2_{3,29} \oplus S^2_{1,29} \oplus S^2_{3,29}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,37} \cdot S^2_{2,37} \oplus S^2_{2,37} \cdot S^2_{3,37} \oplus S^2_{1,37} \oplus S^2_{3,37}&&\text{weight 1}\\
+&&\oplus\; & S^2_{1,51} \cdot S^2_{2,51} \oplus S^2_{2,51} \cdot S^2_{3,51} \oplus S^2_{1,51} \oplus S^2_{3,51}&&\text{weight 1}\\
+&&\oplus\; & S^3_{1,11} \cdot S^3_{2,11} \oplus S^3_{2,11} \cdot S^3_{3,11} \oplus S^3_{1,11} \oplus S^3_{3,11}&&\text{weight 1}\\
+&&\oplus\; & S^2_{0,0} \cdot S^2_{1,0}&&\text{weight 1}\\
+&&\oplus\; & S^2_{2,46} \cdot S^2_{3,46}&&\text{weight 1}\\
+&&\oplus\; & S^2_{3,0} \cdot S^2_{4,0}&&\text{weight 1}\\
+&&\oplus\; & S^3_{0,38} \cdot S^3_{1,38}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,20} \cdot S^3_{3,20}&&\text{weight 1}\\
+&&\oplus\; & S^3_{2,50} \cdot S^3_{3,50}&&\text{weight 1}\\
+&&\oplus\; & S^4_{2,24} \cdot S^4_{3,24}&&\text{weight 1}
 \end{flalign*}
 
-The equation for \cipher{MiniMORUS1280} is very similar, and is given in \Cref{sec:traileq}.
+The equation for \cipher{MiniMORUS640} is very similar, and is given in \Cref{sec:traileq}.
 
 \subsection{Bias of the Trail}
 \label{sec:minibias}
 
-In the equation for \cipher{MiniMORUS640} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MiniMORUS1280} (cf. \Cref{sec:traileq}).
+In the equation for \cipher{MiniMORUS1280} from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \cipher{MiniMORUS640} (cf. \Cref{sec:traileq}).
 
 That the bias is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
 
 \subsection{Experimental Verification}
 
-To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
+To confirm that our analysis is correct, we ran experiments on an implementation of \cipher{MiniMORUS1280} and \cipher{MiniMORUS640}. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
 While our analysis from the previous section predicts a bias of $2^{-16}$, experiments indicate a slightly higher bias of $2^{-15.5}$ for \cipher{MORUS640}. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
 
 %\noindent
@@ -245,3 +244,7 @@ While our analysis from the previous section predicts a bias of $2^{-16}$, exper
   \end{tabular}
   }
 \end{table}
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:
