@@ -1,19 +1,38 @@
 \section{Introduction}
 \label{sec/Introduction}
 
-\todo{discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}}
+Authenticated Encryption (AE) schemes combine the functionality of symmetric encryption schemes and message authentication codes.
+Based on a shared secret key $K$, they encrypt a plaintext message $M$ to a ciphertext $C$ and authentication tag $T$ in order to protect both the confidentiality and the authenticity of $M$.
+Most modern authenticated encryption algorithms are nonce-based schemes with associated data (AEAD),
+where $(C, T)$ additionally depends on a unique nonce $N$ (or initialization value IV) and optional associated metadata $A$.
+One of the most prominent standardized AEAD designs is \cipher{AES-GCM} \cite{TODOMV05,TODONIST},
+which is widely deployed in protocols such as \cipher{TLS v1.3}.
 
-\todo{linear cryptanalysis \cite{eurocryptMatsui93,eurocryptMatsuiY92}}
+To address the growing need for modern authenticated encryption designs for different application scenarios, 
+the CAESAR competition was launched in 2013 \cite{CAESAR}.
+The goal of this competition is to select a final portfolio of AEAD designs for three different use-cases:
+(1) lightweight hardware characteristics,
+(2) high-speed software performance, and
+(3) robustness.
+The competition attracted 57 first-round submissions, 7 of which were recently selected as finalists in the fourth selection round.
 
-\todo{analysis of MORUS: \cite{secryptDwivediMW17,trustcomSalamSBDPW17,balkancryptsecMilevaDV15}}
+\morus is one of the three finalists for use-case (2), together with \cipher{OCB} and \cipher{AEGIS}.
+\todo[inline]{Advertise MORUS}
 
-Block ciphers provide confidentiality through encryption. Hash functions are the building blocks of integrity and authenticity. These two operations combine in a single scheme class named Authenticated Encryption. From a message; IV and key, it produces a ciphertext and a final authentication tag.
+\subsubsection*{Related Work.}
 
-\noindent
-The CAESAR\cite{CAESAR} Competition aims to provide with a portfolio of authenticated encryption schemes. The selection is made by comparing the resistances to a wide range of attacks. Morus is one of the last 3 finalist.
+\todo[inline]{Analysis of MORUS: Designers and \cite{secryptDwivediMW17,trustcomSalamSBDPW17,balkancryptsecMilevaDV15}, and nonce-misuse analysis}
+
+\todo[inline]{Related designs; Analysis of related designs; discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}}
 
 \subsubsection*{Our Contributions.}
+% Paragraph: We have 3 results, the main one is on full MORUS
+
+% Paragraph: Details on keystream bias
 Our main result is the existence of a linear trail linking ciphertext bits spanning five consecutive encryption steps. As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps. Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design. Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
+\todo{somewhere: linear cryptanalysis \cite{eurocryptMatsui93,eurocryptMatsuiY92}}
+
+% Paragraph: Details on Section 7
 
 \subsubsection*{Paper Outline.}
 This paper is organized as follows, we first provide a brief introduction of how Morus operates (Sect. \ref{sec/Preliminaries}).

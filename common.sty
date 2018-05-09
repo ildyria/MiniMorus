@@ -27,7 +27,11 @@
 }
 
 \usepackage{tikz}
-\usetikzlibrary{calc,math,arrows.meta}
+\usetikzlibrary{calc,math,arrows.meta,external}
+
+%\ifexternalize
+%\tikzexternalize[prefix=figures/, only named=true, aux in dpth=false]
+%\fi
 
 \makeatletter
 \pgfdeclareshape{oplus}{%{{{
