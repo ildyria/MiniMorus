@@ -33,13 +33,13 @@ as well as the general design rationale of the initialization, encryption proces
 The main focus is on differential properties, whereas not many details are given for the other attack vectors.
 In third-party analysis,
 Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher for the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \morus.
-Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discussed the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \morus[640] is well beyond the security claim.
-Dwivedi et~al.~\cite{secryptDwivediMW17} later proposed key-recovery attacks for \morus[1280] if the initialization is reduced to 3.6 out of 16 rounds and discussed the security of \morus against internal differentials and rotational cryptanalysis.
-Salam et~al.~\cite{trustcomSalamSBDPW17} applied cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \morus[1280] with negligible complexity.
+Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \morus[640] is well beyond the security claim.
+Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \morus[1280] if the initialization is reduced to 3.6 out of 16 rounds and discuss the security of \morus against internal differentials and rotational cryptanalysis.
+Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \morus[1280] with negligible complexity.
 Additionally, 
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
-independently proposed state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
+independently propose state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
 
 \todo[inline]{Related designs. Brice, do you want to add a sentence to discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}?}
 
