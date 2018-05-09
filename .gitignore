@@ -57,8 +57,11 @@ latex.out
 *.synctex.gz
 *.fdb_latexmk
 *.fls
-morus.log
-morusAC.log
+*.log
+
+# Bibtext
+*.bbl
+*.blg
 
 # Annoying MacOS things
 .DS_Store
