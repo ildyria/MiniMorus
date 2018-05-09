@@ -1,13 +1,18 @@
 %\usepackage[hmargin=3cm,vmargin=2.8cm]{geometry}
 
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{ifthen}
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{siunitx}
-\usepackage[section]{placeins}
-\usepackage[hidelinks]{hyperref}
+\usepackage{placeins} % removed [section] due to oversized figures
+\ifshrink
+  \usepackage[hidelinks,pdfpagescrop={92 112 523 778},a4paper=false]{hyperref}
+\else
+  \usepackage[hidelinks]{hyperref}
+\fi
 \usepackage{cleveref}
+\usepackage{todonotes}
 
 \allowdisplaybreaks%this is to allow page breaks within multiline equations (to accomodate full trail equations)
 
@@ -77,6 +82,9 @@
 %\definecolor{mycyan}{HTML}{2AA198}
 
 \newcommand{\cipher}[1]{\textsf{#1}}
+
+\usepackage{xspace}
+\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
 
 \newif\ifsubstates\substatesfalse
 
@@ -170,3 +178,21 @@
 \newcommand\StateUpdate{\ensuremath{\texttt{StateUpdate}}}
 \newcommand\rotl{\ensuremath{\lll}}
 \newcommand\rotlxy{\ensuremath{\lll_W}}
+
+
+
+% EU Horizon 2020 acknowledgements
+\usepackage{wrapfig}
+\definecolor{eublue}{HTML}{003399}
+\definecolor{eugold}{HTML}{FFCC00}
+\newcommand{\euflag}[1][1]{\tikz[scale=#1]{\filldraw[eublue] (-22.5pt,-15pt) rectangle (22.5pt,15pt);
+  \foreach \i in {0,...,12} { \fill[eugold] (\i*30:10pt) +(90:1.666pt) -- +(306:1.666pt) -- +(162:1.666pt) -- +(18:1.666pt) -- +(234:1.666pt) -- cycle; }
+}}
+\newcommand{\horizonack}[1]{{
+  \setlength\intextsep{0pt}
+  \begin{wrapfigure}[4]{l}{0pt}
+    \euflag
+  \end{wrapfigure}
+  \noindent #1
+  \par
+}}

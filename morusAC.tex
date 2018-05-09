@@ -1,25 +1,24 @@
 \newif\ifanonymous
 %\anonymoustrue%uncomment for submission version
 
-\documentclass{llncs}
+\newif\ifshrink\shrinkfalse
+%\shrinktrue for screen-friendly original LNCS paper size
+
+\documentclass[a4paper]{llncs}
 \usepackage{common}
 
 \ifanonymous
 \author{}
 \institute{}
 \else
-\author{Tomer Ashur, Maria Eichlseder, Ga\"etan Leurent,\\Brice Minaud, Yann Rotella, Yu Sasaki, Beno\^it Viguier}
+\author{Tomer Ashur \and Maria Eichlseder \and Ga\"etan Leurent \and Brice Minaud \and Yann Rotella \and Yu Sasaki \and Beno\^it Viguier}
 \institute{}
 %\path|tomer.ashur@esat.kuleuven.be|, \path|maria.eichlseder@iaik.tugraz.at|, \path|gaetan.leurent@inria.fr|, \path|brice.minaud@gmail.com|, \path|yann.rotella@inria.fr|, \path|b.viguier@science.ru.nl|, \path|sasaki.yu@lab.ntt.co.jp|
 \fi
 
 \begin{document}
 
-\mainmatter
-
-% \title{Note on Linear Biases in MORUS}
-\title{Morus: Biases in the stream}
-
+\title{\morus: Biases in the stream}
 \maketitle
 
 \input{morusAC_00_Abstract}
@@ -31,6 +30,14 @@
 \input{morusAC_06_Discussion}
 \input{morusAC_07_IniFin}
 
+\ifanonymous
+\else
+  %\subsubsection{Acknowledgments.}
+  %...
+  %\horizonack{The research leading to these results has received funding from
+  %the European Union's Horizon 2020 research and innovation programme under
+  %grant agreement No 644052 (HECTOR) and \dots.}
+\fi
 
 \bibliographystyle{splncs03}
 \bibliography{morusAC}
@@ -38,6 +45,5 @@
 \appendix
 
 \input{morusAC_App_IniFin}
-
 
 \end{document}
