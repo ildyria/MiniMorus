@@ -41,14 +41,13 @@ Additionally,
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
 independently propose state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
-Finally, a keystream bias of the same nature as our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher AEGIS \cite{AEGIS}, which shares the same overall structure as \morus.
+Finally, a keystream bias of a similar nature as our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist which shares the same overall structure as \morus, but uses a very different, \cipher{AES}-based state update function.
 
 \subsubsection*{Our Contributions.}
-We analyze the security of \morus and present a keystream distinguisher based on
+We analyze the security of \morus and present a key\-stream distinguisher based on
 linear approximations for full \morus[1280].
 In addition, we provide results for round-reduced \morus with reduced initialization or finalization.
 
-% Paragraph: Details on keystream bias
 Our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking ciphertext bits of five consecutive encryption blocks.
 %As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps.
 %Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design.
@@ -71,9 +70,9 @@ In addition, we symbolically evaluated the relevant equations.
 In addition to this attack on full \morus, we also analyze the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
 While this analysis does not threaten full \morus, it complements the main result to provide a better understanding of the \morus design approach.
 We present a forgery attack for round-reduced \morus[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 rounds. This nonce-respecting attack is based on a differential analysis of the padding rule.
-The second result targets a round-reduced initialization with 10 out of 16 steps, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
+The second result targets a round-reduced initialization with 10 out of 16 rounds, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
 
-\subsubsection*{Article Outline.}
+\subsubsection*{Outline.}
 This paper is organized as follows.
 We first provide a brief description of \morus in \Cref{sec/Preliminaries}.
 In \Cref{sec/introminimorus}, we introduce \minimorus, an abstraction of \morus based on a certain class of rotational symmetries.
