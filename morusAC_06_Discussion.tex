@@ -5,7 +5,7 @@
 
 %This is just a sketch for now...
 
-We now discuss the impact of our attacks for the security of \MORUS.
+We now discuss the impact of these attacks on the security of \MORUS.
 
 \subsubsection{Keystream biases.}
 
@@ -49,10 +49,7 @@ the resulting complexity is still out of reach.
 
 However, \cipher{MORUS1280} with a 256-bit key claims a security level
 of 256 bits for confidentiality, and an attack with complexity $2^{152}$
-should violate this claim, even if it is not practical.  The
-\cipher{MORUS} specification limits the amount of plaintext encrypted
-with a given key to $2^{64}$, but this does not affect our attack
-because we can use keystream generated with different keys.
+violates this claim, even if it is not practical.  
 
 Moreover, the existence of this trail does hint at some weakness in the
 design of \cipher{MORUS}. Indeed, a notable feature of the trail is that

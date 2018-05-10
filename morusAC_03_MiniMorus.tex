@@ -14,7 +14,7 @@ We begin with a few observations about the \StateUpdate{} function. Besides XOR 
 \end{enumerate}
 The second type of rotation always shifts registers by a multiple of the word size $w$. This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a register-wise rotation by $w$ bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
 
-Since we want to build a linear trail, we are interested in linear combinations of bits within a register.
+To build our linear trail, we start in a linear combinations of bits within a single register.
 \begin{definition}
 Recall that $w$ denotes the word size in bits, and $4w$ is the size of a register. A linear combination of the form:
 \[
@@ -41,7 +41,7 @@ This naturally leads to the idea of building a linear trail using only symmetric
 
 In fact, we can go further and consider a reduced version of \MORUS where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \MiniMORUS[640] and \MiniMORUS[1280], for \MORUS[640] and \MORUS[1280] respectively. Since registers in \MiniMORUS contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
 
-Because the trail we are going to build is relatively complex, we will first describe it on \MiniMORUS. We will then extend it to the full \MORUS via the previous symmetry.
+Since the trail we are building is relatively complex, we will first describe it on \MiniMORUS. We will then extend it to the full \MORUS via the previous symmetry.
 
 \begin{figure}[h]
   \substatesfalse

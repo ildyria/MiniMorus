@@ -3,11 +3,11 @@
 \section{Linear Trail for \MiniMORUS}
 \label{sec/minitrails}
 
-In this section, we describe how we build a trail for \MiniMORUS before computing its bias and experimentally verify it.
+In this section, we describe how we build a trail for \MiniMORUS before computing its correlation and experimentally verify it.
 
 \subsection{Overview of the Trail}
 
-To build a linear trail on \MiniMORUS, we combine the following five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$, where the subscript $i$ denotes a bit position, and the superscript $t$ denotes a step number:
+To build a linear trail for \MiniMORUS, we combine the following five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$, where the subscript $i$ denotes a bit position, and the superscript $t$ denotes a step number:
 \begin{itemize}
     \item $\alpha^t_i$ approximates (one bit of) state word $S_0$ using the ciphertext;
     \item $\beta^t_i$ approximates $S_1$ using $S_0$ and the ciphertext;
@@ -16,7 +16,7 @@ To build a linear trail on \MiniMORUS, we combine the following five trail fragm
     \item $\varepsilon^t_i$ approximates $S_0$ using two approximations of $S_2$ in consecutive steps.
 \end{itemize}
 
-The trail fragments are depicted on \Cref{fig:minimorusfragments}. In all cases except $\alpha^t_i$, the trail fragment approximates a single AND gate by zero, which holds with probability 3/4, and hence the trail fragment has weight 1. In the case of $\alpha^t_i$, two AND gates are involved; however the two gates share an entry in common, and in both cases the other entry also has a linear contribution to the trail, which results in an overall contribution of the form:
+The trail fragments are depicted on \Cref{fig:minimorusfragments}. In all cases except $\alpha^t_i$, the trail fragment approximates a single AND gate by zero, which holds with probability 3/4, and hence the trail fragment has weight 1. In the case of $\alpha^t_i$, two AND gates are involved; however the two gates share an entry in common, and in both cases the other entry also has a linear contribution to the trail, which results in an overall contribution of the form (see \cite[Sec.~3.3]{DBLP:conf/indocrypt/AshurR16})
 \[
 x \cdot y \oplus x \cdot z \oplus y \oplus z= (x \oplus 1) \cdot (y \oplus z).
 \]
@@ -136,7 +136,7 @@ The way we are going to use each trail fragment may be summarized as follows, wh
 \varepsilon^t_i:\quad&& S^t_{2,i}, S^{t+1}_{2,i+b_2} &\to S^{t+1}_{0,i}.
 \end{alignat*}
 
-In more detail, the idea is that by using $\alpha^t_i$, we are able to approximate a bit of $S_0$ using only a ciphertext bit. By combining $\alpha^t_i$ with $\beta^{t+1}_{i+b_0}$, we are then able to approximate a bit of $S_1$ (at step $t+1$) using only ciphertext bits from two consecutive steps. Likewise, $\gamma^t_i$ allows us to ``jump'' from $S_1$ to $S_4$, i.e. by combining $\alpha^t_i$ with $\beta^t_i$ and $\gamma^t_i$ with appropriate choices of parameters $t$ and $i$ for each, we are able to approximate one bit of $S_4$ using only ciphertext bits. Notice however that $\gamma^t_i$ requires approximating $S_1$ in two consecutive steps; and so the previous combination requires using $\alpha^t_i$ and $\beta^t_i$ \emph{twice} at different steps. In the same way, $\delta^t_i$ allows us to jump from $S_4$ to $S_2$; and $\varepsilon^t_i$ allows jumping from $S_2$ back to $S_0$. In the end, we are able to approximate a bit of $S_0$ using only ciphertext bits via the combination of all trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$.
+In more detail, the idea is that by using $\alpha^t_i$, we are able to approximate a bit of $S_0$ using only a ciphertext bit. By combining $\alpha^t_i$ with $\beta^{t+1}_{i+b_0}$, we are then able to approximate a bit of $S_1$ (at step $t+1$) using only ciphertext bits from two consecutive steps. Likewise, $\gamma^t_i$ allows us to ``jump'' from $S_1$ to $S_4$, i.e. by combining $\alpha^t_i$ with $\beta^t_i$ and $\gamma^t_i$ with appropriate choices of parameters $t$ and $i$ for each, we are able to approximate one bit of $S_4$ using only ciphertext bits. Notice however that $\gamma^t_i$ requires approximating $S_1$ in two consecutive steps; and so the previous combination requires using $\alpha^t_i$ and $\beta^t_i$ \emph{twice} at different steps. In the same way, $\delta^t_i$ allows us to jump from $S_4$ to $S_2$; and $\varepsilon^t_i$ allows jumping from $S_2$ back to $S_0$. Eventually, we are able to approximate a bit of $S_0$ using only ciphertext bits via the combination of all trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, and $\varepsilon^t_i$.
 
 However, the same bit of $S_0$ can also be approximated directly by using $\alpha^t_i$ at the corresponding step. Thus that bit can be linearly approximated from two different sides: the first approximation uses a combination of all trail fragments, and involves successive approximations of all state registers (except $S_3$) spanning several encryption steps, as explained in the previous paragraph. The second approximation only involves using $\alpha^t_i$ at the final step reached by the previous trail. By XORing up these two approximations, we are left with only ciphertext bits, spanning five consecutive encryption steps.
 
@@ -145,7 +145,7 @@ Of course, the overall trail resulting from all of the previous combinations is 
 \subsection{Trail Equation}
 \label{sec:minitraileq}
 
-The equation corresponding to each of the five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$ may be written explicitly as $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ as follows. For each equation, we write on the left-hand side of the equality the biased linear combination used in the trail; and on the right-hand side, the remainder of the equation, which must have non-zero bias (in all cases the bias is $2^{-1}$).
+The equation corresponding to each of the five trail fragments $\alpha^t_i$, $\beta^t_i$, $\gamma^t_i$, $\delta^t_i$, $\varepsilon^t_i$ may be written explicitly as $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ as follows. For each equation, we write on the left-hand side of the equality the biased linear combination used in the trail; and on the right-hand side, the remainder of the equation, which must have non-zero correlation (in all cases the correlation is $2^{-1}$).
 \begin{alignat*}{2}
 A^t_i:\quad&& C^t_i \oplus S^{t+1}_{0,i+b_0} &= S^t_{1,i} \oplus S^t_{3,i} \oplus S^t_{1,i} \cdot S^t_{2,i} \oplus S^t_{2,i} \cdot S^t_{3,i}\\
 B^t_i:\quad&& C^t_i \oplus S^t_{0,i} \oplus S^t_{1,i} &= S^t_{2,i} \cdot S^t_{3,i} \\
@@ -154,18 +154,18 @@ D^t_i:\quad&& S^t_{4,i} \oplus S^{t+1}_{4,i+b_4} \oplus S^{t+1}_{2,i} &= S^{t+1}
 E^t_i:\quad&& S^t_{2,i} \oplus S^{t+1}_{2,i+b_2} \oplus S^{t+1}_{0,i} &= S^t_{3,i} \cdot S^t_{4,i}
 \end{alignat*}
 
-From an algebraic point of view, building the full trail amounts to adding up copies of the previous equations for various choices of $t$ and $i$, so that eventually all $S^x_{y,z}$ terms on the left-hand side cancel out. Then we are left with only ciphertext terms on the left-hand side, while the right-hand side consists of a sum of biased expressions. By measuring the bias of the right-hand side expression, we will then be able to deduce the same bias on the linear combination of ciphertext bits on the left-hand side. We now set out to do so.
+From an algebraic point of view, building the full trail amounts to adding up copies of the previous equations for various choices of $t$ and $i$, so that eventually all $S^x_{y,z}$ terms on the left-hand side cancel out. Then we are left with only ciphertext terms on the left-hand side, while the right-hand side consists of a sum of biased expressions. By measuring the correlation of the right-hand side expression, we are then able to determine the correlation of the linear combination of ciphertext bits on the left-hand side. We now set out to do so.
 
 In order to build the equation for the full trail, we start with $E^2_0$:
 \[
 S^2_{2,0} \oplus S^{3}_{2,b_2} \oplus S^{3}_{0,0} = S^2_{3,0} \cdot S^2_{4,0}.
 \]
-In order to cancel the $S^{3}_{0,0}$ term on the left-hand side, we add in the equation $A^2_{-b_0}$ (where the sum of two equations of the form $a = b$ and $c = d$ is defined to be $a+c = b+d$). This yields:
+In order to cancel the $S^{3}_{0,0}$ term on the left-hand side, we add to the equation $A^2_{-b_0}$ (where the sum of two equations of the form $a = b$ and $c = d$ is defined to be $a+c = b+d$). This yields:
 \begin{align*}
 &S^2_{2,0} \oplus S^3_{2,b_2} \oplus C^2_{-b_0}\\
 =\; &S^2_{3,0} \cdot S^2_{4,0} \oplus S^2_{1,-b_0} \oplus S^2_{3,-b_0} \oplus S^2_{1,-b_0} \cdot S^2_{2,-b_0} \oplus S^2_{2,-b_0} \cdot S^2_{3,-b_0}.
 \end{align*}
-We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows us to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \MiniMORUS[1280], this yields the equation:
+We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add to the equations $D^t_i$ for appropriate choices of $t$ and $i$. This replaces the two $S^t_{2,i}$ terms by four $S^t_{4,i}$ terms. By using equation $B^t_i$ four times, we can then replace these four $S^t_{4,i}$ terms by eight $S^t_{1,i}$ terms. By applying equation $B^t_i$ eight times, these eight $S^t_{1,i}$ terms can in turn be replaced by eight $S^t_{0,i}$ terms (and some ciphertext terms). Finally, applying $A^t_i$ eight times allows to replace these eight $S^t_{0,i}$ terms by only ciphertext bits. Ultimately, for \MiniMORUS[1280], this yields the equation:
 \begin{flalign*}
 &&&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}&&\\
 &&\oplus\; &C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24}&&\\
@@ -189,17 +189,17 @@ We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add in 
 
 The equation for \MiniMORUS[640] is very similar, and is given in \Cref{sec:traileq}.
 
-\subsection{Bias of the Trail}
+\subsection{Correlation of the Trail}
 \label{sec:minibias}
 
-In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has an expected bias of $2^{-16}$. The same holds for \MiniMORUS[640] (cf. \Cref{sec:traileq}).
+In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the piling-up lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a correlation of $2^{-16}$. The same holds for \MiniMORUS[640] (cf. \Cref{sec:traileq}).
 
-That the bias is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final bias is $2^{-16}$ rather than $2^{-24}$.
+That the correlation is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final correlation is $2^{-16}$ rather than $2^{-24}$.
 
 \subsection{Experimental Verification}
 
-To confirm that our analysis is correct, we ran experiments on an implementation of \MiniMORUS[1280] and \MiniMORUS[640]. In both cases, we measured the bias of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the bias of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
-While our analysis from the previous section predicts a bias of $2^{-16}$, experiments indicate a slightly higher bias of $2^{-15.5}$ for \MORUS[640]. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
+To confirm that our analysis is correct, we ran experiments on an implementation of \MiniMORUS[1280] and \MiniMORUS[640]. In both cases, we measured the correlation of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the correlation of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
+While our analysis from the previous section predicts a correlation of $2^{-16}$, experiments indicate a slightly better empirical correlation of $2^{-15.5}$ for \MORUS[640]. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
 
 In order to preserve anonymity, our implementation is attached to the submission as auxiliary material. In the full version of this paper, a link will be provided instead.
 
@@ -224,7 +224,7 @@ In order to preserve anonymity, our implementation is attached to the submission
 %\end{align*}
 
 \begin{table}[h!]
-  \caption{Experimental verification of trail biases.}
+  \caption{Experimental verification of trail correlations.}
   \label{tab:miniapproximations}
   \centerline{
   \begin{tabular}{@{}llSSS@{}}
