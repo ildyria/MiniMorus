@@ -4,13 +4,12 @@
 \label{sec/Preliminaries}
 
 \MORUS is a family of authenticated ciphers designed by Wu and Huang \cite{MORUS}.
+An instance of \MORUS is parametrized by a secret key $K$. During encryption, it takes as input a plaintext message $M$, a nonce $N$, and possibly some associated data $A$, and outputs a ciphertext $C$ together with an authentication tag $T$.
 In this section, we provide a brief description of \MORUS and introduce the
 notation for linear approximations.
 
 \subsection{Specification of \MORUS}
 \label{subsec/Spec}
-
-An instance of \MORUS is parametrized by a secret key $K$. During encryption, it takes as input a plaintext message $M$, a nonce $N$, and possibly some associated data $A$, and outputs a ciphertext $C$ together with an authentication tag $T$.
 
 The \MORUS family supports two internal state sizes: 640 and 1280 bits,
 referred to as \MORUS[640] and \MORUS[1280], respectively.
@@ -26,7 +25,8 @@ The associated data and the plaintext are then processed block by block.
 Then the internal state undergoes the finalization phase, which outputs the authentication tag.
 
 Every part of this process relies on iterating the \StateUpdate{} function at the core of \MORUS. Each call to the \StateUpdate{} function is called a step.
-In order to denote the internal state of the cipher at the $t$-th step, we use a superscript to denote the step number: the internal state at step $t$ is denoted by $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
+%In order to denote the internal state of the cipher at the $t$-th step, we use a superscript to denote the step number:
+The internal state at step $t$ is denoted by $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t = -16$ before the initialization and $t=0$ after the initialization.
 
 %Hereafter we explain \StateUpdate{}.
 
@@ -34,70 +34,88 @@ In order to denote the internal state of the cipher at the $t$-th step, we use a
 \StateUpdate{} takes as input the internal state $S^t = S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$ and an additional $q$-bit value $m^t$ (recall that $q$ is the size of a register), and outputs an updated internal state.
 %During the associated data processing phase and encryption phase, $m^t$ is is an associated data block or message block. Otherwise $m^t$ can be 0 or constant when the additional input is unnecessary.
 
-\StateUpdate{} is composed of 5 rounds with similar operations. The additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round uses the word-wise left circular shift operation, which divides a $q$-bit register value into 4 words of $w = q/4$ bits, and performs a left circular shift operation on each $w$-bit word. The word-wise circular shift constants $b_i$ in round $i$ are defined in \Cref{Tbl:rcon}. Left circular shifts on a whole $q$-bit register are also used. The register-wise circular shift constants are also listed in \Cref{Tbl:rcon}.
-\begin{table}[!htb]
-\centering
-\caption{Left Circular Shift Constants of \texorpdfstring{\MORUS}{MORUS}} \label{Tbl:rcon}
-\begin{tabular}{r||ccccc|ccccc} \hline
-& \multicolumn{5}{c|}{Word-wise circular shift} & \multicolumn{5}{c}{Register-wise circular shift} \\
-                  & \makebox[2em]{$b_0$} & \makebox[2em]{$b_1$} & \makebox[2em]{$b_2$} & \makebox[2em]{$b_3$} & \makebox[2em]{$b_4$} & \makebox[2em]{$b'_0$} & \makebox[2em]{$b'_1$} & \makebox[2em]{$b'_2$} & \makebox[2em]{$b'_3$} & \makebox[2em]{$b'_4$} \\ \hline
-\MORUS[640]  &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
-\MORUS[1280] & 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\ \hline
-\end{tabular}
+\StateUpdate{} is composed of 5 rounds with similar operations.
+The additional input $m^t$ is used in rounds 2 to 5, but not in round 1.
+Each round uses the word-wise rotation (left circular shift) operation,
+denoted $\lll_w$ in the following and \texttt{Rotl\_xxx\_yy} in the design document.
+It divides a $q$-bit register value into 4 words of $w = q/4$ bits, and performs a rotation on each $w$-bit word.
+The word-wise rotation constants $b_i$ for round $i$ are defined in \Cref{Tbl:rcon}.
+Additionally, each round uses rotations on a whole $q$-bit register by a multiple of the word size,
+denoted $\lll$ in the following and \texttt{<<<} in the design document.
+The register-wise rotation constants $b_i'$ are also listed in \Cref{Tbl:rcon}.
+%\todo{rounds $0\dots4$ or $1\dots5$?}
+\begin{table}%[!bht]
+  \centering
+  \caption{Rotation constants $b_i$ for $\lll_w$ and $b_i'$ for $\lll$ in round $i$ of \texorpdfstring{\MORUS}{MORUS}.} \label{Tbl:rcon}
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}l@{\qquad}rrrrr rrrrr@{}}
+    \toprule
+    & \multicolumn{5}{@{}c@{~}}{Word-wise rotation $\lll_w$} & \multicolumn{5}{@{}c@{}}{Register-wise rotation $\lll$} \\
+    \cmidrule(r){2-6}
+    \cmidrule(l){7-11}
+    & $b_0$  & $b_1$  & $b_2$  & $b_3$  & $b_4$  
+    & $b_0'$ & $b_1'$ & $b_2'$ & $b_3'$ & $b_4'$  \\
+    %& \makebox[2em]{$b_0$} & \makebox[2em]{$b_1$} & \makebox[2em]{$b_2$} & \makebox[2em]{$b_3$} & \makebox[2em]{$b_4$} & \makebox[2em]{$b'_0$} & \makebox[2em]{$b'_1$} & \makebox[2em]{$b'_2$} & \makebox[2em]{$b'_3$} & \makebox[2em]{$b'_4$} \\ \hline
+    \midrule
+    \MORUS[640]  &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
+    \MORUS[1280] & 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\
+    \bottomrule
+  \end{tabular}
 \end{table}
 
-We denote those register-wise and word-wise left circular shift by $x \lll y$ and $x \lll_W y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \MORUS design document.)
-
-Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow \StateUpdate{}(S^t,m^t)$ is defined as follows.
+Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow \StateUpdate{}(S^t,m^t)$ is defined as follows:
 \begin{align*}
 \textrm{Round 1:} &&
-S^{t+1}_0 &\leftarrow ( S^t_0 \oplus (S^t_1 \cdot S^t_2) \oplus S^t_3 ) \lll_W b_0 &
+S^{t+1}_0 &\leftarrow ( S^t_0 \oplus (S^t_1 \cdot S^t_2) \oplus S^t_3 )            \lll_w b_0, &
 S^t_3 \leftarrow S^t_3 \lll b'_0.\\
 \textrm{Round 2:} &&
-S^{t+1}_1 &\leftarrow ( S^t_1 \oplus (S^t_2 \cdot S^t_3) \oplus S^t_4 \oplus m_i ) \lll_W b_1 &
+S^{t+1}_1 &\leftarrow ( S^t_1 \oplus (S^t_2 \cdot S^t_3) \oplus S^t_4 \oplus m_i ) \lll_w b_1, &
 S^t_4 \leftarrow S^t_4 \lll b'_1.\\
 \textrm{Round 3:} &&
-S^{t+1}_2 &\leftarrow ( S^t_2 \oplus (S^t_3 \cdot S^t_4) \oplus S^t_0 \oplus m_i ) \lll_W b_2 &
+S^{t+1}_2 &\leftarrow ( S^t_2 \oplus (S^t_3 \cdot S^t_4) \oplus S^t_0 \oplus m_i ) \lll_w b_2, &
 S^t_0 \leftarrow S^t_0 \lll b'_2.\\
 \textrm{Round 4:} &&
-S^{t+1}_3 &\leftarrow ( S^t_3 \oplus (S^t_4 \cdot S^t_0) \oplus S^t_1 \oplus m_i ) \lll_W b_3 &
+S^{t+1}_3 &\leftarrow ( S^t_3 \oplus (S^t_4 \cdot S^t_0) \oplus S^t_1 \oplus m_i ) \lll_w b_3, &
 S^t_1 \leftarrow S^t_1 \lll b'_3.\\
 \textrm{Round 5:} &&
-S^{t+1}_4 &\leftarrow ( S^t_4 \oplus (S^t_0 \cdot S^t_1) \oplus S^t_2 \oplus m_i ) \lll_W b_4 &
+S^{t+1}_4 &\leftarrow ( S^t_4 \oplus (S^t_0 \cdot S^t_1) \oplus S^t_2 \oplus m_i ) \lll_w b_4, &
 S^t_2 \leftarrow S^t_2 \lll b'_4.
 \end{align*}
 
 \subsubsection{Initialization.}
-The initialization of \MORUS[640] consists of loading a 128-bit key $K_{128}$ and a 128-bit nonce $IV_{128}$ into the state, and running \StateUpdate{} for 16 steps. The key and nonce are loaded into the state as follows:
+The initialization of \MORUS[640] starts by loading the 128-bit key $K_{128}$ and the 128-bit nonce $N_{128}$ into the state together with constants $c_0, c_1$:
+%and running \StateUpdate{} for 16 steps. The key and nonce are loaded into the state as follows:
 \begin{align*}
-S^{-16}_0 = \textrm{IV}_{128}, &&
-S^{-16}_1 = K_{128}, &&
-S^{-16}_2 = 1^{128}, &&
-S^{-16}_3 = const_0, &&
-S^{-16}_4 = const_1.
+S^{-16}_0 &= N_{128}, &
+S^{-16}_1 &= K_{128}, &
+S^{-16}_2 &= 1^{128}, &
+S^{-16}_3 &= c_0, &
+S^{-16}_4 &= c_1.
 \end{align*}
-The internal state is then updated 16 times with  $\StateUpdate{}(S^t,0)$ for $t=-16,-15,\ldots,-1$. Finally, the key is XORed into the state again with $S^0_1 \leftarrow S^0_1 \oplus K_{128}$.
+Then, $\StateUpdate{}(S^t,0)$ is iterated 16 times for $t=-16,-15,\ldots,-1$.
+Finally, the key is XORed into the state again with $S^0_1 \leftarrow S^0_1 \oplus K_{128}$.
 
-The initialization of \MORUS[1280] is slightly different from that of \MORUS[640] due to the difference in register size and the two possible key sizes:
-\begin{itemize}
-  \item[-] when the key size is 128 bits, $K = K_{128} \|K_{128}$.
-  \item[-] when the key size is 256 bits, $K = K_{256}$.
-\end{itemize}
-The state is initialized as:
+The initialization of \MORUS[1280] differs slightly due to the difference in register size and the two possible key sizes,
+and uses either
+$K = K_{128} \|K_{128}$ (for \MORUS[1280-128]) or
+$K = K_{256}$ (for \MORUS[1280-256])
+to initialize the state:
 \begin{align*}
-S^{-16}_0 &= \textrm{IV}_{128} \| 0^{128}, &
+S^{-16}_0 &= N_{128} \mathrel\| 0^{128}, &
 S^{-16}_1 &= K, &
-S^{-16}_2 = 1^{256}, \\
+S^{-16}_2 &= 1^{256}, &
 S^{-16}_3 &= 0^{256}, &
-S^{-16}_4 &= const_0\|const_1.
+S^{-16}_4 &= c_0\mathrel\|c_1.
 \end{align*}
-After updating the state 16 times with \StateUpdate{}, the state is updated with $S^0_1 \leftarrow S^0_1 \oplus K$.
+After iterating \StateUpdate{} 16 times, the state is updated with $S^0_1 \leftarrow S^0_1 \oplus K$.
 
 
 \subsubsection{Associated Data Processing.}
-After initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block,  it is padded to 128 bits and 256 bits for \MORUS[640] and \MORUS[1280] respectively, using 0 bits. The padded full block is then used to update the state. If the length of $A$, denoted by `${\it adlen}$' is 0, the associated data processing phase is skipped.
-
-The state is then updated with $S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t)$ for $t=0,1,\ldots,u-1$ where $u = \lceil \frac{{\it adlen}}{128} \rceil$ and $u = \lceil \frac{{\it adlen}}{256} \rceil$ for \MORUS[640] and \MORUS[1280], respectively.
+After initialization, the associated data $A$ is processed in blocks of $q \in \{128, 256\}$ bits.
+For the padding, if the last associated data block is not a full block, it is padded to $q$ bits with zeroes.
+If the length of $A$, denoted by $|A|$, is 0, then the associated data processing phase is skipped;
+else, the state is updated as
+\[S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t) \qquad \text{for } t=0,1,\ldots,\lceil |A|/q\rceil-1.\]
 
 \subsubsection{Encryption.}
 At each encryption step, a 16-byte (resp. 32-byte) message block $M_t$ is used to update the state in \MORUS[640] (resp. \MORUS[1280]), and a ciphertext $C_t$ is produced.
