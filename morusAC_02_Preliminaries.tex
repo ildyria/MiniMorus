@@ -135,7 +135,7 @@ else, the state is updated as
 
 \subsubsection{Encryption.}
 Next, the message is processed in blocks $M_t$ of  $q \in \{128, 256\}$ bits to update the state and produce the ciphertext blocks $C_t$.
-If the last message block is not a full block, zero-bits are used to pad it to 128 or 256 bits for \MORUS[640] and \MORUS[1280], respectively, and the padded full block is used to update the state. But only the partial block is encrypted. Note that if the message length denoted by $|M|$ is 0, encryption is skipped.
+If the last message block is not a full block, a string of 0's is used to pad it to 128 or 256 bits for \MORUS[640] and \MORUS[1280], respectively, and the padded full block is used to update the state. However, only the partial block is encrypted. Note that if the message length denoted by $|M|$ is 0, encryption is skipped.
 Let $u = \lceil |A|/q \rceil$ and $v = \lceil |M|/q \rceil$. The following is performed for $t=0, 1, \ldots, v-1$:
 \begin{align*}
 C^t &\leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll b_2') \oplus (S^{u+t}_2 \cdot S^{u+t}_3),\\
