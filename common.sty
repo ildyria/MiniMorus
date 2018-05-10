@@ -89,9 +89,9 @@
 
 \usepackage{xspace}
 %\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
-\newcommand{\morus}[1][]{\ifx&#1&\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
+\newcommand{\MORUS}[1][]{\ifx\relax#1\relax\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
 %\newcommand{\minimorus}[1][]{\cipher{MiniMORUS#1}\xspace}
-\newcommand{\minimorus}[1][]{\ifx&#1&\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
+\newcommand{\MiniMORUS}[1][]{\ifx\relax#1\relax\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
 
 \newif\ifsubstates\substatesfalse
 

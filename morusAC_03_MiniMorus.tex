@@ -1,6 +1,6 @@
 %!TEX root = morusAC.tex
 
-\section{Symmetric Linear Combinations and \cipher{MiniMORUS}}
+\section{Symmetric Linear Combinations and \MiniMORUS}
 \label{sec/introminimorus}
 
 To simplify the description of the attack, we assume all plaintext blocks are zero. However the same results would hold as long as the plaintext is fixed. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
@@ -25,7 +25,7 @@ is said to be \emph{symmetric} iff the set of bits $S^t_{i,j(0)}, \dots, S^t_{i,
 \{j(i) : i\leq k\} = \{j(i) + w \text{\rm{} mod } 4w : i\leq k\}.
 \]
 \end{definition}
-\emph{Example.} The following linear combination is symmetric for \cipher{MORUS640}, i.e. $w = 32$:
+\emph{Example.} The following linear combination is symmetric for \MORUS[640], i.e. $w = 32$:
 \begin{equation}
 S^t_{0,0} \oplus S^t_{0,32} \oplus S^t_{0,64} \oplus S^t_{0,96}.
 \label{eq:symmetric}
@@ -37,11 +37,11 @@ On the other hand, since word-wise rotations always shift all four words within 
 
 This naturally leads to the idea of building a linear trail using only symmetric linear combinations, which is what we are going to do. As a result, the effect of register-wise rotations can be ignored. Moreover, since all linear combinations we consider are going to be symmetric, they can be described by truncating the linear combination to the first word of a register. Indeed, an equivalent way of saying a linear combination is symmetric, is that it involves the same bits in each word within a register. For example, in the case of (\ref{eq:symmetric}) above, the four bits involved are the first bit of each of the four words.
 
-\subsection{\cipher{MiniMORUS}}
+\subsection{\MiniMORUS}
 
-In fact, we can go further and consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
+In fact, we can go further and consider a reduced version of \MORUS where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \MiniMORUS[640] and \MiniMORUS[1280], for \MORUS[640] and \MORUS[1280] respectively. Since registers in \MiniMORUS contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
 
-Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS}. We will then extend it to the full \cipher{MORUS} via the previous symmetry.
+Because the trail we are going to build is relatively complex, we will first describe it on \MiniMORUS. We will then extend it to the full \MORUS via the previous symmetry.
 
 \begin{figure}[h]
   \substatesfalse
@@ -51,6 +51,6 @@ Because the trail we are going to build is relatively complex, we will first des
   \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
     \printstate
   \end{tikzpicture}%}}}
-  \caption{\cipher{MiniMORUS} state update function.}
+  \caption{\MiniMORUS state update function.}
   \label{fig:minimorus}
 \end{figure}

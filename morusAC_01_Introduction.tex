@@ -18,35 +18,35 @@ The goal of this competition is to select a final portfolio of AEAD designs for 
 (3) robustness.
 The competition attracted 57 first-round submissions, 7 of which were recently selected as finalists in the fourth selection round.
 
-\morus is one of the three finalists for use-case (2), together with \cipher{OCB} and \cipher{AEGIS}.
+\MORUS is one of the three finalists for use-case (2), together with \cipher{OCB} and \cipher{AEGIS}.
 This family of authenticated ciphers by Wu and Huang \cite{MORUS} provides three main variants:
-\morus[640] with a 128-bit key and \morus[1280] with either a 128-bit or a 256-bit key.
+\MORUS[640] with a 128-bit key and \MORUS[1280] with either a 128-bit or a 256-bit key.
 The design approach is reminiscent of classical stream cipher designs and
 continuously updates a relatively large state with a few fast operations.
-\morus can be efficiently implemented in both software and hardware;
+\MORUS can be efficiently implemented in both software and hardware;
 in particular, the designers claim that the software performance even surpasses
 \cipher{AES-GCM} implementations using Intel's \cipher{AES-NI} instructions,
-and that \morus is the fastest authenticated cipher not using \cipher{AES-NI} \cite{MORUS}.
+and that \MORUS is the fastest authenticated cipher not using \cipher{AES-NI} \cite{MORUS}.
 
 \subsubsection*{Related Work.}
-In the \morus submission document, the designers discuss the security of \morus against
+In the \MORUS submission document, the designers discuss the security of \MORUS against
 several attacks, including algebraic, differential, and guess-and-determine attacks.
 The main focus is on differential properties, and not many details are given for other attack vectors.
 In third-party analysis,
-Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \morus.
-Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \morus[640] is well beyond the security claim.
-Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \morus[1280] if initialization is reduced to 3.6 out of 16 rounds, and discuss the security of \morus against internal differentials and rotational cryptanalysis.
-Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \morus[1280] with negligible complexity.
+Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \MORUS.
+Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \MORUS[640] is well beyond the security claim.
+Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \MORUS[1280] if initialization is reduced to 3.6 out of 16 rounds, and discuss the security of \MORUS against internal differentials and rotational cryptanalysis.
+Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \MORUS[1280] with negligible complexity.
 Additionally, 
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
-independently propose state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
-Finally, a keystream bias of a similar nature as our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist which shares the same overall structure as \morus, but uses a very different, \cipher{AES}-based state update function.
+independently propose state-recovery and forgery attacks on \MORUS in a nonce-misuse setting with negligible data and time complexities.
+Finally, a keystream bias of a similar nature as our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist which shares the same overall structure as \MORUS, but uses a very different, \cipher{AES}-based state update function.
 
 \subsubsection*{Our Contributions.}
-We analyze the security of \morus and present a key\-stream distinguisher based on
-linear approximations for full \morus[1280].
-In addition, we provide results for round-reduced \morus with reduced initialization or finalization.
+We analyze the security of \MORUS and present a key\-stream distinguisher based on
+linear approximations for full \MORUS[1280].
+In addition, we provide results for round-reduced \MORUS with reduced initialization or finalization.
 
 Our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking ciphertext bits of five consecutive encryption blocks.
 %As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps.
@@ -55,31 +55,31 @@ Our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsu
 More precisely, we show that when encrypting a fixed plaintext block multiple times, a linear correlation exists between some output bits of the cipher.
 Moreover, the bias depends purely on the plaintext, and not on the secret key of the cipher.
 In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is known.
-For \morus[1280] with 256-bit keys, the linear bias is $2^{-73}$
+For \MORUS[1280] with 256-bit keys, the linear bias is $2^{-73}$
 \todo{double-check bias vs. correlation everywhere}
 and can be exploited using about $2^{152}$ encrypted blocks.
 \todo{double-check}
 We note that our attack is nonce-respecting, and that rekeying does not prevent it: the biases are independent of the secret encryption key and nonce, and can be exploited as long as a given plaintext block is encrypted sufficiently often, regardless of whether each encryption uses a different key.
 
-To obtain this result, we propose a simplified abstraction of \morus, called \minimorus, which takes advantage of certain rotational symmetries in \morus.
+To obtain this result, we propose a simplified abstraction of \MORUS, called \MiniMORUS, which takes advantage of certain rotational symmetries in \MORUS.
 We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
 To confirm the validity of our analysis,
-we practically verified the bias of the linear approximation for \minimorus and of partial approximations for \morus.
+we practically verified the bias of the linear approximation for \MiniMORUS and of partial approximations for \MORUS.
 In addition, we symbolically evaluated the relevant equations.
 
-In addition to this attack on full \morus, we also analyze the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
-While this analysis does not threaten full \morus, it complements the main result to provide a better understanding of the \morus design approach.
-We present a forgery attack for round-reduced \morus[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 rounds. This nonce-respecting attack is based on a differential analysis of the padding rule.
+In addition to this attack on full \MORUS, we also analyze the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
+While this analysis does not threaten full \MORUS, it complements the main result to provide a better understanding of the \MORUS design approach.
+We present a forgery attack for round-reduced \MORUS[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 rounds. This nonce-respecting attack is based on a differential analysis of the padding rule.
 The second result targets a round-reduced initialization with 10 out of 16 rounds, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
 
 \subsubsection*{Outline.}
 This paper is organized as follows.
-We first provide a brief description of \morus in \Cref{sec/Preliminaries}.
-In \Cref{sec/introminimorus}, we introduce \minimorus, an abstraction of \morus based on a certain class of rotational symmetries.
+We first provide a brief description of \MORUS in \Cref{sec/Preliminaries}.
+In \Cref{sec/introminimorus}, we introduce \MiniMORUS, an abstraction of \MORUS based on a certain class of rotational symmetries.
 We analyze this simplified scheme in \Cref{sec/minitrails} and provide a ciphertext-only linear approximation with a weight of 16.
 We then extend our result to the full scheme in \Cref{sec/fulltrails}, showing a bias in the keystream over 5 rounds,
-and discuss the implications of our observation for the security of \morus in \Cref{sec/Discussion}.
-In \Cref{sec/IniFin}, we present our results on the security of \morus with round-reduced initialization (in a nonce-misuse setting) or finalization.
+and discuss the implications of our observation for the security of \MORUS in \Cref{sec/Discussion}.
+In \Cref{sec/IniFin}, we present our results on the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
 Finally, we conclude in \Cref{sec/Conclusion}.
 
 %%% Local Variables:

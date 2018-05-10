@@ -3,25 +3,25 @@
 \section{Preliminaries}
 \label{sec/Preliminaries}
 
-MORUS \cite{MORUS} is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits.
-Each member is called \cipher{MORUS640} and \cipher{MORUS1280}, respectively.
+\MORUS \cite{MORUS} is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits.
+Each member is called \MORUS[640] and \MORUS[1280], respectively.
 
-An instance of MORUS is parametrized by a secret key. During encryption, it takes as input a plaintext message and possibly some associated data, and outputs a ciphertext together with an authentication tag.
-In the recommended parameters, \cipher{MORUS640} supports 128-bit keys and \cipher{MORUS1280} supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
+An instance of \MORUS is parametrized by a secret key. During encryption, it takes as input a plaintext message and possibly some associated data, and outputs a ciphertext together with an authentication tag.
+In the recommended parameters, \MORUS[640] supports 128-bit keys and \MORUS[1280] supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
 
-\subsection{Specification of MORUS}
+\subsection{Specification of \MORUS}
 \label{subsec/Spec}
 
-The internal state of MORUS is composed of five registers. Let $q$ be the register size, where $q = 128$ for \cipher{MORUS640} and $q=256$ for \cipher{MORUS1280}. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then the internal state of MORUS may be represented as $S_0\|S_1\|S_2\|S_3\|S_4$.
+The internal state of \MORUS is composed of five registers. Let $q$ be the register size, where $q = 128$ for \MORUS[640] and $q=256$ for \MORUS[1280]. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then the internal state of \MORUS may be represented as $S_0\|S_1\|S_2\|S_3\|S_4$.
 Registers are themselves divided into four $q/4$-bit \emph{words}.
-Throughout the paper, we denote the word size by $w = q/4$, i.e. $w=32$ for \cipher{MORUS640} and $w=64$ for \cipher{MORUS1280}.
+Throughout the paper, we denote the word size by $w = q/4$, i.e. $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
 
-The encryption process of MORUS consists of four parts: initialization, associated data processing, encryption, and finalization. 
+The encryption process of \MORUS consists of four parts: initialization, associated data processing, encryption, and finalization. 
 During the initialization phase, the value of the state is initialized using a key and nonce.
 Associated data block and plaintext blocks are then processed block by block.
 Then the internal state undergoes the finalization phase, which outputs the authentication tag.
 
-Every part of this process relies on iterating the \StateUpdate{} function at the core of MORUS. Each call to the \StateUpdate{} function is called a step.
+Every part of this process relies on iterating the \StateUpdate{} function at the core of \MORUS. Each call to the \StateUpdate{} function is called a step.
 In order to denote the internal state of the cipher at the $t$-th step, we use a superscript to denote the step number: the internal state at step $t$ is denoted by $S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$, where $t$ is $-16$ before the initialization and $t=0$ after the initialization.
 
 %Hereafter we explain \StateUpdate{}.
@@ -33,16 +33,16 @@ In order to denote the internal state of the cipher at the $t$-th step, we use a
 \StateUpdate{} is composed of 5 rounds with similar operations. The additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round uses the word-wise left circular shift operation, which divides a $q$-bit register value into 4 words of $w = q/4$ bits, and performs a left circular shift operation on each $w$-bit word. The word-wise circular shift constants $b_i$ in round $i$ are defined in \Cref{Tbl:rcon}. Left circular shifts on a whole $q$-bit register are also used. The register-wise circular shift constants are also listed in \Cref{Tbl:rcon}.
 \begin{table}[!htb]
 \centering
-\caption{Left Circular Shift Constants of MORUS} \label{Tbl:rcon}
+\caption{Left Circular Shift Constants of \texorpdfstring{\MORUS}{MORUS}} \label{Tbl:rcon}
 \begin{tabular}{r||ccccc|ccccc} \hline
 & \multicolumn{5}{c|}{Word-wise circular shift} & \multicolumn{5}{c}{Register-wise circular shift} \\
                   & \makebox[2em]{$b_0$} & \makebox[2em]{$b_1$} & \makebox[2em]{$b_2$} & \makebox[2em]{$b_3$} & \makebox[2em]{$b_4$} & \makebox[2em]{$b'_0$} & \makebox[2em]{$b'_1$} & \makebox[2em]{$b'_2$} & \makebox[2em]{$b'_3$} & \makebox[2em]{$b'_4$} \\ \hline
-\cipher{MORUS640} &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
-\cipher{MORUS1280}& 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\ \hline
+\MORUS[640]  &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
+\MORUS[1280] & 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\ \hline
 \end{tabular}
 \end{table}
 
-We denote those register-wise and word-wise left circular shift by $x \lll y$ and $x \lll_W y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document.)
+We denote those register-wise and word-wise left circular shift by $x \lll y$ and $x \lll_W y$, respectively. (Those are denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \MORUS design document.)
 
 Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow \StateUpdate{}(S^t,m^t)$ is defined as follows.
 \begin{align*}
@@ -64,7 +64,7 @@ S^t_2 \leftarrow S^t_2 \lll b'_4.
 \end{align*}
 
 \subsubsection{Initialization.}
-The initialization of \cipher{MORUS640} consists of loading a 128-bit key $K_{128}$ and a 128-bit nonce $IV_{128}$ into the state, and running \StateUpdate{} for 16 steps. The key and nonce are loaded into the state as follows:
+The initialization of \MORUS[640] consists of loading a 128-bit key $K_{128}$ and a 128-bit nonce $IV_{128}$ into the state, and running \StateUpdate{} for 16 steps. The key and nonce are loaded into the state as follows:
 \begin{align*}
 S^{-16}_0 = \textrm{IV}_{128}, &&
 S^{-16}_1 = K_{128}, &&
@@ -74,7 +74,7 @@ S^{-16}_4 = const_1.
 \end{align*}
 The internal state is then updated 16 times with  $\StateUpdate{}(S^t,0)$ for $t=-16,-15,\ldots,-1$. Finally, the key is XORed into the state again with $S^0_1 \leftarrow S^0_1 \oplus K_{128}$.
 
-The initialization of \cipher{MORUS1280} is slightly different from that of \cipher{MORUS640} due to the difference in register size and the two possible key sizes:
+The initialization of \MORUS[1280] is slightly different from that of \MORUS[640] due to the difference in register size and the two possible key sizes:
 \begin{itemize}
   \item[-] when the key size is 128 bits, $K = K_{128} \|K_{128}$.
   \item[-] when the key size is 256 bits, $K = K_{256}$.
@@ -91,45 +91,45 @@ After updating the state 16 times with \StateUpdate{}, the state is updated with
 
 
 \subsubsection{Associated Data Processing.}
-After initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block,  it is padded to 128 bits and 256 bits for \cipher{MORUS640} and \cipher{MORUS1280} respectively, using 0 bits. The padded full block is then used to update the state. If the length of $A$, denoted by `${\it adlen}$' is 0, the associated data processing phase is skipped.
+After initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block,  it is padded to 128 bits and 256 bits for \MORUS[640] and \MORUS[1280] respectively, using 0 bits. The padded full block is then used to update the state. If the length of $A$, denoted by `${\it adlen}$' is 0, the associated data processing phase is skipped.
 
-The state is then updated with $S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t)$ for $t=0,1,\ldots,\ell$ where $\ell = \lceil \frac{{\it adlen}}{128} \rceil -1$ and $\ell = \lceil \frac{{\it adlen}}{256} \rceil -1$ for \cipher{MORUS640} and \cipher{MORUS1280}, respectively.
+The state is then updated with $S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t)$ for $t=0,1,\ldots,\ell$ where $\ell = \lceil \frac{{\it adlen}}{128} \rceil -1$ and $\ell = \lceil \frac{{\it adlen}}{256} \rceil -1$ for \MORUS[640] and \MORUS[1280], respectively.
 
 \subsubsection{Encryption.}
-At each encryption step, a 16-byte (resp. 32-byte) message block $M_t$ is used to update the state in \cipher{MORUS640} (resp. \cipher{MORUS1280}), and a ciphertext $C_t$ is produced.
+At each encryption step, a 16-byte (resp. 32-byte) message block $M_t$ is used to update the state in \MORUS[640] (resp. \MORUS[1280]), and a ciphertext $C_t$ is produced.
 
-If the last message block is not a full block, 0 bits are used to pad it to 128 and 256 bits for \cipher{MORUS640} and \cipher{MORUS1280}, respectively, and the padded full block is used to update the state. But only the partial block is encrypted. Note that if the message length denoted by `${\it msglen}$' is 0, encryption is skipped.
+If the last message block is not a full block, 0 bits are used to pad it to 128 and 256 bits for \MORUS[640] and \MORUS[1280], respectively, and the padded full block is used to update the state. But only the partial block is encrypted. Note that if the message length denoted by `${\it msglen}$' is 0, encryption is skipped.
 
-In \cipher{MORUS640}, Let $u = \lceil \frac{{\it adlen}}{128} \rceil$ and $v = \lceil \frac{{\it msglen}}{128} \rceil$. The following is performed for $t=0, 1, \ldots, v-1$:
+In \MORUS[640], Let $u = \lceil \frac{{\it adlen}}{128} \rceil$ and $v = \lceil \frac{{\it msglen}}{128} \rceil$. The following is performed for $t=0, 1, \ldots, v-1$:
 \begin{align*}
 C^t &\leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 96) \oplus (S^{u+t}_2 \cdot S^{u+t}_3),\\
 S^{u+t+1} &\leftarrow \StateUpdate{}(S^{u+t},M^t).
 \end{align*}
 
-For \cipher{MORUS1280}, $u = \lceil \frac{{\it adlen}}{256} \rceil$ and $v = \lceil \frac{{\it msglen}}{256} \rceil$. The ciphertext block $C^t$ is computed as $C^t \leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 192) \oplus (S^{u+t}_2 \cdot S^{u+t}_3)$.
+For \MORUS[1280], $u = \lceil \frac{{\it adlen}}{256} \rceil$ and $v = \lceil \frac{{\it msglen}}{256} \rceil$. The ciphertext block $C^t$ is computed as $C^t \leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 192) \oplus (S^{u+t}_2 \cdot S^{u+t}_3)$.
 
 \subsubsection{Finalization.}
 The finalization phase generates the authentication tag $T$ using 10 more \StateUpdate{} steps. We only discuss the case where $T$ is not truncated. The associated data length and the message length are used to update the state as follows.
 \begin{enumerate}
-\item ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}$ for \cipher{MORUS640} and ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}\|0^{128}$ for \cipher{MORUS1280}, where ${\it adlen}$ and ${\it msglen}$ are represented as 64-bit integers.
+\item ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}$ for \MORUS[640] and ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}\|0^{128}$ for \MORUS[1280], where ${\it adlen}$ and ${\it msglen}$ are represented as 64-bit integers.
 \item $S^{u+v}_4 \leftarrow S^{u+v}_4 \oplus S^{u+v}_0.$
 \item For $t = u+v, u+v+1, \ldots, u+v+9,$ compute
 %\begin{equation*}
 $S^{t+1} \leftarrow \StateUpdate{} (S^t, {\it tmp})$.
 %\end{equation*}
-\item For \cipher{MORUS640}, $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$. For \cipher{MORUS1280}, $S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ is computed and the least significant 128 bits are produced as a tag $T$.
+\item For \MORUS[640], $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$. For \MORUS[1280], $S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ is computed and the least significant 128 bits are produced as a tag $T$.
 \end{enumerate}
 
 \subsubsection{Security.}
 With a 128-bit tag, integrity is claimed up to 128 bits and confidentiality is claimed up to the number of bits of the key. See Table~\ref{Tbl/security} for summary.
 \begin{table}[!htb]
 \centering
-\caption{Security goals of MORUS.} \label{Tbl/security}
+\caption{Security goals of \MORUS.} \label{Tbl/security}
 \begin{tabular}{ccc}\hline
                         & Confidentiality (bits) & Integrity (bits) \\ \hline
-\cipher{MORUS640}-128   & 128                    & 128              \\
-\cipher{MORUS1280}-128  & 128                    & 128              \\
-\cipher{MORUS1280}-256  & 256                    & 128              \\ \hline
+\MORUS[640-128]   & 128                    & 128              \\
+\MORUS[1280-128]  & 128                    & 128              \\
+\MORUS[1280-256]  & 256                    & 128              \\ \hline
 \end{tabular}
 \end{table}
 
@@ -156,11 +156,11 @@ $S^t_i$ &:& the $i$-th register at the beginning of $t$-th encryption step.\\
 $S^t_{i,j}$ &:& the $j$-th bit of $S^t_i$, with $S^t_{i,0}$ being the rightmost bit.
 \end{tabular}
 }
-In the above notation, bit positions are always taken modulo the register size, i.e. 128 for \cipher{MORUS640} and 256 for \cipher{MORUS1280}.
+In the above notation, bit positions are always taken modulo the register size, i.e. 128 for \MORUS[640] and 256 for \MORUS[1280].
 
 For simplicity, in the remainder, the $0$-th encryption step will often denote the encryption step where our linear trail starts. Any encryption step could be chosen for that purpose, as long as at least four more encryption steps follow. In particular the $0$-th encryption step from the perspective of the trail does not have to be the first encryption step after initialization.
 
-%Finally, let $x$ denote a register. Recall that registers of \cipher{MORUS} are composed of four words. We now define register-wise and word-wise rotations (denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \cipher{MORUS} design document):\\
+%Finally, let $x$ denote a register. Recall that registers of \MORUS are composed of four words. We now define register-wise and word-wise rotations (denoted by \texttt{<<<} and \texttt{Rotl\_xxx\_yy} respectively in the \MORUS design document):\\
 %\centerline{
 %\def\arraystretch{1.25}
 %\begin{tabular}{lcl}
@@ -169,4 +169,4 @@ For simplicity, in the remainder, the $0$-th encryption step will often denote t
 %\end{tabular}
 %}
 %
-%The $b_i$'s denote rotation constants, whose value depends on which version of \cipher{MORUS} is considered. Throughout, $w$ denotes the  word size, i.e. $w=32$ for \cipher{MORUS640} and $w=64$ for \cipher{MORUS1280}.
+%The $b_i$'s denote rotation constants, whose value depends on which version of \MORUS is considered. Throughout, $w$ denotes the  word size, i.e. $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
