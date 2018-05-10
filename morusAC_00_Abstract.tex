@@ -3,7 +3,7 @@
 \begin{abstract}
   \morus is a high-performance authenticated encryption algorithm
   submitted to the CAESAR competition, and recently selected as a
-  finalist.  There are three version of \morus: \morus[640] with a
+  finalist.  There are three versions of \morus: \morus[640] with a
   640-bit state and a 128-bit key, and \morus[1280] with a 1280-bit
   state and a 128-bit or 256-bit key; for all versions the security
   claim for confidentiality matches the key size.  In this paper, we
@@ -24,11 +24,11 @@
 % From the nature of the linear cryptanalysis, the attack works in the known plaintext attacks. Moreover, if a fixed plaintext is encrypted multiple times, the correlation can be used to recover a 1-bit information of the plaintext. The attack principally has larger impact because it can be used to recover more unknown bits of the plaintext, provided an initial segment of the plaintext is known. 
 %
   To identify the bias, we exploit rotational symmetries in \morus
-  using linear masks that are invariants by word-rotations of the
+  using linear masks that are invariant by word-rotations of the
   state.  This motivates us to introduce word-oriented versions of
   \morus called \minimorus, which help the
   analysis. The attack has been implemented and verified on
-  \minimorus, having a bias of $2^{-16}$.
+  \minimorus, where it yields a bias of $2^{-16}$.
 
 %The bias for \cipher{MORUS1280} is slightly worse than the 4 copies of \cipher{MiniMORUS}, and the mechanism behind is explained.
 %
@@ -58,7 +58,7 @@
   components.  We show a forgery attack when the finalization is
   reduced from 10 rounds to 3, and a key-recovery attack in the
   nonce-misue setting when the initialization is reduced from 16 to 10
-  steps.  These additional results do not threaten the full \morus but
+  steps.  These additional results do not threaten full \morus, but
   studying all aspects of the design is useful to understand its
   strengths and weaknesses.
 
