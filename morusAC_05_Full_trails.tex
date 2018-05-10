@@ -127,7 +127,7 @@ In our analysis so far, for the sake of simplicity, we have assumed that all pla
 To see this, recall that plaintext bits contribute to the encryption process in two ways (cf. \Cref{subsec/Spec}):
 \begin{enumerate}
 \item They are added to some bits derived from the state to form the ciphertext.\label{item:1}
-\item During each encryption step, the \StateUpdate function adds a plaintext block to every register except $S_0$.\label{item:2}
+\item During each encryption step, the \StateUpdate{} function adds a plaintext block to every register except $S_0$.\label{item:2}
 \end{enumerate}
 
 The effect of \Cref{item:1} is that whenever we use a ciphertext bit in our full trail equation, the corresponding plaintext bit also needs to be XORed in. Because ciphertext bits only contribute linearly to the trail equation, this only adds a linear combination of plaintext bits to the equation.
