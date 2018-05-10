@@ -35,8 +35,8 @@ The main focus is on differential properties, and not many details are given for
 In third-party analysis,
 Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \MORUS.
 Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \MORUS[640] is well beyond the security claim.
-Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \MORUS[1280] if initialization is reduced to 3.6 out of 16 rounds, and discuss the security of \MORUS against internal differentials and rotational cryptanalysis.
-Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \MORUS[1280] with negligible complexity.
+Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \MORUS[1280] if initialization is reduced to 3.6 out of 16 steps, and discuss the security of \MORUS against internal differentials and rotational cryptanalysis.
+Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 steps of the initialization of \MORUS[1280] with negligible complexity.
 Additionally, 
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
@@ -69,15 +69,15 @@ In addition, we symbolically evaluated the relevant equations.
 
 In addition to this attack on full \MORUS, we also analyze the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
 While this analysis does not threaten full \MORUS, it complements the main result to provide a better understanding of the \MORUS design approach.
-We present a forgery attack for round-reduced \MORUS[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 rounds. This nonce-respecting attack is based on a differential analysis of the padding rule.
-The second result targets a round-reduced initialization with 10 out of 16 rounds, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
+We present a forgery attack for round-reduced \MORUS[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 steps. This nonce-respecting attack is based on a differential analysis of the padding rule.
+The second result targets a round-reduced initialization with 10 out of 16 steps, and extends a state-recovery attack (e.g., in a nonce-misuse setting) into a key-recovery attack.
 
 \subsubsection*{Outline.}
 This paper is organized as follows.
 We first provide a brief description of \MORUS in \Cref{sec/Preliminaries}.
 In \Cref{sec/introminimorus}, we introduce \MiniMORUS, an abstraction of \MORUS based on a certain class of rotational symmetries.
 We analyze this simplified scheme in \Cref{sec/minitrails} and provide a ciphertext-only linear approximation with a weight of 16.
-We then extend our result to the full scheme in \Cref{sec/fulltrails}, showing a bias in the keystream over 5 rounds,
+We then extend our result to the full scheme in \Cref{sec/fulltrails}, showing a bias in the keystream over 5 steps,
 and discuss the implications of our observation for the security of \MORUS in \Cref{sec/Discussion}.
 In \Cref{sec/IniFin}, we present our results on the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
 Finally, we conclude in \Cref{sec/Conclusion}.

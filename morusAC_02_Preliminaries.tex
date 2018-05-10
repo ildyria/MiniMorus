@@ -3,18 +3,22 @@
 \section{Preliminaries}
 \label{sec/Preliminaries}
 
-\MORUS \cite{MORUS} is a family of authenticated ciphers with two internal state sizes: 640 and 1280 bits.
-Each member is called \MORUS[640] and \MORUS[1280], respectively.
-
-An instance of \MORUS is parametrized by a secret key. During encryption, it takes as input a plaintext message and possibly some associated data, and outputs a ciphertext together with an authentication tag.
-In the recommended parameters, \MORUS[640] supports 128-bit keys and \MORUS[1280] supports both 128-bit and 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
+\MORUS is a family of authenticated ciphers designed by Wu and Huang \cite{MORUS}.
+In this section, we provide a brief description of \MORUS and introduce the
+notation for linear approximations.
 
 \subsection{Specification of \MORUS}
 \label{subsec/Spec}
 
-The internal state of \MORUS is composed of five registers. Let $q$ be the register size, where $q = 128$ for \MORUS[640] and $q=256$ for \MORUS[1280]. Let $S_i, i \in\{0,1,2,3,4\}$ be a register. Then the internal state of \MORUS may be represented as $S_0\|S_1\|S_2\|S_3\|S_4$.
+An instance of \MORUS is parametrized by a secret key $K$. During encryption, it takes as input a plaintext message $M$, a nonce $N$, and possibly some associated data $A$, and outputs a ciphertext $C$ together with an authentication tag $T$.
+
+The \MORUS family supports two internal state sizes: 640 and 1280 bits,
+referred to as \MORUS[640] and \MORUS[1280], respectively.
+Three parameter sets are recommended: \MORUS[640] supports 128-bit keys and \MORUS[1280] supports either 128-bit or 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
+
+The internal state of \MORUS is composed of five $q$-bit \emph{registers} $S_i$, $i \in\{0,1,2,3,4\}$, where $q = 128$ for \MORUS[640] and $q=256$ for \MORUS[1280]. The internal state of \MORUS may be represented as $S_0\|S_1\|S_2\|S_3\|S_4$.
 Registers are themselves divided into four $q/4$-bit \emph{words}.
-Throughout the paper, we denote the word size by $w = q/4$, i.e. $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
+Throughout the paper, we denote the word size by $w = q/4$, i.e., $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
 
 The encryption process of \MORUS consists of four parts: initialization, associated data processing, encryption, and finalization. 
 During the initialization phase, the value of the state is initialized using a key and nonce.
