@@ -1,3 +1,5 @@
+%!TEX root = morusAC.tex
+
 \section{Introduction}
 \label{sec/Introduction}
 
@@ -27,21 +29,19 @@ in particular, the designers claim that the software performance even surpasses
 and that \morus is the fastest authenticated cipher not using \cipher{AES-NI} \cite{MORUS}.
 
 \subsubsection*{Related Work.}
-In the submission document, the designers discuss the security of \morus against
-several attacks, including algebraic, differential, and guess-and-determine attacks,
-as well as the general design rationale of the initialization, encryption process, and finalization \cite{MORUS}.
-The main focus is on differential properties, whereas not many details are given for the other attack vectors.
+In the \morus submission document, the designers discuss the security of \morus against
+several attacks, including algebraic, differential, and guess-and-determine attacks.
+The main focus is on differential properties, and not many details are given for other attack vectors.
 In third-party analysis,
-Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher for the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \morus.
+Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \morus.
 Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \morus[640] is well beyond the security claim.
-Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \morus[1280] if the initialization is reduced to 3.6 out of 16 rounds and discuss the security of \morus against internal differentials and rotational cryptanalysis.
+Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \morus[1280] if initialization is reduced to 3.6 out of 16 rounds, and discuss the security of \morus against internal differentials and rotational cryptanalysis.
 Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 rounds of the initialization of \morus[1280] with negligible complexity.
 Additionally, 
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
 independently propose state-recovery and forgery attacks on \morus in a nonce-misuse setting with negligible data and time complexities.
-
-\todo[inline]{Related designs. Brice, do you want to add a sentence to discuss \cite{sacryptMinaud14} on AEGIS \cite{AEGIS}?}
+Finally, a keystream bias of the same nature as our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher AEGIS \cite{AEGIS}, which shares the same overall structure as \morus.
 
 \subsubsection*{Our Contributions.}
 We analyze the security of \morus and present a keystream distinguisher based on

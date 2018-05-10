@@ -8,12 +8,13 @@ Reasons:
 Committee list on https://asiacrypt.iacr.org/2018/callforpapers.html
 
 COI:
-- Virginie Lallemend
+- Virginie Lallemand
 - Gaëtan Leurent 
 - Stefan Mangard
 - Brice Minaud
 - Lejla Batina
 - Bart Mennink
 - Gilles Van Assche
+- Martin R. Albrecht
 - ...
 
