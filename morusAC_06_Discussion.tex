@@ -7,11 +7,11 @@
 
 We now discuss the impact of these attacks on the security of \MORUS.
 
-\subsubsection{Keystream biases.}
+\subsubsection{Keystream correlation.}
 
-We emphasize that the biases we uncover between ciphertext bits are
-\emph{absolute}, in the sense that they do not depend on the encryption
-key, or the nonce.  This is the same situation as the keystream biases
+We emphasize that the correlation we uncover between ciphertext bits is
+\emph{absolute}, in the sense that it does not depend on the encryption
+key, or on the nonce.  This is the same situation as the keystream correlations
 in AEGIS~\cite{sacryptMinaud14}.  As such, they can be leveraged to
 mount an attack in the broacast setting, where the same message is
 encrypted multiple times with different IVs and potentially different
@@ -23,7 +23,7 @@ tricking the victim to visit a malicious website) to generate a large
 number of request to a secure website.  Because of details of the HTTP
 protocol, each request includes an authentication token to identify the
 user, and the attacker can target this token as a repeated plaintext.
-Concretely, biases in the RC4 keystream have been exploited in this
+Concretely, correlations in the RC4 keystream have been exploited in this
 setting, leading to the recovery of authentication cookies in
 practice~\cite{DBLP:conf/uss/AlFardanBPPS13}.
 
@@ -36,7 +36,7 @@ limitation does not apply: all that matters for our attack is that the
 same plaintext be encrypted enough times.
 
 With the trail presented in this work, the data complexity is clearly
-out of reach in practice, since exploiting the bias would require
+out of reach in practice, since exploiting the correlation would require
 $2^{152}$ encrypted blocks for \cipher{MORUS1280}, and $2^{146}$
 encrypted blocks for \cipher{MORUS640}. The data complexity could be
 slightly lowered by leveraging multilinear cryptanalysis; indeed, the
