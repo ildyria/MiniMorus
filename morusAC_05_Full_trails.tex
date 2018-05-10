@@ -119,6 +119,27 @@ In the case of \MORUS[640], collisions between rotation constants further compli
 %TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
 %(maybe not relevant due to overall complexity\dots)
 
+\subsection{Taking Variable Plaintext into Account}
+\label{subsec:variable}
+
+In our analysis so far, for the sake of simplicity, we have assumed that all plaintext blocks are zero. We now examine what happens if we remove that assumption, and integrate plaintext variables into our analysis. What we show is that plaintext variables only contribute linearly to the trail. In other words, the full trail equation with plaintext variables is equal to the full trail equation with all-zero plaintext XORed with a linear combination of plaintext variables.
+
+To see this, recall that plaintext bits contribute to the encryption process in two ways (cf. \Cref{subsec/Spec}):
+\begin{enumerate}
+\item They are added to some bits derived from the state to form the ciphertext.\label{item:1}
+\item During each encryption step, the \StateUpdate function adds a plaintext block to every register except $S_0$.\label{item:2}
+\end{enumerate}
+
+The effect of \Cref{item:1} is that whenever we use a ciphertext bit in our full trail equation, the corresponding plaintext bit also needs to be XORed in. Because ciphertext bits only contribute linearly to the trail equation, this only adds a linear combination of plaintext bits to the equation.
+
+Regarding \Cref{item:2}, recall that the full trail equation is a linear combination of (the symmetrized version of) equations $A^t_i$, $B^t_i$, $C^t_i$, $D^t_i$, $E^t_i$ in \Cref{sec:minitraileq}. Also observe that in each equation, state bits that are shifted by a word-wise rotation only contribute linearly. Because plaintext bits are XORed into each register at the same time word-wise rotation is performed, this implies that plaintext bits resulting from \Cref{item:2} also only contribute linearly.
+In fact in all cases, it so happens that updating the equation to take plaintext variables into account simply involves XORing in the plaintext bit $M^t_i$.
+
+It may be observed that message blocks in the \StateUpdate{} function only contribute linearly to the state, and in that regard play a role similar to key bits in an SPN cipher; and indeed in SPN ciphers, key bits contribute linearly to linear trails \cite{eurocryptMatsui93}.
+
+In the end, with variable plaintext, our trail yields a biased linear combination of ciphertext bits and plaintext bits.
+In regards to attacks, this means the situation is effectively the same as with a biased stream cipher: in particular if the plaintext is known we obtain a distinguisher; and if a fixed unknown plaintext is encrypted multiple times (possibly also with some known variable part) then our trail yields a plaintext recovery attack.
+
 %%% Local Variables:
 %%% TeX-master: "morusAC"
 %%% End:
