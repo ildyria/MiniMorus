@@ -34,6 +34,7 @@ several attacks, including algebraic, differential, and guess-and-determine atta
 The main focus is on differential properties, and not many details are given for other attack vectors.
 In third-party analysis,
 Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \MORUS.
+Shi et~al.~\cite{aiieShiGLZ16} analyze the differential properties of the finalization reduced to 2 out of 10 steps, but find no attacks.
 Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \MORUS[640] is well beyond the security claim.
 Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \MORUS[1280] if initialization is reduced to 3.6 out of 16 steps, and discuss the security of \MORUS against internal differentials and rotational cryptanalysis.
 Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 steps of the initialization of \MORUS[1280] with negligible complexity.
@@ -80,7 +81,7 @@ We analyze this simplified scheme in \Cref{sec/minitrails} and provide a ciphert
 We then extend our result to the full scheme in \Cref{sec/fulltrails}, showing a correlation in the keystream over 5 steps,
 and discuss the implications of our observation for the security of \MORUS in \Cref{sec/Discussion}.
 In \Cref{sec/IniFin}, we present our results on the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
-Finally, we conclude in \Cref{sec/Conclusion}.
+We conclude in \Cref{sec/Conclusion}.
 
 %%% Local Variables:
 %%% TeX-master: "morusAC"
