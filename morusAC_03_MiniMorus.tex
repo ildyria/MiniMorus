@@ -14,7 +14,7 @@ We begin with a few observations about the \StateUpdate{} function. Besides XOR 
 \end{enumerate}
 The second type of rotation always shifts registers by a multiple of the word size $w$. This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a register-wise rotation by $w$ bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
 
-To build our linear trail, we start in a linear combinations of bits within a single register.
+To build our linear trail, we start with a linear combinations of bits within a single register.
 \begin{definition}
 Recall that $w$ denotes the word size in bits, and $4w$ is the size of a register. A linear combination of the form:
 \[

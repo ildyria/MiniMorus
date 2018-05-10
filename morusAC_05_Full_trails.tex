@@ -6,7 +6,7 @@
 In the previous section, we presented a linear trail for the reduced ciphers \MiniMORUS[1280] and \MiniMORUS[640]. We now turn to the full ciphers \MORUS[1280] and \MORUS[640].
 
 \subsection{Symmetrizing the Trail}
-In order to build a trail for the full \MORUS, we proceed exactly as we did for \MiniMORUS, following exactly the same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \MiniMORUS to the four-word registers of full \MORUS, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec/introminimorus}.
+In order to build a trail for the full \MORUS, we proceed exactly as we did for \MiniMORUS, following the same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \MiniMORUS to the four-word registers of full \MORUS, we make every term $S^t_{i,j}$ and $C^t_j$ symmetric, in the sense of \Cref{sec/introminimorus}.
 That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we \emph{symmetrize} the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=64$ (for \MORUS[1280]), the term $S^3_{2,0}$ is symmetrized into:
 \[
 S^3_{2,0} \oplus S^3_{2,64} \oplus S^3_{2,128} \oplus S^3_{2,192}.

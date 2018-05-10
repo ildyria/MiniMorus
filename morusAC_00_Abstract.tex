@@ -3,32 +3,30 @@
 \begin{abstract}
   \MORUS is a high-performance authenticated encryption algorithm
   submitted to the CAESAR competition, and recently selected as a
-  finalist.  There are three versions of \MORUS: \MORUS[640] with
-  %a 640-bit state and
-  a 128-bit key, and \MORUS[1280] with
-  % a 1280-bit state and
-  a 128-bit or 256-bit key. For all versions the security
+  finalist.  There are three versions of \MORUS: \MORUS[640] with a
+  640-bit state and a 128-bit key, and \MORUS[1280] with a 1280-bit
+  state and a 128-bit or 256-bit key; for all versions the security
   claim for confidentiality matches the key size.  In this paper, we
   analyze the components of this algorithm (initialization, state
   update and tag generation), and report several results.
 
-  As our main result, we exhibit a
-  linear bias in the keystream of full \MORUS, which can be used to distinguish its output
-  from random, and to recover some plaintext bits in the
+  Our main result is on the full state update of \MORUS: we found a
+  linear bias in the keystream that can be used to distinguish the
+  output from random, and to recover some plaintext bits in the
   broadcast setting.  For \MORUS[1280], the bias is $2^{-76}$,
-  which can be exploited after around $2^{152}$ encryptions, less than
-  would be expected for a 256-bit secure cipher.  For
-  \MORUS[640], the same attack results in a bias of $2^{-73}$, which does not threaten
+  which can be identified after around $2^{152}$ encryptions, less than
+  would be expected for a 256-bit secure cipher.  On the other hand, for
+  \MORUS[640], the bias is $2^{-73}$, which does not threaten
   the security of the cipher.
 
 % More precisely, we show that a linear correlation exists between some bits of the plaintext and ciphertext. Moreover the bias depends purely on the plaintext, and not on the secret key nor the nonce, hence restricting the single use of nonce or even rekeying does not prevent the attacks.
 %
 % From the nature of the linear cryptanalysis, the attack works in the known plaintext attacks. Moreover, if a fixed plaintext is encrypted multiple times, the correlation can be used to recover a 1-bit information of the plaintext. The attack principally has larger impact because it can be used to recover more unknown bits of the plaintext, provided an initial segment of the plaintext is known. 
 %
-  To identify this bias, we make use of rotational symmetries in \MORUS
+  To identify this bias, we exploit rotational symmetries in \MORUS
   using linear masks that are invariant by word-rotations of the
-  state.  This motivates us to introduce single-word versions of
-  \MORUS called \MiniMORUS, which aid in the
+  state.  This motivates us to introduce single word versions of
+  \MORUS called \MiniMORUS, which help the
   analysis. The attack has been implemented and verified on
   \MiniMORUS, where it yields a bias of $2^{-16}$.
 
@@ -56,11 +54,11 @@
 %times, regardless of whether each encryption uses a different key.
 
   We also study reduced versions of the initialization and
-  finalization of \MORUS, aiming to evaluate the security margin of these
-  components.  We show a forgery attack when finalization is
+  finalization of \MORUS to evaluate the security margin of these
+  components.  We show a forgery attack when the finalization is
   reduced from 10 rounds to 3, and a key-recovery attack in the
-  nonce-misue setting when initialization is reduced from 16 to 10
-  steps.  These additional results do not threaten full \MORUS, but
+  nonce-misue setting when the initialization is reduced from 16 to 10
+  steps.  These additional results do not threaten the full \MORUS, but
   studying all aspects of the design is useful to understand its
   strengths and weaknesses.
 
