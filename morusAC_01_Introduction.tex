@@ -62,7 +62,7 @@ and can be exploited using about $2^{152}$ encrypted blocks.
 We note that our attack is nonce-respecting, and that rekeying does not prevent it: the biases are independent of the secret encryption key and nonce, and can be exploited as long as a given plaintext block is encrypted sufficiently often, regardless of whether each encryption uses a different key.
 
 To obtain this result, we propose a simplified abstraction of \MORUS, called \MiniMORUS, which takes advantage of certain rotational symmetries in \MORUS.
-We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
+We observe that the actual bias of the approximation is better than suggested by the construction of the trails.
 To confirm the validity of our analysis,
 we practically verified the bias of the linear approximation for \MiniMORUS and of partial approximations for \MORUS.
 In addition, we symbolically evaluated the relevant equations.
