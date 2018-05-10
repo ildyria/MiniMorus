@@ -14,7 +14,22 @@ notation for linear approximations.
 The \MORUS family supports two internal state sizes: 640 and 1280 bits,
 referred to as \MORUS[640] and \MORUS[1280], respectively.
 Three parameter sets are recommended: \MORUS[640] supports 128-bit keys and \MORUS[1280] supports either 128-bit or 256-bit keys. The tag size is 128 bits or shorter. The designers strongly recommend using a 128-bit tag.
+%
+%\subsubsection{Security.}
+With a 128-bit tag, integrity is claimed up to 128 bits and confidentiality is claimed up to the number of key bits (\Cref{Tbl/security}).
 
+\begin{table}[b]
+\caption{Security goals of \MORUS.} \label{Tbl/security}
+\centering
+\begin{tabular}{@{}l@{\quad}c@{\qquad}c@{}}\toprule
+                        & Confidentiality (bits) & Integrity (bits) \\ \midrule
+\MORUS[640-128]   & 128                    & 128              \\
+\MORUS[1280-128]  & 128                    & 128              \\
+\MORUS[1280-256]  & 256                    & 128              \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{State.}
 The internal state of \MORUS is composed of five $q$-bit \emph{registers} $S_i$, $i \in\{0,1,2,3,4\}$, where $q = 128$ for \MORUS[640] and $q=256$ for \MORUS[1280]. The internal state of \MORUS may be represented as $S_0\|S_1\|S_2\|S_3\|S_4$.
 Registers are themselves divided into four $q/4$-bit \emph{words}.
 Throughout the paper, we denote the word size by $w = q/4$, i.e., $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
@@ -44,26 +59,8 @@ Additionally, each round uses rotations on a whole $q$-bit register by a multipl
 denoted $\lll$ in the following and \texttt{<<<} in the design document.
 The register-wise rotation constants $b_i'$ are also listed in \Cref{Tbl:rcon}.
 %\todo{rounds $0\dots4$ or $1\dots5$?}
-\begin{table}%[!bht]
-  \centering
-  \caption{Rotation constants $b_i$ for $\lll_w$ and $b_i'$ for $\lll$ in round $i$ of \texorpdfstring{\MORUS}{MORUS}.} \label{Tbl:rcon}
-  \setlength{\tabcolsep}{6pt}
-  \begin{tabular}{@{}l@{\qquad}rrrrr rrrrr@{}}
-    \toprule
-    & \multicolumn{5}{@{}c@{~}}{Word-wise rotation $\lll_w$} & \multicolumn{5}{@{}c@{}}{Register-wise rotation $\lll$} \\
-    \cmidrule(r){2-6}
-    \cmidrule(l){7-11}
-    & $b_0$  & $b_1$  & $b_2$  & $b_3$  & $b_4$  
-    & $b_0'$ & $b_1'$ & $b_2'$ & $b_3'$ & $b_4'$  \\
-    %& \makebox[2em]{$b_0$} & \makebox[2em]{$b_1$} & \makebox[2em]{$b_2$} & \makebox[2em]{$b_3$} & \makebox[2em]{$b_4$} & \makebox[2em]{$b'_0$} & \makebox[2em]{$b'_1$} & \makebox[2em]{$b'_2$} & \makebox[2em]{$b'_3$} & \makebox[2em]{$b'_4$} \\ \hline
-    \midrule
-    \MORUS[640]  &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
-    \MORUS[1280] & 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
-Let `$\cdot$' denote the bit-wise AND operation. $S^{t+1} \leftarrow \StateUpdate{}(S^t,m^t)$ is defined as follows:
+$S^{t+1} \leftarrow \StateUpdate{}(S^t,m^t)$ is defined as follows, where $\cdot$ denotes bit-wise AND, $\oplus$ is bit-wise XOR, and $m_i$ is defined depending on the context:
 \begin{align*}
 \textrm{Round 1:} &&
 S^{t+1}_0 &\leftarrow ( S^t_0 \oplus (S^t_1 \cdot S^t_2) \oplus S^t_3 )            \lll_w b_0, &
@@ -81,6 +78,25 @@ S^t_1 \leftarrow S^t_1 \lll b'_3.\\
 S^{t+1}_4 &\leftarrow ( S^t_4 \oplus (S^t_0 \cdot S^t_1) \oplus S^t_2 \oplus m_i ) \lll_w b_4, &
 S^t_2 \leftarrow S^t_2 \lll b'_4.
 \end{align*}
+
+\begin{table}[t]%[!bht]
+  \centering
+  \caption{Rotation constants $b_i$ for $\lll_w$ and $b_i'$ for $\lll$ in round $i$ of \texorpdfstring{\MORUS}{MORUS}.} \label{Tbl:rcon}
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}l@{\qquad}rrrrr rrrrr@{}}
+    \toprule
+    & \multicolumn{5}{@{}c@{~}}{Word-wise rotation $\lll_w$} & \multicolumn{5}{@{}c@{}}{Register-wise rotation $\lll$} \\
+    \cmidrule(r){2-6}
+    \cmidrule(l){7-11}
+    & $b_0$  & $b_1$  & $b_2$  & $b_3$  & $b_4$  
+    & $b_0'$ & $b_1'$ & $b_2'$ & $b_3'$ & $b_4'$  \\
+    %& \makebox[2em]{$b_0$} & \makebox[2em]{$b_1$} & \makebox[2em]{$b_2$} & \makebox[2em]{$b_3$} & \makebox[2em]{$b_4$} & \makebox[2em]{$b'_0$} & \makebox[2em]{$b'_1$} & \makebox[2em]{$b'_2$} & \makebox[2em]{$b'_3$} & \makebox[2em]{$b'_4$} \\ \hline
+    \midrule
+    \MORUS[640]  &  5 & 31 &  7 & 22 & 13 & 32 &  64 &  96 &  64 & 32 \\
+    \MORUS[1280] & 13 & 46 & 38 &  7 &  4 & 64 & 128 & 192 & 128 & 64 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsubsection{Initialization.}
 The initialization of \MORUS[640] starts by loading the 128-bit key $K_{128}$ and the 128-bit nonce $N_{128}$ into the state together with constants $c_0, c_1$:
@@ -118,55 +134,39 @@ else, the state is updated as
 \[S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t) \qquad \text{for } t=0,1,\ldots,\lceil |A|/q\rceil-1.\]
 
 \subsubsection{Encryption.}
-At each encryption step, a 16-byte (resp. 32-byte) message block $M_t$ is used to update the state in \MORUS[640] (resp. \MORUS[1280]), and a ciphertext $C_t$ is produced.
-
-If the last message block is not a full block, 0 bits are used to pad it to 128 and 256 bits for \MORUS[640] and \MORUS[1280], respectively, and the padded full block is used to update the state. But only the partial block is encrypted. Note that if the message length denoted by `${\it msglen}$' is 0, encryption is skipped.
-
-In \MORUS[640], Let $u = \lceil \frac{{\it adlen}}{128} \rceil$ and $v = \lceil \frac{{\it msglen}}{128} \rceil$. The following is performed for $t=0, 1, \ldots, v-1$:
+Next, the message is processed in blocks $M_t$ of  $q \in \{128, 256\}$ bits to update the state and produce the ciphertext blocks $C_t$.
+If the last message block is not a full block, a string of 0's is used to pad it to 128 or 256 bits for \MORUS[640] and \MORUS[1280], respectively, and the padded full block is used to update the state. However, only the partial block is encrypted. Note that if the message length denoted by $|M|$ is 0, encryption is skipped.
+Let $u = \lceil |A|/q \rceil$ and $v = \lceil |M|/q \rceil$. The following is performed for $t=0, 1, \ldots, v-1$:
 \begin{align*}
-C^t &\leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 96) \oplus (S^{u+t}_2 \cdot S^{u+t}_3),\\
+C^t &\leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll b_2') \oplus (S^{u+t}_2 \cdot S^{u+t}_3),\\
 S^{u+t+1} &\leftarrow \StateUpdate{}(S^{u+t},M^t).
 \end{align*}
 
-For \MORUS[1280], $u = \lceil \frac{{\it adlen}}{256} \rceil$ and $v = \lceil \frac{{\it msglen}}{256} \rceil$. The ciphertext block $C^t$ is computed as $C^t \leftarrow M^t \oplus S^{u+t}_0 \oplus (S^{u+t}_1 \lll 192) \oplus (S^{u+t}_2 \cdot S^{u+t}_3)$.
-
 \subsubsection{Finalization.}
-The finalization phase generates the authentication tag $T$ using 10 more \StateUpdate{} steps. We only discuss the case where $T$ is not truncated. The associated data length and the message length are used to update the state as follows.
+The finalization phase generates the authentication tag $T$ using 10 more \StateUpdate{} steps. We only discuss the case where $T$ is not truncated. The associated data length and the message length are used to update the state:
 \begin{enumerate}
-\item ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}$ for \MORUS[640] and ${\it tmp} \leftarrow {\it adlen}\|{\it msglen}\|0^{128}$ for \MORUS[1280], where ${\it adlen}$ and ${\it msglen}$ are represented as 64-bit integers.
+\item $L \leftarrow |A| \mathrel\| |M|$ for \MORUS[640] or $L \leftarrow |A| \mathrel\| |M| \mathrel\|0^{128}$ for \MORUS[1280], where $|A|, |M|$ are represented as 64-bit integers.
 \item $S^{u+v}_4 \leftarrow S^{u+v}_4 \oplus S^{u+v}_0.$
 \item For $t = u+v, u+v+1, \ldots, u+v+9,$ compute
 %\begin{equation*}
 $S^{t+1} \leftarrow \StateUpdate{} (S^t, {\it tmp})$.
 %\end{equation*}
-\item For \MORUS[640], $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$. For \MORUS[1280], $S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ is computed and the least significant 128 bits are produced as a tag $T$.
+%\item For \MORUS[640], $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 96) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$. For \MORUS[1280], $S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll 192) \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$ is computed and the least significant 128 bits are produced as a tag $T$.
+\item $T = S^{u+v+10}_0 \oplus (S^{u+v+10}_1 \lll b_2') \oplus ( S^{u+v+10}_2 \cdot S^{u+v+10}_3)$, or the least significant 128 bits of this value in case of \MORUS[1280].
 \end{enumerate}
-
-\subsubsection{Security.}
-With a 128-bit tag, integrity is claimed up to 128 bits and confidentiality is claimed up to the number of bits of the key. See Table~\ref{Tbl/security} for summary.
-\begin{table}[!htb]
-\centering
-\caption{Security goals of \MORUS.} \label{Tbl/security}
-\begin{tabular}{ccc}\hline
-                        & Confidentiality (bits) & Integrity (bits) \\ \hline
-\MORUS[640-128]   & 128                    & 128              \\
-\MORUS[1280-128]  & 128                    & 128              \\
-\MORUS[1280-256]  & 256                    & 128              \\ \hline
-\end{tabular}
-\end{table}
 
 \subsection{Notation}
 \label{subsec/Notation}
 
-We define the \emph{bias} of an event $E$ as:
-\[
-\bias(E) \eqdef 2\Pr(E)-1.
-\]
-Note that the bias is sometimes defined as half the above value in the literature. We also define the \emph{weight} of an event as:
-\[
-\weight(E) \eqdef -\log|\bias(E)|
-\]
-where $\log()$ denotes logarithm in base 2. By the piling-up lemma, the bias (resp. weight) of an XOR of independent variables is equal to the product (resp. sum) of their individual biases (resp. weights) \cite{eurocryptMatsui93}.
+In the following, we use linear approximations \cite{eurocryptMatsui93}
+that hold with probability $\Pr(E) = \frac{1}{2} + \varepsilon$, i.e., they are biased with bias $\varepsilon$.
+The \emph{correlation} $\corr(E)$ of the approximation and its \emph{weight} $\weight(E)$ are defined as
+\begin{align*}
+\corr(E) &\eqdef 2\Pr(E)-1 = 2 \varepsilon\,, \\
+%We also use the \emph{weight} of the approximation, defined as
+\weight(E) &\eqdef -\log_2|\corr(E)|\,,
+\end{align*}
+where $\log_2()$ denotes logarithm in base 2. By the piling-up lemma, the correlation (resp. weight) of an XOR of independent variables is equal to the product (resp. sum) of their individual correlations (resp. weights) \cite{eurocryptMatsui93}.
 
 We also recall the following notation from the previous section, where an \emph{encryption step} refers to one call to the \StateUpdate{} function:\\
 \centerline{
@@ -178,7 +178,7 @@ $S^t_i$ &:& the $i$-th register at the beginning of $t$-th encryption step.\\
 $S^t_{i,j}$ &:& the $j$-th bit of $S^t_i$, with $S^t_{i,0}$ being the rightmost bit.
 \end{tabular}
 }
-In the above notation, bit positions are always taken modulo the register size, i.e. 128 for \MORUS[640] and 256 for \MORUS[1280].
+In the above notation, bit positions are always taken modulo the register size $q$, i.e., $q=128$ for \MORUS[640] and $q=256$ for \MORUS[1280].
 
 For simplicity, in the remainder, the $0$-th encryption step will often denote the encryption step where our linear trail starts. Any encryption step could be chosen for that purpose, as long as at least four more encryption steps follow. In particular the $0$-th encryption step from the perspective of the trail does not have to be the first encryption step after initialization.
 
