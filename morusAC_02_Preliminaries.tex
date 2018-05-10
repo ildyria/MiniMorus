@@ -22,7 +22,7 @@ Throughout the paper, we denote the word size by $w = q/4$, i.e., $w=32$ for \MO
 
 The encryption process of \MORUS consists of four parts: initialization, associated data processing, encryption, and finalization. 
 During the initialization phase, the value of the state is initialized using a key and nonce.
-Associated data block and plaintext blocks are then processed block by block.
+The associated data and the plaintext are then processed block by block.
 Then the internal state undergoes the finalization phase, which outputs the authentication tag.
 
 Every part of this process relies on iterating the \StateUpdate{} function at the core of \MORUS. Each call to the \StateUpdate{} function is called a step.
@@ -97,7 +97,7 @@ After updating the state 16 times with \StateUpdate{}, the state is updated with
 \subsubsection{Associated Data Processing.}
 After initialization, the associated data $A$ is processed. For the padding, if the last associated data block is not a full block,  it is padded to 128 bits and 256 bits for \MORUS[640] and \MORUS[1280] respectively, using 0 bits. The padded full block is then used to update the state. If the length of $A$, denoted by `${\it adlen}$' is 0, the associated data processing phase is skipped.
 
-The state is then updated with $S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t)$ for $t=0,1,\ldots,\ell$ where $\ell = \lceil \frac{{\it adlen}}{128} \rceil -1$ and $\ell = \lceil \frac{{\it adlen}}{256} \rceil -1$ for \MORUS[640] and \MORUS[1280], respectively.
+The state is then updated with $S^{t+1} \leftarrow \StateUpdate{}(S^t, A^t)$ for $t=0,1,\ldots,u-1$ where $u = \lceil \frac{{\it adlen}}{128} \rceil$ and $u = \lceil \frac{{\it adlen}}{256} \rceil$ for \MORUS[640] and \MORUS[1280], respectively.
 
 \subsubsection{Encryption.}
 At each encryption step, a 16-byte (resp. 32-byte) message block $M_t$ is used to update the state in \MORUS[640] (resp. \MORUS[1280]), and a ciphertext $C_t$ is produced.
@@ -174,3 +174,7 @@ For simplicity, in the remainder, the $0$-th encryption step will often denote t
 %}
 %
 %The $b_i$'s denote rotation constants, whose value depends on which version of \MORUS is considered. Throughout, $w$ denotes the  word size, i.e. $w=32$ for \MORUS[640] and $w=64$ for \MORUS[1280].
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

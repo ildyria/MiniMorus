@@ -1,11 +1,11 @@
 #include "main_mini_morus.h"
 
-inline void copy_word(state_words* to, const state_words* from)
+void copy_word(state_words* to, const state_words* from)
 {
   *to = *from;
 }
 
-inline void save_state(state* state_saved, state state, int i)
+void save_state(state* state_saved, state state, int i)
 {
   copy_word(&state_saved[i][0], &state[0]);
   copy_word(&state_saved[i][1], &state[1]);
@@ -14,7 +14,7 @@ inline void save_state(state* state_saved, state state, int i)
   copy_word(&state_saved[i][4], &state[4]);
 }
 
-inline void sample(state* saved_state, state_words* saved_cipher, int num, struct RNG_state* seed)
+void sample(state* saved_state, state_words* saved_cipher, int num, struct RNG_state* seed)
 {
   state state;
   state_words null_words;
@@ -29,7 +29,7 @@ inline void sample(state* saved_state, state_words* saved_cipher, int num, struc
   save_state(saved_state, state, i);
 }
 
-inline int linear_sample(struct RNG_state* seed)
+int linear_sample(struct RNG_state* seed)
 {
   state saved_state[6];
   state_words saved_cipher[5];
@@ -58,7 +58,7 @@ void linear_stats(unsigned long long num) {
       // printf ( "  %6d  %12d\n", tid, seed);
 
       // try using openmp to speed things up
-      #pragma omp parallel for reduction(+:bias,inbalance)
+      // #pragma omp parallel for reduction(+:bias,inbalance)
       for(i = 0 ; i < num; ++i)
       {
         res = linear_sample(seed);
@@ -74,13 +74,14 @@ void linear_stats(unsigned long long num) {
     printf("--------------------------\n");
     printf("num:  %llu\n", (num* omp_get_max_threads()));
     printf("inba: %lld\n", inbalance);
-    printf("bias: %llu\n", bias);
+    // printf("bias: %llu\n", bias);
+    printf("bias: %f\n", log2(fabs(inbalance)/(num* omp_get_max_threads())));
     printf("--------------------------\n");
 }
 
 int main(int argc, char const *argv[]) {
   long long int num = 1;
-  num <<= 33;
+  num <<= 20;
   srand(time(NULL));
   linear_stats(num);
   return 0;

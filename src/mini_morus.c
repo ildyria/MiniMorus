@@ -4,11 +4,11 @@ void null_word(state_words* w) {
    *w = 0;
 }
 
-inline void print_state(state state) {
+void print_state(state state) {
   printf("%08x %08x %08x %08x %08x\n", state[0], state[1], state[2], state[3], state[4]);
 }
 
-inline uint32_t rotate_left(uint32_t x, int bits)
+uint32_t rotate_left(uint32_t x, int bits)
 {
   if (bits == 0) return x;
   return (x << bits) | (x >> (32 - bits));
@@ -58,14 +58,14 @@ void encrypt(state_words* out, state_words message, state st)
   *out = message;
 }
 
-inline uint32_t gen_mask(uint32_t* mask, unsigned int i)
+uint32_t gen_mask(uint32_t* mask, unsigned int i)
 {
   *mask |= (1 << i);
   return 0;
 }
 
 // Compute the Hamming Weight
-inline uint32_t HW(uint32_t x)
+uint32_t HW(uint32_t x)
 {
     x = x - ((x >> 1) & 0x55555555);
     x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
@@ -81,6 +81,7 @@ int linear(state* saved_state, state_words* saved_cipher) {
   uint32_t mask = 0;
   uint32_t res = 0;
 
+#if 0
   gen_mask(&mask,27);
   res ^= saved_cipher[0] & mask;
 
@@ -109,6 +110,13 @@ int linear(state* saved_state, state_words* saved_cipher) {
   mask = 0;
   gen_mask(&mask,19);
   res ^= saved_cipher[4] & mask;
+
+#else
+
+  res ^= saved_state[1][0] & (1<<5);
+  res ^= saved_cipher[0] & (1<<0);
+  
+#endif
 
   return 1 & HW(res);
 }

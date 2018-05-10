@@ -1,6 +1,6 @@
 #include "morus.h"
 
-inline void print_state(state state) {
+void print_state(state state) {
   printf("--------------------------------------------\n");
   printf("   S0   |   S1   |   S3   |   S3   |   S4   \n");
   printf("%08x %08x %08x %08x %08x\n", state[0][3], state[1][3], state[2][3], state[3][3], state[4][3]);
@@ -9,11 +9,11 @@ inline void print_state(state state) {
   printf("%08x %08x %08x %08x %08x\n", state[0][0], state[1][0], state[2][0], state[3][0], state[4][0]);
 }
 
-inline void print_word(state_words word) {
+void print_word(state_words word) {
   printf("%08x %08x %08x %08x\n", word[0], word[1], word[2], word[3]);
 }
 
-inline void print(state* saved_state, state_words* saved_cipher)
+void print(state* saved_state, state_words* saved_cipher)
 {
   int i;
   printf("-------------------------------------------- Ciphers\n");
@@ -25,13 +25,13 @@ inline void print(state* saved_state, state_words* saved_cipher)
     print_state(saved_state[i]);
   }
 }
-inline uint32_t rotate_left(uint32_t x, int bits)
+uint32_t rotate_left(uint32_t x, int bits)
 {
   if (bits == 0) return x;
   return (x << bits) | (x >> (32 - bits));
 }
 
-inline void copy_state_words(state_words out, const state_words word)
+void copy_state_words(state_words out, const state_words word)
 {
   out[0] = word[0];
   out[1] = word[1];
@@ -39,7 +39,7 @@ inline void copy_state_words(state_words out, const state_words word)
   out[3] = word[3];
 }
 
-inline void rotate_left_word(state_words word, int bits)
+void rotate_left_word(state_words word, int bits)
 {
   word[0] = rotate_left(word[0], bits);
   word[1] = rotate_left(word[1], bits);
@@ -47,7 +47,7 @@ inline void rotate_left_word(state_words word, int bits)
   word[3] = rotate_left(word[3], bits);
 }
 
-inline void and_xor_to_word(state_words o, const state_words s1 , const state_words s2)
+void and_xor_to_word(state_words o, const state_words s1 , const state_words s2)
 {
   o[0] ^= s1[0] & s2[0];
   o[1] ^= s1[1] & s2[1];
@@ -55,7 +55,7 @@ inline void and_xor_to_word(state_words o, const state_words s1 , const state_wo
   o[3] ^= s1[3] & s2[3];
 }
 
-inline void xor_to_word(state_words o, const state_words s)
+void xor_to_word(state_words o, const state_words s)
 {
 		o[0] ^= s[0];
     o[1] ^= s[1];
@@ -63,8 +63,9 @@ inline void xor_to_word(state_words o, const state_words s)
     o[3] ^= s[3];
 }
 
-inline void permute_words(state_words s, int bits)
+void permute_words(state_words s, int bits)
 {
+	// return;
 	uint32_t t;
 	if (bits == 96)
 	{
@@ -97,30 +98,6 @@ void null_word(state_words* w){
 }
 
 void rand_init(state st, struct RNG_state* seed){
-  // need to be faster !!!
-	// st[0][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[1][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[2][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[3][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[4][0] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  //
-  // st[0][1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[1][1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[2][1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[3][1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[4][1] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  //
-  // st[0][2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[1][2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[2][2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[3][2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[4][2] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  //
-  // st[0][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[1][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[2][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[3][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
-  // st[4][3] = (rand_r(seed) & 0xffff) | (rand_r(seed) & 0xffff) << 16;
   st[0][0] = aesrand_int32_r(seed);
   st[1][0] = aesrand_int32_r(seed);
   st[2][0] = aesrand_int32_r(seed);
@@ -152,35 +129,35 @@ void iterate(state st, state_words message) {
     and_xor_to_word(st[0], st[1], st[2]);
     rotate_left_word(st[0],5);
 
-    // permute_words(st[3],32);
+    permute_words(st[3],32);
 
     xor_to_word(st[1], message);
     xor_to_word(st[1],st[4]);
     and_xor_to_word(st[1], st[2], st[3]);
     rotate_left_word(st[1],31);
 
-    // permute_words(st[4],64);
+    permute_words(st[4],64);
 
     xor_to_word(st[2], message);
     xor_to_word(st[2],st[0]);
     and_xor_to_word(st[2], st[3], st[4]);
     rotate_left_word(st[2],7);
 
-    // permute_words(st[0],96);
+    permute_words(st[0],96);
 
     xor_to_word(st[3], message);
     xor_to_word(st[3],st[1]);
     and_xor_to_word(st[3], st[4], st[0]);
     rotate_left_word(st[3],22);
 
-    // permute_words(st[1],64);
+    permute_words(st[1],64);
 
     xor_to_word(st[4], message);
     xor_to_word(st[4],st[2]);
     and_xor_to_word(st[4], st[0], st[1]);
     rotate_left_word(st[4],13);
 
-    // permute_words(st[2],32);
+    permute_words(st[2],32);
 
     // print_state(st);
 }
@@ -193,7 +170,7 @@ void encrypt(state_words* out, state_words message, state st)
   copy_state_words(mem,message);
   copy_state_words(st1,st[1]);
 
-  // permute_words(st1,96);
+  permute_words(st1,96);
 
   xor_to_word(st1,message);
   xor_to_word(st1,st[0]);
@@ -209,14 +186,14 @@ void encrypt(state_words* out, state_words message, state st)
   // print_word(*out);
 }
 
-inline uint32_t gen_mask(uint32_t* mask, unsigned int i)
+uint32_t gen_mask(uint32_t* mask, unsigned int i)
 {
   *mask |= (1 << i);
   return 0;
 }
 
 // Compute the Hamming Weight
-inline uint32_t HW(uint32_t x)
+uint32_t HW(uint32_t x)
 {
     x = x - ((x >> 1) & 0x55555555);
     x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
@@ -241,6 +218,7 @@ int linear(state* saved_state, state_words* saved_cipher) {
   uint32_t mask = 0;
   uint32_t res = 0;
 
+#if 0
   // print(saved_state,saved_cipher);
 
   mask = 0;
@@ -293,5 +271,84 @@ int linear(state* saved_state, state_words* saved_cipher) {
   // res ^= saved_state[3][1][2] & mask;
   // res ^= saved_state[3][1][3] & mask;
 
+#else
+
+  /* res ^= saved_state[0][1][0] & (1<<0); */
+  /* res ^= saved_state[0][1][1] & (1<<0); */
+  /* res ^= saved_state[1][0][3] & (1<<5); */
+  /* res ^= saved_cipher[0][0] & (1<<0); */
+
+  /* res ^= saved_state[0][1][1] & (1<<0); */
+  /* res ^= saved_state[0][0][0] & (1<<0); */
+  /* res ^= saved_cipher[0][0] & (1<<0); */
+
+  /* res ^= saved_state[0][1][0] & (1<<0); */
+  /* res ^= saved_state[1][0][3] & (1<<5); */
+  /* res ^= saved_state[0][0][0] & (1<<0); */
+  /* res ^= saved_state[0][3][0] & (1<<0); */
+  
+  /* res ^= saved_state[1][1][0] & (1<<5); */
+  /* res ^= saved_state[1][0][3] & (1<<5); */
+  /* res ^= saved_cipher[1][3] & (1<<5); */
+
+
+  /* res ^= saved_state[0][1][0] & (1<<0); */
+  /* res ^= saved_state[0][1][1] & (1<<0); */
+  /* res ^= saved_state[1][1][0] & (1<<5); */
+  /* res ^= saved_cipher[0][0] & (1<<0); */
+  /* res ^= saved_cipher[1][3] & (1<<5); */
+
+  /* res ^= saved_state[0][1][1] & (1<<0); */
+  /* res ^= saved_state[0][1][2] & (1<<0); */
+  /* res ^= saved_state[1][1][1] & (1<<5); */
+  /* res ^= saved_cipher[0][1] & (1<<0); */
+  /* res ^= saved_cipher[1][0] & (1<<5); */
+
+  /* res ^= saved_state[1][1][0] & (1<<5); */
+  /* res ^= saved_state[1][1][1] & (1<<5); */
+  /* res ^= saved_state[2][1][0] & (1<<10); */
+  /* res ^= saved_cipher[1][0] & (1<<5); */
+  /* res ^= saved_cipher[2][3] & (1<<10); */
+
+
+  res ^= saved_cipher[0][0] & (1<<27);
+  res ^= saved_cipher[0][1] & (1<<27);
+  res ^= saved_cipher[0][2] & (1<<27);
+  res ^= saved_cipher[0][3] & (1<<27);
+  /* res ^= saved_state[1][0][0] & (1<<0); */
+  /* res ^= saved_state[1][0][1] & (1<<0); */
+  /* res ^= saved_state[1][0][2] & (1<<0); */
+  /* res ^= saved_state[1][0][3] & (1<<0); */
+
+  res ^= saved_cipher[1][0] & (1<<0);
+  res ^= saved_cipher[1][1] & (1<<0);
+  res ^= saved_cipher[1][2] & (1<<0);
+  res ^= saved_cipher[1][3] & (1<<0);
+  /* res ^= saved_state[2][0][0] & (1<<5); */
+  /* res ^= saved_state[2][0][1] & (1<<5); */
+  /* res ^= saved_state[2][0][2] & (1<<5); */
+  /* res ^= saved_state[2][0][3] & (1<<5); */
+
+  res ^= saved_state[1][3][0] & (1<<0);
+  res ^= saved_state[1][3][1] & (1<<0);
+  res ^= saved_state[1][3][2] & (1<<0);
+  res ^= saved_state[1][3][3] & (1<<0);
+  /* res ^= saved_state[1][0][0] & (1<<0); */
+  /* res ^= saved_state[1][0][1] & (1<<0); */
+  /* res ^= saved_state[1][0][2] & (1<<0); */
+  /* res ^= saved_state[1][0][3] & (1<<0); */
+  /* res ^= saved_state[2][0][0] & (1<<5); */
+  /* res ^= saved_state[2][0][1] & (1<<5); */
+  /* res ^= saved_state[2][0][2] & (1<<5); */
+  /* res ^= saved_state[2][0][3] & (1<<5); */
+  
+  res ^= saved_state[1][1][0] & (1<<0);
+  res ^= saved_state[1][1][1] & (1<<0);
+  res ^= saved_state[1][1][2] & (1<<0);
+  res ^= saved_state[1][1][3] & (1<<0);
+  
+#endif
+
+  
   return 1 & HW(res);
 }

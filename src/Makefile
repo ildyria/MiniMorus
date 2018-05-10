@@ -1,9 +1,9 @@
 MINI = mini_morus
 MEDIUM = medium_morus
 FULL = morus
-LIBS = -lm -fopenmp -flto -fwhole-program -fdelete-null-pointer-checks -march=native
+LIBS = -lm -march=native -g #-fopenmp #-O0 -fsanitize=address
 CC = gcc
-CFLAGS = -Wall -O3 -fopenmp -fdelete-null-pointer-checks -flto -march=native
+CFLAGS = -Wall -Wextra -O3 -march=native -g #-fopenmp #-fsanitize=address -O0
 COMMON_FILE = aes-rng.c
 MINI_OBJECTS = $(MINI:%=%.o) $(MINI:%=main_%.o) $(COMMON_FILE:%.c=%.o)
 MEDIUM_OBJECTS = $(MEDIUM:%=%.o) $(MEDIUM:%=main_%.o) $(COMMON_FILE:%.c=%.o)
