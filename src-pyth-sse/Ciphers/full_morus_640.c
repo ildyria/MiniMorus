@@ -10,7 +10,6 @@
 #define n4 22
 #define n5 13
 
-
 #define XOR_128(x,y)      _mm_xor_si128((x),(y))     /*XOR_128(x,y) = x ^ y, where x and y are two 128-bit word*/
 #define AND_128(x,y)      _mm_and_si128((x),(y))     /*AND_128(x,y) = x & y, where x and y are two 128-bit word*/
 
@@ -21,12 +20,6 @@
 #define ROTL_128_96(x)      		_mm_shuffle_epi32((x),_MM_SHUFFLE(0,3,2,1))   /*Rotate x by 96-bit positions to the left*/
 
 void morus_640_print_state(state state) {
-	// printf("--------------------------------------------\n");
-	// printf("   S0   |   S1   |   S3   |   S3   |   S4   \n");
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f32[3], state[1].f32[3], state[2].f32[3], state[3].f32[3], state[4].f32[3]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f32[2], state[1].f32[2], state[2].f32[2], state[3].f32[2], state[4].f32[2]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f32[1], state[1].f32[1], state[2].f32[1], state[3].f32[1], state[4].f32[1]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f32[0], state[1].f32[0], state[2].f32[0], state[3].f32[0], state[4].f32[0]);
 }
 
 void morus_640_copy_state(state to, state from) {
@@ -38,7 +31,6 @@ void morus_640_copy_state(state to, state from) {
 }
 
 inline void print_word(union Register *word) {
-	// printf("%08x %08x %08x %08x\n", word->f32[0], word->f32[1], word->f32[2], word->f32[3]);
 }
 
 void morus_640_print(state *saved_state, union Register *saved_cipher) {

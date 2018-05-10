@@ -2,13 +2,6 @@
 
 #ifdef __AVX2__
 
-/*define data alignment for different C compilers*/
-#if defined(__GNUC__)
-#define DATA_ALIGN32(x) x __attribute__ ((aligned(32)))
-#else
-#define DATA_ALIGN32(x) __declspec(align(32)) x
-#endif
-
 #ifdef _MSC_VER
 #define  inline __inline
 #endif
@@ -29,12 +22,6 @@
 #define ROTL_256_192(x)    _mm256_permute4x64_epi64((x), _MM_SHUFFLE(0,3,2,1))  /*Rotate x by 192-bit positions to the left*/
 
 void morus_1280_print_state(state state) {
-	// printf("--------------------------------------------\n");
-	// printf("   S0   |   S1   |   S3   |   S3   |   S4   \n");
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f64[3], state[1].f64[3], state[2].f64[3], state[3].f64[3], state[4].f64[3]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f64[2], state[1].f64[2], state[2].f64[2], state[3].f64[2], state[4].f64[2]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f64[1], state[1].f64[1], state[2].f64[1], state[3].f64[1], state[4].f64[1]);
-	// printf("%08x %08x %08x %08x %08x\n", state[0].f64[0], state[1].f64[0], state[2].f64[0], state[3].f64[0], state[4].f64[0]);
 }
 
 void morus_1280_copy_state(state to, state from) {
@@ -46,7 +33,6 @@ void morus_1280_copy_state(state to, state from) {
 }
 
 inline void print_word(union Register *word) {
-	// printf("%08x %08x %08x %08x\n", word->f64[0], word->f64[1], word->f64[2], word->f64[3]);
 }
 
 void morus_1280_print(state *saved_state, union Register *saved_cipher) {

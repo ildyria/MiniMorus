@@ -186,4 +186,17 @@ uint8_t aesrand_int8_r(struct RNG_state* rng) {
   die ("AES-NI support not enabled!\n");
 }
 
+__m128i aesrand_m128i_r(struct RNG_state *rng) {
+	die ("AES-NI support not enabled!\n");
+}
+
+#ifdef __AVX2__
+
+__m256i aesrand_m256i_r(struct RNG_state *rng) {
+	die ("AES-NI support not enabled!\n");
+}
+
+#endif
+
+
 #endif
