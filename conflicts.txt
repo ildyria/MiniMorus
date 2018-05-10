@@ -20,3 +20,6 @@ COI:
 - Ling Song
 - Mehdi Tibouchi
 - Yosuke Todo
+- Atul Luykx 
+- Svetla Nikova 
+- Frederik Vercauteren 
