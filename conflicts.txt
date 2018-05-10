@@ -1,4 +1,4 @@
-Please insert your ASIACRYPT committee conflicts of interest.
+﻿Please insert your ASIACRYPT committee conflicts of interest.
 Reasons:
 - advisor/supervisor relationship;
 - shared affiliation in the last 2 years;
@@ -16,5 +16,7 @@ COI:
 - Bart Mennink
 - Gilles Van Assche
 - Martin R. Albrecht
-- ...
-
+- Jeremy Jean
+- Ling Song
+- Mehdi Tibouchi
+- Yosuke Todo
