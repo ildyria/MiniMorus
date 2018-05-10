@@ -121,10 +121,10 @@ $S^{t+1} \leftarrow \StateUpdate{} (S^t, {\it tmp})$.
 \end{enumerate}
 
 \subsubsection{Security.}
-With a 128-bit tag, integrity is claimed up to 128 bits and confidentiality is claimed up to the number of bits of the key.
+With a 128-bit tag, integrity is claimed up to 128 bits and confidentiality is claimed up to the number of bits of the key. See Table~\ref{Tbl/security} for summary.
 \begin{table}[!htb]
 \centering
-\caption{Security Goals of MORUS.}
+\caption{Security goals of MORUS.} \label{Tbl/security}
 \begin{tabular}{ccc}\hline
                         & Confidentiality (bits) & Integrity (bits) \\ \hline
 \cipher{MORUS640}-128   & 128                    & 128              \\
