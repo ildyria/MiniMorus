@@ -141,10 +141,10 @@ $\Delta T$ &                   &                        & {\tt 600080830020f00a}
 
 \subsection{Extending State Recovery to Key Recovery}
 \label{subsec/Ini}
-Kales et al.~\cite{cryptoeprint:2017:1137} showed that the internal state of \MORUS[640] can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \MORUS[1280] though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount a universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the finalization, which prevents the attacker from backtracking the state value to the initial state. In this section, we show that meet-in-the-middle attacks allow the attacker to recover the key faster than exhaustive search for a relatively large number of steps, i.e.,~10 out of 16 steps in \MORUS[1280]. 
+Kales et al.~\cite{cryptoeprint:2017:1137} showed that the internal state of \MORUS[640] can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \MORUS[1280] though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount a universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the finalization, which prevents the attacker from backtracking the state value to the initial state. In this section, we show that meet-in-the-middle attacks allow the attacker to recover the key faster than exhaustive search for a relatively large number of steps, i.e., 10 out of 16 steps in \MORUS[1280]. 
 
 \subsubsection{Overview.}
-We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e.,~$S^{-10} = (\IV\mathrel\|0^{128},0^{256},1^{256},0^{256},\const_0\mathrel\|\const_1)$. Also let $S^0$ be 1280-bit state value after the initialization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
+We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e., $S^{-10} = (\IV\mathrel\|0^{128},0^{256},1^{256},0^{256},\const_0\mathrel\|\const_1)$. Also let $S^0$ be 1280-bit state value after the initialization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
 \begin{align*}
 %F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K\|K, 0, 0, 0)\bigr) \oplus (0,K\|K,0,0,0) = S^0.
 F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K, 0, 0, 0)\bigr) \oplus (0,K,0,0,0) = S^0.
@@ -174,7 +174,7 @@ Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K_{128}$. The 
 In the end,
 $F_0$ is computed $2^{|G_2|} \cdot 2^{|G_0|-|G_2|} = 2^{|G_0|}$ times.
 Similarly, $F_1^{-1}$ is computed $2^{|G_1|}$ times. The number of the total candidates after the $x$-bit match is $2^{|G_2|} \cdot 2^{|G_0|-|G_2| + |G_1|-|G_2| - x} = 2^{|G_0| + |G_1| - |G_2| - x}$. Hence, the key $K_{128}$ is recovered with complexity $$\max( 2^{|G_0|}, 2^{|G_1|}, 2^{|G_0| + |G_1| - |G_2| - x}).$$
-Suppose that we choose $|G_0|$ and $|G_1|$ to be balanced i.e. $|G_0|=|G_1|$. Then, the complexity is $$\max( 2^{|G_0|}, 2^{2|G_0| - |G_2| - x}).$$
+Suppose that we choose $|G_0|$ and $|G_1|$ to be balanced i.e., $|G_0|=|G_1|$. Then, the complexity is $$\max( 2^{|G_0|}, 2^{2|G_0| - |G_2| - x}).$$
 Two terms are balanced when $x = |G_0| - |G_2|$. Hence, the number of matched bits in the middle of two functions must be greater than or equal to the number of independently guessed bits to compute $F_0$ and $F_1^{-1}$.
 
 In the attack below, we choose $|G_0|=|G_1|=127$ and $|G_2|=126$ (equivalently $|G_2|-|G_0| = |G_2|-|G_1| = 1$) in order to aim $x=1$-bit match in the middle, which maximizes the number of attacked rounds.
@@ -185,7 +185,7 @@ We found that {\tt StepUpdate} was designed to have good diffusion in the forwar
 G_0 &= \{1, 2, \cdots, 127\} & \textrm {Bit position 0 is unknown.}\\
 G_1 &= \{0, 1, \cdots, 7, 9, 10, \cdots, 127\} & \textrm {Bit position 8 is unknown.}
 \end{align*}
-Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K_{128}$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
+Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K_{128}$ can be recovered faster than the exhaustive search by 1 bit, i.e., with complexity $2^{127}$.
 
 \begin{table}[!tb]
 \begin{center}
