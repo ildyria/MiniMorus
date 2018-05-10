@@ -58,7 +58,8 @@ For \MORUS[1280] with 256-bit keys, the linear correlation is $2^{-76}$
 and can be exploited using about $2^{152}$ encrypted blocks.
 
 To the best of our knowledge, this is the first attack on full \MORUS in the nonce-respecting setting.
-We also note that rekeying does not prevent the attack: the biases are independent of the secret encryption key and nonce, and can be exploited as long as a given plaintext segment is encrypted sufficiently often, regardless of whether each encryption uses a different key.
+We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key and nonce, and can be exploited as long as a given plaintext segment is encrypted sufficiently often, regardless of whether each encryption uses a different key.
+A surprising feature of the linear trail underpinning our attack is also that it does not depend on the values of rotation constants: a very similar trail would exist for most choices of round constants.
 
 To obtain this result, we propose a simplified abstraction of \MORUS, called \MiniMORUS. \MiniMORUS takes advantage of certain rotational symmetries in \MORUS and simplifies the description and analysis of the attack. We then show how the attack can be extended from \MiniMORUS to the real \MORUS.
 %We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
