@@ -3,25 +3,25 @@
 \section{Analysis on Initialization and Finalization of Reduced \MORUS}
 \label{sec/IniFin}
 
-The bias in the previous sections analysed the encryption part of the \MORUS. In this section, for comprehensive security analysis of \MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threat any security claim by the designers. However, we believe that investigating all parts of the design with different approaches from the existing work on \MORUS provides better understanding and will be useful especially when the design will be tweaked in future.
+The bias in the previous sections analysed the encryption part of the \MORUS. In this section, for comprehensive security analysis of \MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threaten any security claim by the designers. However, we believe that investigating all parts of the design with different approaches from the existing work on \MORUS provides a better understanding and will be useful especially when the design will be tweaked in future.
 
 \subsection{Forgery with Reduced Finalization}
 \label{subsec/Fin}
 We present forgery attacks on 3 out of 10 steps of \MORUS[1280] that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respecting setting. As far as we know, this is the first attempt to evaluate integrity of \MORUS in the nonce-respecting setting.
 
 \subsubsection{Overview.}
-A general strategy for forgery attacks in the nonce-respecting setting is to inject some difference in a message block and propagate the it so that it can be canceled by a difference in another message block. However this approach does not work well against \MORUS due to its large state size which prevents an attacker from easily controlling the differences in different registers. 
+A general strategy for forgery attacks in the nonce-respecting setting is to inject some difference in a message block and propagate it so that it can be canceled by a difference in another message block. However this approach does not work well against \MORUS due to its large state size which prevents an attacker from easily controlling the differences in different registers. 
 
-Here we focus on the property that the padding for an associated data $A$ and a message $M$ is the zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ result in identical states after the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, since $A,A'$ (resp. $M,M'$) have different lengths, the corresponding $adlen$s (resp. $msglen$s) are different, which appears as $\Delta adlen$ (resp. $\Delta msglen$), and is injected through the message input interface. Our strategy is to propagate this difference to the 128-bit tags $T$ and $T'$ such that their difference $\Delta T$ appears with higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained or in other words, the attacker does not have to cancel the state difference, which is the main advantage of attacking the finalization part of the scheme. 
+Here we focus on the property that the padding for an associated data $A$ and a message $M$ is the zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ result in identical states after the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, since $A,A'$ (resp. $M,M'$) have different lengths, the corresponding 64-bit values $\adlen$ (resp. $\msglen$) are different, which appears as $\Delta \adlen$ (resp. $\Delta \msglen$) during the finalization, and is injected through the message input interface. Our strategy is to propagate this difference to the 128-bit tags $T$ and $T'$ such that their difference $\Delta T$ appears with higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained or in other words, the attacker does not have to cancel the state difference, which is the main advantage of attacking the finalization part of the scheme. 
 
 Note that if the attacker uses different messages $M,M'$, not only the new tag $T'$ but also new ciphertext $C'$ must be guessed correctly. Because the encryption of \MORUS is a simple XOR of the key stream, $C'$ can be easily guessed. For this purpose, the attacker should first query a longer message $M'=M\|0^*$ to obtain $C'$. Then, $C$ can be obtained by truncating $C'$.
 
 \subsubsection{Differential Trails.}
-Recall that the message input during the finalization of \MORUS[1280] is $adlen\|msglen\|0^{128}$ where $adlen$ and $msglen$ are 64-bit strings. We set $\Delta adlen$ to be of low Hamming weight, e.g.~{\tt 0x0000000000000001}. 
+Recall that the message input during the finalization of \MORUS[1280] is $\adlen\mathrel\|\msglen\mathrel\|0^{128}$ where $\adlen$ and $\msglen$ are 64-bit strings. We set $\Delta \adlen$ to be of low Hamming weight, e.g.,~{\tt 0x0000000000000001}. 
 %Hereafter, we use {\tt typefont} denote hexadecimal numbers.
 This difference propagates through 3 steps as specified in \Cref{Tbl:fin_diff}.
 
-Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in \Cref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1-bit to control each active AND gate. The probability evaluation for round 15 can be ignored since in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only for those bits. As shown in \Cref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
+Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in \Cref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1 bit to control each active AND gate. The probability evaluation for round 15 can be ignored since in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only for those bits. As shown in \Cref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
 
 \begin{table}[!tb]
 \begin{center}
@@ -134,34 +134,36 @@ $\Delta T$ &                   &                        & {\tt 600080830020f00a}
 \end{center}
 \end{table}
 
-\subsubsection{Remarks.} The fact that the $S_4$ is updated in the last round but is not used in the tag generation implies that the \MORUS finalization generally includes unnecessary computations with respect to security. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in \Cref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2-round before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
+\subsubsection{Remarks.} The fact that the $S_4$ is updated in the last round but is not used in the tag generation implies that the \MORUS finalization generally includes unnecessary computations with respect to security. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in \Cref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2 rounds before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
 
 
 
 
 \subsection{Extending State Recovery to Key Recovery}
 \label{subsec/Ini}
-Kales et al.~\cite{cryptoeprint:2017:1137} showed that the internal state of \MORUS[640] can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \MORUS[1280] though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount a universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the finalization, which prevents the attacker to back track the state value to the initial state. In this section, we show that meet-in-the-middle attacks allow the attacker to recover the key faster than exhaustive search for a relatively large number of steps, i.e.~10 out of 16 steps in \MORUS[1280]. 
+Kales et al.~\cite{cryptoeprint:2017:1137} showed that the internal state of \MORUS[640] can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \MORUS[1280] though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount a universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the finalization, which prevents the attacker from backtracking the state value to the initial state. In this section, we show that meet-in-the-middle attacks allow the attacker to recover the key faster than exhaustive search for a relatively large number of steps, i.e.,~10 out of 16 steps in \MORUS[1280]. 
 
 \subsubsection{Overview.}
-We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e.~$S^{-10} = (IV\|0^{128},0^{256},1^{256},0^{256},const_0\|const_1)$. Also let $S^0$ be 1280-bit state value after the finalization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
+We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e.,~$S^{-10} = (\IV\mathrel\|0^{128},0^{256},1^{256},0^{256},\const_0\mathrel\|\const_1)$. Also let $S^0$ be 1280-bit state value after the initialization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
 \begin{align*}
-F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K\|K, 0, 0, 0)\bigr) \oplus (0,K\|K,0,0,0) = S^0.
+%F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K\|K, 0, 0, 0)\bigr) \oplus (0,K\|K,0,0,0) = S^0.
+F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K, 0, 0, 0)\bigr) \oplus (0,K,0,0,0) = S^0.
 \end{align*}
+We target the variant \MORUS[1280-128], where $K = K_{128} \mathrel\| K_{128}$.
 
-Here, our strategy is to recover $K$ by independently processing $F_0$ and $F_1^{-1}$ to find the following match.
+Here, our strategy is to recover $K_{128}$ by independently processing $F_0$ and $F_1^{-1}$ to find the following match.
 \begin{align*}
-F_0 (S^{-10} \oplus (0, K\|K, 0, 0, 0)) \stackrel{?}{=} F_1^{-1} (S^0 \oplus (0,K\|K,0,0,0)).
+  F_0 (S^{-10} \oplus (0, K_{128}\|K_{128}, 0, 0, 0)) \stackrel{?}{=} F_1^{-1} (S^0 \oplus (0,K_{128}\|K_{128},0,0,0)).
 \end{align*}
 
 To evaluate the attack complexity, we consider the following parameters.
 \begin{itemize}
-\item $G_0$: a set of bits of $K$ that are guessed for computing $F_0$.
-\item $G_1$: a set of bits of $K$ that are guessed for computing $F_1^{-1}$.
+\item $G_0$: a set of bits of $K_{128}$ that are guessed for computing $F_0$.
+\item $G_1$: a set of bits of $K_{128}$ that are guessed for computing $F_1^{-1}$.
 \item $G_2$: a set of bits in the intersection of $G_0$ and $G_1$.
 \item $x$ bits can match after processing $F_0$ and $F_1^{-1}$.
 \end{itemize}
-Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K$. The attack exhaustively guesses $G_2$ and performs the following procedure for each guess.
+Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K_{128}$. The attack exhaustively guesses $G_2$ and performs the following procedure for each guess.
 \begin{enumerate}
 \item $F_0$ is computed $2^{|G_0|-|G_2|}$ times and the results are stored in a table $T$. (Because $|G_1|-|G_2|$ bits are unknown, only a part of the state is computed.)
 \item $F_1^{-1}$ is computed $2^{|G_1|-|G_2|}$ times and for each result we check the match with any entry in $T$.
@@ -171,7 +173,7 @@ Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K$. The attack
 
 In the end,
 $F_0$ is computed $2^{|G_2|} \cdot 2^{|G_0|-|G_2|} = 2^{|G_0|}$ times.
-Similarly, $F_1^{-1}$ is computed $2^{|G_1|}$ times. The number of the total candidates after the $x$-bit match is $2^{|G_2|} \cdot 2^{|G_0|-|G_2| + |G_1|-|G_2| - x} = 2^{|G_0| + |G_1| - |G_2| - x}$. Hence, the key $K$ is recovered with complexity $$\max( 2^{|G_0|}, 2^{|G_1|}, 2^{|G_0| + |G_1| - |G_2| - x}).$$
+Similarly, $F_1^{-1}$ is computed $2^{|G_1|}$ times. The number of the total candidates after the $x$-bit match is $2^{|G_2|} \cdot 2^{|G_0|-|G_2| + |G_1|-|G_2| - x} = 2^{|G_0| + |G_1| - |G_2| - x}$. Hence, the key $K_{128}$ is recovered with complexity $$\max( 2^{|G_0|}, 2^{|G_1|}, 2^{|G_0| + |G_1| - |G_2| - x}).$$
 Suppose that we choose $|G_0|$ and $|G_1|$ to be balanced i.e. $|G_0|=|G_1|$. Then, the complexity is $$\max( 2^{|G_0|}, 2^{2|G_0| - |G_2| - x}).$$
 Two terms are balanced when $x = |G_0| - |G_2|$. Hence, the number of matched bits in the middle of two functions must be greater than or equal to the number of independently guessed bits to compute $F_0$ and $F_1^{-1}$.
 
@@ -183,20 +185,20 @@ We found that {\tt StepUpdate} was designed to have good diffusion in the forwar
 G_0 &= \{1, 2, \cdots, 127\} & \textrm {Bit position 0 is unknown.}\\
 G_1 &= \{0, 1, \cdots, 7, 9, 10, \cdots, 127\} & \textrm {Bit position 8 is unknown.}
 \end{align*}
-Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
+Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K_{128}$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
 
 \begin{table}[!tb]
 \begin{center}
-\caption{Analysis of the diffusion and matching bits over 10 steps. `0' and `1' denote that the state bit can and cannot be computed from a partial knowledge of $K$, respectively. After the partial computations from each direction, 4 bits of $S^{-6}$ can match.} 
+\caption{Analysis of the diffusion and matching bits over 10 steps. `0' and `1' denote that the state bit can and cannot be computed from a partial knowledge of $K_{128}$, respectively. After the partial computations from each direction, 4 bits of $S^{-6}$ can match.} 
 \label{Tbl:ini_diffuse}
 {\tiny
 \begin{tabular}{ccccc} \hline
 Round & \multicolumn{4}{c}{State Difference}\\ \hline
-                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-                  & {\tt 0000000000000000} & {\tt 0000000000000001} & {\tt 0000000000000000} & {\tt 0000000000000001} \\
-$S^{-10}\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-                  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                         & {\tt 0000000000000000} & {\tt 0000000000000001} & {\tt 0000000000000000} & {\tt 0000000000000001} \\
+$S^{-10}\oplus K_{128} $ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
 
       & {\tt 0000000000002000} & {\tt 0000000000000000} & {\tt 0000000000002000} & {\tt 0000000000000000} \\
       & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} \\
@@ -262,11 +264,11 @@ $S^{-10}\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 00000
       & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} \\
       & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\ \hline
 
-              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-              & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
-$S^0\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
-              & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
+$S^0\oplus K_{128} $ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
 
 \end{tabular}
 }
