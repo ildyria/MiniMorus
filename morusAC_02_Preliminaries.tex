@@ -30,7 +30,7 @@ In order to denote the internal state of the cipher at the $t$-th step, we use a
 \StateUpdate{} takes as input the internal state $S^t = S^t_0\|S^t_1\|S^t_2\|S^t_3\|S^t_4$ and an additional $q$-bit value $m^t$ (recall that $q$ is the size of a register), and outputs an updated internal state.
 %During the associated data processing phase and encryption phase, $m^t$ is is an associated data block or message block. Otherwise $m^t$ can be 0 or constant when the additional input is unnecessary.
 
-\StateUpdate{} is composed of 5 rounds with similar operations. The additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round uses the word-wise left circular shift operation, which divides a $q$-bit register value into 4 words of $w = q/4$ bits, and performs a left circular shift operation on each $w$-bit word. The word-wise circular shift constants $b_i$ in round $i$ are defined in Table~\ref{Tbl:rcon}. Left circular shifts on a whole $q$-bit register are also used. The register-wise circular shift constants are also listed in Table~\ref{Tbl:rcon}.
+\StateUpdate{} is composed of 5 rounds with similar operations. The additional input $m^t$ is used in rounds 2 to 5, but not in round 1. Each round uses the word-wise left circular shift operation, which divides a $q$-bit register value into 4 words of $w = q/4$ bits, and performs a left circular shift operation on each $w$-bit word. The word-wise circular shift constants $b_i$ in round $i$ are defined in \Cref{Tbl:rcon}. Left circular shifts on a whole $q$-bit register are also used. The register-wise circular shift constants are also listed in \Cref{Tbl:rcon}.
 \begin{table}[!htb]
 \centering
 \caption{Left Circular Shift Constants of MORUS} \label{Tbl:rcon}

@@ -1,3 +1,5 @@
+%!TEX root = morusAC.tex
+
 \section{Symmetric Linear Combinations and \cipher{MiniMORUS}}
 \label{sec/introminimorus}
 
@@ -37,7 +39,7 @@ This naturally leads to the idea of building a linear trail using only symmetric
 
 \subsection{\cipher{MiniMORUS}}
 
-In fact, we can go further and consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see Figure~\ref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
+In fact, we can go further and consider a reduced version of \cipher{MORUS} where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that register-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \cipher{MiniMORUS640} and \cipher{MiniMORUS1280}, for \cipher{MORUS640} and \cipher{MORUS1280} respectively. Since registers in \cipher{MiniMORUS} contain a single word, word-wise and register-wise rotations are the same operation; for simplicity we write $\lll$ for word-wise rotations.
 
 Because the trail we are going to build is relatively complex, we will first describe it on \cipher{MiniMORUS}. We will then extend it to the full \cipher{MORUS} via the previous symmetry.
 

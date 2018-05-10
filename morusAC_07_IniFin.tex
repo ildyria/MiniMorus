@@ -1,3 +1,5 @@
+%!TEX root = morusAC.tex
+
 \section{Analysis on Initialization and Finalization of Reduced MORUS}
 \label{sec/IniFin}
 
@@ -17,9 +19,9 @@ Note that if the attacker uses different messages $M,M'$, not only the new tag $
 \subsubsection{Differential Trails.}
 Recall that the message input during the finalization of \cipher{MORUS1280} is $adlen\|msglen\|0^{128}$ where $adlen$ and $msglen$ are 64-bit strings. We set $\Delta adlen$ to be low Hamming weight, e.g.~{\tt 0x0000000000000001}. 
 %Hereafter, we use {\tt typefont} denote hexadecimal numbers.
-This difference propagates during 3 steps as specified in Table~\ref{Tbl:fin_diff}.
+This difference propagates during 3 steps as specified in \Cref{Tbl:fin_diff}.
 
-Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in Table~\ref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1-bit to control each active AND gate. The probability evaluation for round 15 can be ignored because in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only in those bits. As shown in Table~\ref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
+Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in \Cref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1-bit to control each active AND gate. The probability evaluation for round 15 can be ignored because in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only in those bits. As shown in \Cref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
 
 \begin{table}[!tb]
 \begin{center}
@@ -132,7 +134,7 @@ $\Delta T$ &                   &                        & {\tt 600080830020f00a}
 \end{center}
 \end{table}
 
-\subsubsection{Remarks.} The fact that $S_4$ updated in the last round is not used to compute a tag implies that the MORUS finalization generally includes unnecessary computations with respect to security. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in Table~\ref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2-round before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
+\subsubsection{Remarks.} The fact that $S_4$ updated in the last round is not used to compute a tag implies that the MORUS finalization generally includes unnecessary computations with respect to security. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in \Cref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2-round before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
 
 
 
@@ -181,7 +183,7 @@ We found that {\tt StepUpdate} was designed to have good diffusion in the forwar
 G_0 &= \{1, 2, \cdots, 127\} & \textrm {Bit position 0 is unknown.}\\
 G_1 &= \{0, 1, \cdots, 7, 9, 10, \cdots, 127\} & \textrm {Bit position 8 is unknown.}
 \end{align*}
-Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in Table~\ref{Tbl:ini_diffuse}. In the end, $K$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
+Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K$ can be recovered faster than the exhaustive search by 1 bit, i.e.~with complexity $2^{127}$.
 
 \begin{table}[!tb]
 \begin{center}
@@ -276,4 +278,4 @@ $S^0\oplus K$ & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 000000000
 \subsubsection{Remarks.}
 The matching state does not have te be a border of a step. It can be defined on a border of a round (or even some complicated way). We did not find the extension of the number of attacked steps even with this way. 
 
-As can be seen in Table~\ref{Tbl:ini_diffuse}, the updated register in step $i$ is independent of the update function in step $i+1$ in the forward direction, and starts to impact from step $i+2$. By modifying this point, the diffusion speed can increase faster, which makes this attack harder.
+As can be seen in \Cref{Tbl:ini_diffuse}, the updated register in step $i$ is independent of the update function in step $i+1$ in the forward direction, and starts to impact from step $i+2$. By modifying this point, the diffusion speed can increase faster, which makes this attack harder.
