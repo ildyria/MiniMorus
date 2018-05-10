@@ -176,6 +176,11 @@
       }
     }
   }
+  \foreach \r in {1,...,4} {
+    \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {$M$};
+    \node[opxor] (xorM\r) at ($(W\r\r) +(0,\opoffset+1)$)  {};
+    \draw[next] (M\r) |- (xorM\r);
+  }
 }
 
 %new commands
