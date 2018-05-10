@@ -48,19 +48,19 @@ Finally, a keystream correlation similar in nature to our main attack was uncove
 Our main contribution is a keystream distinguisher on full \MORUS[1280], built from linear approximations of its core \StateUpdate{} function.
 In addition, we provide results for round-reduced \MORUS, targeting both the initialization or finalization phases of the cipher.
 
-In more detail, our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking ciphertext bits across five consecutive encryption blocks.
+In more detail, our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking plaintext and ciphertext bits spanning five consecutive encryption blocks.
 %As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps.
 %Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design.
 %Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
-As a consequence, when encrypting a fixed plaintext segment multiple times, a linear correlation exists between some output bits of the cipher.
-Moreover, the correlation depends purely on the plaintext, and not on the secret key of the cipher.
-In principle, this property could be used to recover unknown bits of a plaintext encrypted a large number of times, provided an initial segment of the plaintext is known.
+%As a consequence, when encrypting a fixed plaintext segment multiple times, a linear correlation exists between some output bits of the cipher.
+Moreover, the correlation does not depend on the secret key of the cipher.
+In principle, this property could be used as a known-plaintext distinguisher, or to recover unknown bits of a plaintext encrypted a large number of times.
 For \MORUS[1280] with 256-bit keys, the linear correlation is $2^{-76}$
 and can be exploited using about $2^{152}$ encrypted blocks.
 
 To the best of our knowledge, this is the first attack on full \MORUS in the nonce-respecting setting.
-We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key and nonce, and can be exploited as long as a given plaintext segment is encrypted sufficiently often, regardless of whether each encryption uses a different key.
-A surprising feature of the linear trail underpinning our attack is also that it does not depend on the values of rotation constants: a very similar trail would exist for most choices of round constants.
+We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key and nonce, and can be exploited for plaintext recovery as long as a given plaintext segment is encrypted sufficiently often, regardless of whether each encryption uses a different key.
+A notable feature of the linear trail underpinning our attack is also that it does not depend on the values of rotation constants: a very similar trail would exist for most choices of round constants.
 
 To obtain this result, we propose a simplified abstraction of \MORUS, called \MiniMORUS. \MiniMORUS takes advantage of certain rotational symmetries in \MORUS and simplifies the description and analysis of the attack. We then show how the attack can be extended from \MiniMORUS to the real \MORUS.
 %We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
