@@ -1,5 +1,6 @@
 \newif\ifanonymous
-\anonymoustrue%uncomment for submission version
+\newif\iflncsmargins
+%\anonymoustrue%uncomment for submission version
 
 \newif\ifshrink
 %\shrinktrue % for screen-friendly original LNCS paper size
@@ -7,14 +8,33 @@
 \documentclass[a4paper]{llncs}
 \usepackage{common}
 \pagestyle{plain}
+\usepackage{multirow}
 
 \ifanonymous
+\lncsmarginstrue
 \author{}
 \institute{}
 \else
-\author{Tomer Ashur \and Maria Eichlseder \and Ga\"etan Leurent \and Brice Minaud \and Yann Rotella \and Yu Sasaki \and Beno\^it Viguier}
-\institute{}
-%\path|tomer.ashur@esat.kuleuven.be|, \path|maria.eichlseder@iaik.tugraz.at|, \path|gaetan.leurent@inria.fr|, \path|brice.minaud@gmail.com|, \path|yann.rotella@inria.fr|, \path|b.viguier@science.ru.nl|, \path|sasaki.yu@lab.ntt.co.jp|
+\author{Tomer Ashur\inst{1} \and Maria Eichlseder\inst{2} \and Martin M. Lauridsen \and Ga\"etan Leurent\inst{3} \and Brice Minaud\inst{4} \and\\ Yann Rotella\inst{3} \and Yu Sasaki\inst{5} \and Beno\^it Viguier\inst{6}}
+\institute{
+imec-COSIC KULeuven, Belgium
+\and
+Graz University of Technology, Austria
+\and
+Inria, France
+\and
+Royal Holloway, University of London, United Kingdom
+\and
+NTT, Japan
+\and
+Radboud University, Netherlands\\
+\path|tomer.ashur@esat.kuleuven.be|, \path|maria.eichlseder@iaik.tugraz.at|, \path|mail@martinlauridsen.info|, \path|gaetan.leurent@inria.fr|, \path|brice.minaud@gmail.com|, \path|yann.rotella@inria.fr|, \path|b.viguier@science.ru.nl|, \path|sasaki.yu@lab.ntt.co.jp|
+}
+\fi
+
+\iflncsmargins
+\else
+\usepackage[hmargin=2.5cm,vmargin=3cm]{geometry}
 \fi
 
 \begin{document}
@@ -45,7 +65,8 @@
 \bibliographystyle{splncs03}
 \bibliography{morusAC}
 
-\section*{Auxiliary Material}
+%\section*{Auxiliary Material}
+\clearpage
 
 \appendix
 
