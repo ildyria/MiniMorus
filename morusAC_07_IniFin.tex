@@ -27,7 +27,7 @@ Recall that each step consists of 5 rounds and the input message is absorbed to 
 \begin{center}
 \caption{Differential propagation through 3 Steps. Five lines for round $i$ denote the difference of $S_0, \cdots, S_4$ after the round $i$ transformation.} %Weight is a Hamming weight of the state difference and accumulated probability is a probability to satisfy the trail from the beginning.}
 \label{Tbl:fin_diff}
-{
+{%
 \iflncsmargins
 \tiny
 \else
@@ -185,10 +185,10 @@ Two terms are balanced when $x = |G_0| - |G_2|$. Hence, the number of matched bi
 
 In the attack below, we choose $|G_0|=|G_1|=127$ and $|G_2|=126$ (equivalently $|G_2|-|G_0| = |G_2|-|G_1| = 1$) in order to aim $x=1$-bit match in the middle, which maximizes the number of attacked rounds.
 
-\begin{table}[!tb]
-\begin{center}
+\begin{table}
 \caption{Analysis of the diffusion and matching bits over 10 steps. `0' and `1' denote that the state bit can and cannot be computed from a partial knowledge of $K_{128}$, respectively. After the partial computations from each direction, 4 bits of $S^{-6}$ can match.} 
 \label{Tbl:ini_diffuse}
+\centering
 {
 \iflncsmargins
 \tiny
@@ -276,7 +276,6 @@ Round & \multicolumn{4}{c}{State Difference}\\ \hline
 
 \end{tabular}
 }
-\end{center}
 \end{table}
 
 \subsubsection{Full Diffusion Rounds.}
