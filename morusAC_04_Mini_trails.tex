@@ -387,8 +387,15 @@ That the correlation is so high may be surprising: indeed, the full trail uses t
 To confirm that our analysis is correct, we ran experiments on an implementation of \MiniMORUS[1280] and \MiniMORUS[640]. In both cases, we measured the correlation of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the correlation of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
 While our analysis from the previous section predicts a correlation of $2^{-16}$, experiments indicate a slightly better empirical correlation of $2^{-15.5}$ for \MORUS[640]. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
 
+\ifanonymous
 The programs used to verify the bias experimentally have been
 submitted as supporting material.
+\else
+The programs we used to verify the bias experimentally are available at:\\
+\centerline{
+\url{https://github.com/ildyria/MorusBias}
+}
+\fi
 
 %\noindent
 %2 approximations for $S^{2,2}_{0}$ of \MiniMORUS[640]:
