@@ -1,7 +1,9 @@
+%!TEX root = morusAC.tex
+
 \section{Trail Equations}
 \label{sec:traileq}
 
-In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each of these connected component. By the Piling-Up Lemma, if we assume that the state bits are uniformly random and independent, then the weight of the full equation is equal to the sum of the weights of the connected components.
+In this section, we provide full trail equations for all variants of \cipher{MORUS}. In each case, we decompose the right-hand side of the equality (involving state bits) into connected components, and compute the weight of each of these connected components. If we assume that distinct state bits are uniformly random and independent, then each connected component is independent. By the Piling-Up Lemma, it follows that the weight of the full equation is equal to the sum of the weights of the connected components.
 
 \subsection{Trail Equation for \cipher{MiniMORUS1280}}
 

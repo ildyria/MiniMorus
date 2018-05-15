@@ -3,7 +3,7 @@
 \section{Linear Trail for \MiniMORUS}
 \label{sec/minitrails}
 
-In this section, we describe how we build a trail for \MiniMORUS before computing its correlation and experimentally verify it.
+In this section, we describe how we build a trail for \MiniMORUS, then compute its correlation and validate the correlation experimentally.
 
 \subsection{Overview of the Trail}
 
@@ -378,7 +378,7 @@ The equation for \MiniMORUS[640] is very similar, and is given in \Cref{sec:trai
 \subsection{Correlation of the Trail}
 \label{sec:minibias}
 
-In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms, and each line has a weight of 1. By the Piling-Up Lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a correlation of $2^{-16}$. The same holds for \MiniMORUS[640] (cf. \Cref{sec:traileq}).
+In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms (in the sense that no two lines share a common term), and each line has a weight of 1. By the Piling-Up Lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a correlation of $2^{-16}$. The same holds for \MiniMORUS[640] (cf. \Cref{sec:traileq}).
 
 That the correlation is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. Since each trail fragment has a weight of 1, this would suggest that the total weight should be $1+2+4+8+9 = 24$ rather than 16. However, when combining trail fragments $\beta_i$ and $\gamma_i$, notice that the same AND is computed at the same step between registers $S_2$ and $S_3$ (equivalently, notice that the right-hand side of equations $B^t_i$ and $C^t_i$ is equal). In both cases it is approximated by zero. When XORing the corresponding equations, these two ANDs cancel each other, which saves two AND gates. Since $\gamma^t_i$ is used four times in the course of the full trail, this results in saving 8 AND gates overall, which explains why the final correlation is $2^{-16}$ rather than $2^{-24}$.
 
