@@ -1,0 +1,12 @@
+\begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
+  \rotwfalse
+  \messagefalse
+  \printstate
+  \draw[trail, epsil]
+    (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
+    (xor2) -- (lll2) (xor2) -- (txor2) (txor2) -- (W40) node[below] {$i$}
+    (lll2) -- (W42) node[below] {$i+b_2$}
+    ;
+
+  \draw (W42) + (0,-0.5) node[below] {weight($\varepsilon^t_i$) = 1};
+\end{tikzpicture}%}}}

@@ -1,0 +1,292 @@
+\usepackage{appendixnumberbeamer}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,graphicx,hyperref,url,eurosym,xspace}
+\usepackage{subcaption}
+\usepackage{booktabs} % \midrule produce better spacing than \hline
+% % slidenumbering
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{sidebar right}{}
+% \usepackage{framed}
+
+
+\setbeamersize{text margin left=5mm,text margin right=5mm}
+
+\usetikzlibrary{crypto.symbols}
+
+\setbeamercolor{reference color}{fg=gray}
+\newcommand{\reference}[1]{{\usebeamercolor[fg]{reference color}\footnotesize #1}}
+\setbeamercolor{gray}{fg=gray}
+\newcommand{\inGray}[1]{{\usebeamercolor[fg]{gray}#1}}
+\definecolor{templateRed}{RGB}{153,77,77}
+\setbeamercolor{template red}{fg=templateRed}
+\newcommand{\templateRed}[1]{{\usebeamercolor[fg]{template red}#1}}
+\definecolor{templateGreen}{RGB}{51,153,102}
+\setbeamercolor{template green}{fg=templateGreen}
+\newcommand{\templateGreen}[1]{{\usebeamercolor[fg]{template green}#1}}
+\definecolor{templateBlue}{RGB}{51,102,153}
+\setbeamercolor{template blue}{fg=templateBlue}
+\newcommand{\templateBlue}[1]{{\usebeamercolor[fg]{template blue}#1}}
+\setbeamercolor{red}{fg=red}
+\newcommand{\inRed}[1]{{\usebeamercolor[fg]{red}#1}}
+\definecolor{myGreen}{RGB}{0,153,0}
+\setbeamercolor{green}{fg=myGreen}
+\newcommand{\inGreen}[1]{{\usebeamercolor[fg]{green}#1}}
+\definecolor{myBlue}{RGB}{0,0,153}
+\setbeamercolor{blue}{fg=myBlue}
+\newcommand{\inBlue}[1]{{\usebeamercolor[fg]{blue}#1}}
+\newcommand{\strong}[1]{\textbf{#1}}
+
+\definecolor{darkgray}{HTML}{666666}
+\definecolor{darkgreen}{HTML}{224400}
+\definecolor{darkgreenBorder}{HTML}{729450}
+\definecolor{blueBlock}{HTML}{60A0E0}
+\definecolor{blueBlockBorder}{HTML}{90D0FF}
+\definecolor{Grayframe}{HTML}{505050}
+\definecolor{GrayframeBorder}{HTML}{A0A0A0}
+
+\definecolor{myBlueA}{RGB}{0, 0, 153}
+\definecolor{myBlueB}{RGB}{44, 22, 133}
+\definecolor{myBlueC}{RGB}{88, 44, 113}
+\definecolor{myBlueD}{RGB}{132, 66, 93}
+\definecolor{myBlueE}{RGB}{176, 88, 73}
+
+\usepackage[notmath]{sansmathfonts}
+
+\usepackage[english]{babel}
+
+\usepackage{siunitx}
+\usepackage{placeins} % removed [section] due to oversized figures
+
+\usepackage{cleveref}
+\usepackage{todonotes}
+
+\allowdisplaybreaks%this is to allow page breaks within multiline equations (to accomodate full trail equations)
+
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,math,arrows.meta,external}
+
+\makeatletter
+\pgfdeclareshape{oplus}{%{{{
+  \inheritsavedanchors[from=circle]
+  \inheritanchorborder[from=circle]
+  \foreach \s in {center,mid,base,text, north,south,west,east,
+                  mid west,mid east,base west,base east,
+                  north west,south west,north east,south east} {
+    \inheritanchor[from=circle]{\s}
+  }
+  \backgroundpath{%
+    \pgfutil@tempdima=\radius%
+    \pgfmathsetlength{\pgf@xb}{\pgfkeysvalueof{/pgf/outer xsep}}%
+    \pgfmathsetlength{\pgf@yb}{\pgfkeysvalueof{/pgf/outer ysep}}%
+    \ifdim\pgf@xb<\pgf@yb%
+      \advance\pgfutil@tempdima by-\pgf@yb%
+    \else%
+      \advance\pgfutil@tempdima by-\pgf@xb%
+    \fi%
+    \pgfpathcircle{\centerpoint}{\pgfutil@tempdima}%
+    % north-south
+    \centerpoint\advance\pgf@y by\radius  \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \centerpoint\advance\pgf@y by-\radius \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+    % east-west
+    \centerpoint\advance\pgf@x by\radius  \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \centerpoint\advance\pgf@x by-\radius \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+  }
+}%}}}
+\makeatother
+\tikzset{op/.style={draw, fill=none, minimum size=1.25ex, inner sep=0pt}}
+\tikzset{opxor/.style={op, shape=oplus}}
+\tikzset{opand/.style={op, rectangle, rounded corners=2pt, minimum height=3ex}}
+\tikzset{oprot/.style={op, rectangle, rounded corners=2pt, inner sep=2pt, minimum width=3ex, font=\scriptsize, fill=white!80!green}}
+\tikzset{oprotw/.style={op, rectangle, rounded corners=2pt, inner sep=2pt, minimum width=3ex, font=\scriptsize, fill=white!80!orange}}
+\tikzset{optee/.style={shape=circle, fill, draw, inner sep=0pt, minimum size=2pt}}
+\tikzset{next/.style={->, >=latex}}
+\tikzset{trail/.style={line width=2pt, line cap=round}}
+\definecolor{delta}{HTML}{B58900}
+\definecolor{epsil}{HTML}{CB4B16}
+\definecolor{gamma}{HTML}{6C71C4}
+\definecolor{beta}{HTML}{268BD2}
+\definecolor{alpha}{HTML}{859900}
+%\definecolor{mybase0}{HTML}{839496}
+%\definecolor{mybase1}{HTML}{93A1A1}
+%\definecolor{mybase2}{HTML}{EEE8D5}
+%\definecolor{mybase3}{HTML}{FDF6E3}
+%\definecolor{myred}{HTML}{DC322F}
+%\definecolor{mymagenta}{HTML}{D33682}
+%\definecolor{mycyan}{HTML}{2AA198}
+
+\newcommand{\cipher}[1]{\textsf{#1}}
+
+\usepackage{xspace}
+%\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
+\newcommand{\MORUS}[1][]{\ifx\relax#1\relax\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
+%\newcommand{\minimorus}[1][]{\cipher{MiniMORUS#1}\xspace}
+\newcommand{\MiniMORUS}[1][]{\ifx\relax#1\relax\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
+
+\newif\ifsubstates\substatesfalse
+\newif\ifstates\statestrue
+\newif\ifrotw\rotwfalse
+\newif\ifmessage\messagefalse
+
+\newcommand{\printstate}{
+  \ifsubstates \pgfmathsetmacro{\roundsep}{1.25}
+  \else        \pgfmathsetmacro{\roundsep}{0.80} \fi
+  \pgfmathsetmacro{\opoffset}{.1}
+
+  \ifsubstates
+    \foreach \r in {-2,...,4} {
+      \foreach \w in {0,...,4} {
+        \draw[thick] (\w-.5,-\r*\roundsep) -- ++(0,-.25);
+        \node[minimum width=1*1.0cm,minimum height=.25*1.5cm, inner sep=0pt] (W\r\w) at (\w,-\r*\roundsep-.125) {};
+      }
+      \draw[thick] (-.5,-\r*\roundsep) node[below left, inner sep=0pt, xshift=-3pt] {$S_{\r,*}^{\r}$} rectangle ++(5,-.25);
+    }
+    \node[minimum width=1*1.0cm,minimum height=.25*1.5cm, inner sep=0pt] (W-1-1) at (-1,--1*\roundsep-.125) {};
+    \node[minimum width=1*1.0cm,minimum height=.25*1.5cm, inner sep=0pt] (W-2-1) at (-2,--1*\roundsep-.125) {};
+  \else
+    \foreach \r in {-1,...,4} {
+      \foreach \w in {0,...,4} {
+        \coordinate (W\r\w) at (\w,-\r*\roundsep-.125);
+      }
+    }
+    \foreach \w in {0,...,4} {
+      \coordinate (W-2\w) at (\w,--2.375*\roundsep-.125);
+    }
+    \coordinate (W-1-1) at (-1,--1*\roundsep-.125);
+    \coordinate (W-2-1) at (-2,--1*\roundsep-.125);
+  \fi
+
+  %\foreach \r/\rot in {-1/0,0/5,1/31,2/7,3/22,4/13} { % round
+  \foreach \r/\rot in {-1/0,0/b_0,1/b_1,2/b_2,3/b_3,4/b_4} { % round
+    \ifthenelse{\equal{\r}{-1}}{
+      \pgfmathsetmacro{\txorx}{int(mod(\r+2,5))}
+      \pgfmathsetmacro{\tanAx}{int(mod(\r+4,5))}
+      \pgfmathsetmacro{\tanBx}{int(mod(\r+3,5))}
+      \pgfmathsetmacro{\tlllx}{int(mod(\r+1,5))}
+    }{
+      \pgfmathsetmacro{\txorx}{int(mod(\r+3,5))}
+      \pgfmathsetmacro{\tanAx}{int(mod(\r+2,5))}
+      \pgfmathsetmacro{\tanBx}{int(mod(\r+1,5))}
+    }
+    \pgfmathsetmacro{\rprev}{int(\r-1)}
+    \ifthenelse{\equal{\r}{-1}}%
+    { \node[opxor] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {}; }%
+    { \node[oprot] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {$\lll\!\rot$}; }
+      \node[opxor] (xor\r) at ($(W\r\r) +(0,\opoffset+.50)$)  {};
+      \node[opxor] (xnd\r) at ($(W\r\r) +(0,\opoffset+.75)$)  {};
+    \ifthenelse{\equal{\r}{4}}
+    { \node[opand] (and\r) at ($(W\r3) +(.5,\opoffset+.75)$)  {$\cdot$}; }
+    { \node[opand] (and\r) at ($(W\r\r) +(.5,\opoffset+.75)$) {$\cdot$}; }
+    \ifthenelse{\equal{\r}{-1}}%
+    {
+    \ifmessage
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$M$};
+    \else
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {\color{black!2}{$M$}};
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$0$};
+    \fi
+      \node[inner sep=1pt] (C) at ($(lll\r) +(0,-.5)$) {$C$};
+      \draw[next] (M) -- (xnd\r);
+      \draw[next] (lll\r) -- (C);
+      \coordinate[optee] (tlll\r) at ($(W\r\tlllx) +(0,\opoffset+.25)$); }{}
+      \coordinate[optee] (txor\r) at ($(W\r\txorx) +(0,\opoffset+.50)$);
+      \coordinate[optee] (tanA\r) at ($(W\r\tanAx) +(0,\opoffset+.675)$);
+      \coordinate[optee] (tanB\r) at ($(W\r\tanBx) +(0,\opoffset+.825)$);
+
+    \ifthenelse{\equal{\r}{-1}}%
+    { \draw[next] (tlll\r) -- (lll\r); }{}
+      \draw[next] (txor\r) -- (xor\r);
+    \ifthenelse{\tanAx < \r}%
+    { \draw[next] (tanA\r) -- (tanA\r-|and\r.west); }%
+    { \draw[next] (tanA\r) -- (tanA\r-|and\r.east); }
+    \ifthenelse{\tanBx < \r}%
+    { \draw[next] (tanB\r) -- (tanB\r-|and\r.west); }%
+    { \draw[next] (tanB\r) -- (tanB\r-|and\r.east); }
+    \draw[next] (and\r) -- (xnd\r);
+    \draw[    ] (xnd\r) -- (xor\r);
+    \draw[    ] (xor\r) -- (lll\r);
+
+    \foreach \w in {0,...,4} {
+      \ifthenelse{\equal{\w}{\r}}{
+        \draw (W\rprev\w) -- (xnd\r);
+        \draw (lll\r) -- (W\r\w);
+      }{
+        \draw (W\rprev\w) -- (W\r\w);
+      }
+    }
+  }
+  \foreach \r in {1,...,4} {
+    \ifmessage
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {$M$};
+      \node[opxor] (xorM\r) at ($(W\r\r) +(0,\opoffset+1)$)  {};
+      \draw[next] (M\r) |- (xorM\r);
+    \else
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {\color{black!2}$M$};
+    \fi
+
+  }
+
+  \ifrotw
+    \foreach \r/\rotw in {-1/3w,0/1w,1/2w,2/3w,3/2w,4/1w} { % round
+      \ifthenelse{\equal{\r}{-1}}{
+        \pgfmathsetmacro{\txorx}{int(mod(\r+2,5))}
+        \pgfmathsetmacro{\tanAx}{int(mod(\r+4,5))}
+        \pgfmathsetmacro{\tanBx}{int(mod(\r+3,5))}
+        \pgfmathsetmacro{\tlllx}{int(mod(\r+1,5))}
+        \pgfmathsetmacro{\tlllw}{int(mod(\r+4,5))}
+      }{
+        \pgfmathsetmacro{\tlllw}{int(mod(\r+4,5))}
+        \pgfmathsetmacro{\txorx}{int(mod(\r+3,5))}
+        \pgfmathsetmacro{\tanAx}{int(mod(\r+2,5))}
+        \pgfmathsetmacro{\tanBx}{int(mod(\r+1,5))}
+      }
+      \ifthenelse{\equal{\r}{-1}}%
+      { \node[oprotw] (lll\r-w) at ($(W\r\r) +(1.5,\opoffset+.5)$)  {$\lll\!\rotw$}; }%
+      { \node[oprotw] (lll\r-w) at ($(W\r\txorx) +(0,\opoffset+.25)$)  {$\lll\!\rotw$}; }
+    }
+    \foreach \r in {0,...,4} {
+      \node[inner sep=1pt] (S\r) at ($(W0\r) +(0,\opoffset+2)$) {$S_\r$};
+    }
+  \else
+  \fi
+  \ifstates
+    \foreach \r in {0,...,4} {
+      \node[inner sep=1pt] (S\r) at ($(W0\r) +(0,\opoffset+2)$) {$S_\r$};
+    }
+  \else
+  \fi
+
+}
+
+%new commands
+\newcommand{\bias}{\ensuremath{\operatorname{bias}}}
+\newcommand{\corr}{\ensuremath{\operatorname{cor}}}
+\newcommand{\weight}{\ensuremath{\operatorname{weight}}}
+\newcommand\eqdef{:=}%equality by definition
+\newcommand\StateUpdate{\ensuremath{\texttt{StateUpdate}}}
+\newcommand\rotl{\ensuremath{\lll}}
+\newcommand\rotlxy{\ensuremath{\lll_w}}
+
+\newcommand{\adlen}{|A|}  % design: $adlen$
+\newcommand{\msglen}{|M|} % design: $msglen$
+\newcommand{\const}{c}    % design: $const$
+\newcommand{\IV}{N}       % design: $IV$
+
+% EU Horizon 2020 acknowledgements
+\usepackage{wrapfig}
+\definecolor{eublue}{HTML}{003399}
+\definecolor{eugold}{HTML}{FFCC00}
+\newcommand{\euflag}[1][1]{\tikz[scale=#1]{\filldraw[eublue] (-22.5pt,-15pt) rectangle (22.5pt,15pt);
+  \foreach \i in {0,...,12} { \fill[eugold] (\i*30:10pt) +(90:1.666pt) -- +(306:1.666pt) -- +(162:1.666pt) -- +(18:1.666pt) -- +(234:1.666pt) -- cycle; }
+}}
+\newcommand{\horizonack}[1]{{
+  \setlength\intextsep{0pt}
+  \begin{wrapfigure}[4]{l}{0pt}
+    \euflag
+  \end{wrapfigure}
+  \noindent #1
+  \par
+}}

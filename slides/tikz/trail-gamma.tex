@@ -1,0 +1,15 @@
+\begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
+  \rotwfalse
+  \messagefalse
+  \printstate
+  \draw[trail, gamma]
+    (W-21) node[above] {$i$} -- (xnd1) (xnd1) -- (xor1) (xor1) -- (lll1)
+    (xnd1) -- (and1)
+    (xor1) -- (txor1)
+    (txor1) -- (W-24) node[above] {$i$}
+    (lll1) -- (W41) node[below] {$i+b_1$}
+    ;
+    % \draw[gamma,very thick] (W-24) + (0,+0.175) ellipse (0.2cm and 0.15cm);
+    \draw (W42) + (0,-0.5) node[below] {weight($\gamma^t_i$) = 1};
+
+\end{tikzpicture}%}}}

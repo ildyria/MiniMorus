@@ -1,0 +1,19 @@
+\begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
+  \rotwfalse
+  \messagefalse
+  \printstate
+  \draw[trail, alpha]
+    (C) -- node[right] {$i$} (lll-1)
+    (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+    (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) -- (tanB0-|and0.east)
+    (and0) -- (xnd0) (xnd0) -- (tlll-1) (xnd0) -- (xor0)
+    (and-1.east|-tanA-1) -- (tanA-1) (tanA-1) -- (txor0) (txor0) -- (xor0)
+    (xor0) -- (lll0) (lll0) -- (W40) node[below] {$i+b_0$}
+    ;
+  \draw[trail, alpha, dashed]
+    (and-1.east|-tanB-1) -- (tanB-1) (tanB-1) -- (tanA0) (tanA0) -- (tanA0-|and0.east);
+  % \draw[alpha, very thick] (W40) + (0,-0.2) ellipse (0.6cm and 0.175cm);
+
+  \draw (W42) + (0,-0.5) node[below] {weight($\alpha^t_i$) = 1 (not 2)};
+
+\end{tikzpicture}%}}}

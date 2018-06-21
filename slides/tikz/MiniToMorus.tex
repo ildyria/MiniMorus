@@ -1,0 +1,20 @@
+\begin{tikzpicture}[font=\Huge]
+
+\foreach \s in {0,...,4} {
+  \node (MnS\s) at (2+4.5*\s,2) {$S_\s$};
+
+  \foreach \w in {1.5} {
+    \draw (\w+4.5*\s,0) rectangle +(0.75,0.5);
+  }
+}
+\node[left] (MM) at (-1,0.25) {\MiniMORUS:};
+
+\foreach \s in {0,...,4} {
+  \foreach \w in {0,...,3} {
+    \draw (\w+4.5*\s,-2) rectangle +(0.75,0.5);
+  }
+}
+
+\node[left] (MM) at (-1,-1.75) {\MORUS:};
+
+\end{tikzpicture}

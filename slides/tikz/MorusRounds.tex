@@ -1,0 +1,62 @@
+\begin{tikzpicture}[font=\huge]
+\tikzset{oop/.style={draw, fill=none, minimum size=2ex, inner sep=0pt}}
+\tikzset{oopxor/.style={oop, shape=oplus}}
+
+\foreach \r/\t in {-4/$S^{-16}$,-3/$S^{-15}$,-1/$S^{-1}$} {
+  \draw (2*\r,0) rectangle ++(0.5,3);
+  \node at (0.25+2*\r,1.5) {$f$};
+  \node (t-\r) at (-0.25+2*\r,3.5) {\t};
+}
+\foreach \r in {-4,-3} {
+  \foreach \h in {0.5,1,1.5,2,2.5} {
+    \draw [edge] (0.5+2*\r,\h) -- +(1.5,0);
+  }
+}
+\foreach \h in {0.5,1,1.5,2,2.5} {
+  \draw [edge] (-9,\h) -- +(1,0);
+}
+\node [anchor=east] at (-9,2.5) {$cst$};
+\node [anchor=east] at (-9,2) {$cst$};
+\node [anchor=east] at (-9,1.5) {$1^*$};
+\node [anchor=east] at (-9,1) {$Key$};
+\node [anchor=east] at (-9,0.5) {$Nonce$};
+\node (ldots) at (0.25+2*-1.625,1.5) {\ldots\ldots};
+
+\foreach \r in {0,1,2,3,4} {
+
+  \draw (2*\r,0) rectangle ++(0.5,3);
+  \node at (0.25+2*\r,1.5) {$f$};
+  \node (t\r) at (-0.25+2*\r,3.5) {$S^\r$};
+  \node (M\r) at (0.25+2*\r,-1.5) {$M^\r$};
+  \node[oopxor] (xor\r) at ($(M\r) +(0,-1.5)$)  {};
+  \node (C\r) at ($(M\r) +(0,-3)$) {$C^\r$};
+
+  \draw[edge] (M\r.north) -- (0.25+2*\r,0);
+  \draw[edge] (M\r.south) -- (xor\r.north);
+  \draw[edge] (xor\r.south) -- (C\r.north);
+}
+
+\foreach \r in {0,1,2,3,4} {
+  \foreach \h in {0.5,1,1.5,2,2.5} {
+    \draw[edge] (-1.5+2*\r,\h) -- +(1.5,0);
+  }
+  \draw[edge] (-0.5+2*\r,2) -- +(0,-5) -- (xor\r.west);
+}
+\node (ldots) at (9.5,1.5) {\ldots};
+
+\pause
+
+\fill [ruDarkTeal,opacity=.9] (-11,-0.5) rectangle +(10,4.5);
+\node at (-6,1.75) {\color{white}\textbf{RANDOM}};
+
+\pause
+
+\fill [black!2] (-11.1,-0.51) rectangle +(10.2,4.6);
+\node [anchor=east] at (-1,2.5) {{\Large\tt rand()} $\rightarrow S_4$};
+\node [anchor=east] at (-1,2) {{\Large\tt rand()} $\rightarrow S_3$};
+\node [anchor=east] at (-1,1.5) {{\Large\tt rand()} $\rightarrow S_2$};
+\node [anchor=east] at (-1,1) {{\Large\tt rand()} $\rightarrow S_1$};
+\node [anchor=east] at (-1,0.5) {{\Large\tt rand()} $\rightarrow S_0$};
+
+
+\end{tikzpicture}

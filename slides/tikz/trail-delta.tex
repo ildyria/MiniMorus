@@ -1,0 +1,14 @@
+\begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
+  \rotwfalse
+  \messagefalse
+  \printstate
+  \draw[trail, delta]
+    (W-24) node[above] {$i$} -- (xnd4) (xnd4) -- (xor4) (xnd4) -- (and4)
+    (xor4) -- (lll4) (xor4) -- (txor4) (txor4) -- (W42) node[below] {$i$}
+    (lll4) -- (W44) node[below] {$i+b_4$}
+    ;
+
+    % \draw[delta, very thick] (W42) + (0,-0.175) ellipse (0.2cm and 0.15cm);
+    \draw (W42) + (0,-0.5) node[below] {weight($\delta^t_i$) = 1};
+
+\end{tikzpicture}%}}}
