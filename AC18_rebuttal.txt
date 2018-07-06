@@ -1,0 +1,289 @@
+Dear Tomer Ashur; Maria Eichlseder; Martin M. Lauridsen; Gaëtan Leurent; Brice Minaud; Yann Rotella; Yu Sasaki; Benoît Viguier,
+
+Below please find the reviewer comments on your paper
+
+  "Cryptanalysis of MORUS"
+
+that was submitted to ASIACRYPT 2018. 
+
+https://secure.iacr.org/websubrev/ac2018/submit/rebuttal.php
+
+Remember that the deadline for the rebuttals is July 13th, 11:45 UTC.
+
+************************************************************************
+* REBUTTAL *************************************************************
+************************************************************************
+
+We thank all reviewers for taking the time to review this submission.
+We will take all editorial comments into account to prepare an updated version.
+Below, we discuss some specific comments raised by the reviewers:
+
+> A small drawback that I would add is that this paper would benefit from a
+> concrete comparison with similar attacks, as the previous one that was found
+> on AEGIS. While it does not low down the impact of the attack on a new scheme
+> it could help to understand the differences for further cryptanalysis.
+
+... TODO ...
+
+> Moreover, the provided attack works either if the key is fixed or if the same
+> plaintext is repeated a large number of times. While the former case is not a
+> big limitation in practice even considering design recommendations, the later
+> seems to be less probable in practice. Maybe examples of concrete scenarii
+> should be emphasized to strengthen the proposal.
+
+... TODO ...
+
+************************************************************************
+* REVIEWS **************************************************************
+************************************************************************
+
+This paper presents three attacks on MORUS: a linear attack on the
+confidentiality of full MORUS, a
+differential attack on the integrity of MORUS with reduced finalisation, and a
+meet-in-the-middle
+key-recovery attack on MORUS with reduced initialisation. 
+
+The main result, i.e. the linear attack, is quite interesting in itself, and
+shows a potential
+weakness in the parameters of MORUS-1280. In particular, the attack shows that
+increasing the
+internal state size alone from MORUS-640 to MORUS-1280 has little influence on
+the linear
+correlation. Additionally, it is very interesting that the correlation is
+completely independent of
+the key and nonce. While that attack requires repeated encryption of the same
+plaintext with
+different nonces, the authors argue that previous attacks on RC4 have been
+carried out in this
+setting. 
+
+Presentation wise, the authors introduce a small version of MORUS which, along
+with excellent
+figures, makes it significantly easier to grasp the details of the attack. It
+is also nice to see
+that the authors explicitly derive formulas for the linear expressions, and
+additionally perform
+experiments to back up these derivations.
+
+For the two other attacks, while maybe not as interesting, the presentation is
+equally clear and
+easy to follow. All in all, the paper is well written as present valuable
+cryptanalysis of a CAESAR
+finalist. I recommend acceptance. 
+
+
+Some editorial comments:
+
+- Page 6: Under finalization, tmp isn't defined. 
+- The word "Symmetric" is a bit confusing. Maybe change to "Rotation
+invariant"?
+- It might be good to add the LAT for AND somewhere, as a help to the reader.
+
+- Figure 3: Good, but needs a much more descriptive caption. Explain what the
+numbers are, what the
+x's are, annotate with round-numbers.
+- I could use a bit more detail about the experimental verification in section
+4.4.
+- Page 21: "beginning and end of finalization" -> initialization
+- Table 4 and 5 should be in the main body.
+
+========================================================================
+
+This paper presents new cryptanalysis against MORUS, one of the three
+finalists in the CAESAR authenticated encryption competition in the group for
+use-case high-speed software performance.
+
+The main result of this paper is a keystream distinguisher on full MORUS-1280
+based on linear approximations of its StateUpdate-function. 
+It does not depend the secret key and thus does not allow key recovery, so in
+principle it can only recover unknown bits of plaintext.
+Against full MORUS-1280 with 256 bits of claimed security, one can recover
+plaintext bits using about 2^152 encrypted blocks *under various keys*, which
+is clearly impractical.
+While MORUS claims 256-bit security and restricts each key to at most 2^64
+encryptions, this does not hamper this attack.
+Even though the data complexity of 2^152 is impractically large, as this is
+the same scenario as the real-world decrypting plaintext attacks on RC4 in
+TLS, this attack should be taken as a certificational break of full
+MORUS-1280.
+
+The linear approximation on the StateUpdate function can be seen as rotational
+linear cryptanalysis, where every used linear mask on a 'register' (256-bit
+for MORUS-1280) uses the same bits of each 'word' within a register (a
+'register' consists of 4 'words').
+The authors call this property 'symmetric', and this property is maintained
+under various operations on linear masks: XORing two linear masks, performing
+the same bit-wise rotation on each word in a register, and performing
+word-wise rotations on a register.
+This simplifies analysis and naturally gives rise to analysis where one just
+considers the linear mask on the first word of each register (as the other
+words have the same linear mask).
+The authors introduce minimorus where each register just contains a single
+word and remove all word-wise rotations.
+
+The authors introduce a simplified analysis on simplified minimorus which
+showcases their results and allowed experimental verification by the authors.
+The full attack is then an extension of this analysis, where the authors
+analyze the interaction of the non-linear components.
+
+The paper is well written and provides new cryptanalysis, besides the main
+result on full MORUS-1280 the paper includes attacks against round-reduce
+initialization and finalization.
+
+
+- consider renaming rotations similar to the existing terminology of 'bit-wise
+rotation of machine registers'. i.e., X-wise rotation does rotation in steps
+of unit X. This means that 'word-wise' rotation becomes 'bit-wise' rotation,
+and 'register-wise' rotation becomes 'word-wise' rotation in this paper.
+- consider renaming 'symmetric property' to 'rotational property' to make the
+link to rotational differential cryptanalysis and to make it more specific
+that it is a rotational symmetry instead of e.g. reflection symmetry.
+
+========================================================================
+
+Morus is a stream cipher based authenticated encryption scheme, typically
+designed for high-performance applications. It is one of the finalist of the
+CAESAR competition. As the major contribution of the paper, the authors have
+presented a linear correlation in the keystream of full MORUS. For MORUS-1280
+(-640), the authors have showed a correlation of $2^{-76}$ ($2^{-73}$ resp.),
+which can be used to mount a distinguishing attack after $2^{152}$ ($2^{146}$
+resp.) encryptions. This attack depicts that MORUS-1280-256 doesn't offer 
+$256$-bit security for confidentiality, as claimed by the designers. The
+authors have also presented one integrity attack and one key-recovery attacks
+on reduced round MORUS.
+
+The overall presentation of the paper is really good. The concept of using
+symmetric linear combinations to deal with the bit rotations is novel. I also
+appreciate the idea of building the linear trail for a reduced version (called
+MiniMORUS) first, and then extending it to full MORUS using symmetrization. 
+   
+The editorial quality of the paper is also good. Some minor issues of the
+papers are:
+1. abstract: “less than would be” -> less than what would be.
+2. Same notation $C_i^t$ is used to denote a ciphertext as well as an equation
+(page 11). 
+3. “That the correlation ... 9 times” -> change the sentence.
+4. Capitalization is not consistent (Keystream correlation, Data complexity,
+Differential Trails, Full Diffusion Rounds etc).
+
+Overall, the reported results of this paper are very interesting, especially
+MORUS being one of the finalist of the ongoing CAESAR competition. Although
+the reported attacks are not practical, it certainly breaks the claimed
+security of MORUS-1280-256 and depicts some major weaknesses in the inherent
+design of MORUS such as:
+(i) It is possible to build trails irrespective of the rotation constants,
+	(i)	(ii) Finalization phase involves some unnecessary non-linear computations
+which are ultimately not used during the tag generation.
+	(ii)	
+With the light of the ongoing final round of the CAESAR competition, these
+results are very relevant and might play a crucial role in the
+selection/rejection of MORUS in the final portfolio; and hence I think the
+work should be accepted.
+
+========================================================================
+
+This paper proposes several attacks on a family of authenticated encryption
+schemes MORUS, which is one of finalists of the CAESAR competition. The
+authors found linear correlations in the keystreams with 2^-73 and 2^-76 of on
+MORUS-640 and MORUS-1280, respectively. These biases enable to develop
+distinguishing attacks with 2^146 and 2^152 encryptions, respectively. Since
+these linear correlations are independent from values of key, a typical
+countermeasure such as key updating does not make sense, and broadcast setting
+where the same plaintext is encrypted with different keys is directly applied.
+ 
+
+Also, they analyze the reduced version of MORUS, and present forgery and key
+recovery attacks on several reduced variants of MORUS. 
+
+The strongest result in this paper is the distinguishing attack on MORUS-1280,
+because this attack successfully breaks the claimed security of 256-bit key
+version of MORUS-1280 for the first time, while the required time and data
+complexity is still very high and impractical.
+Linear correlation attacks to stream ciphers are not new techniques but
+finding good trails are non-trivial task. Furthermore, these attacks are
+nicely backed up by experimental verifications of toy models. On the other
+hands, the security analysis of the reduced variant of MORUS is less
+interesting. 
+
+In the plaintext recovery attack in the broad setting, it requires more
+samples than distinguishing attacks. So, the attack does not match the
+practical attack scenario such as BEAST. 
+
+Overall, since MORUS is one of finalists of CAESAR, third party cryptanalysis
+is valuable, I believe that the result should be published from this
+conference 
+
+
+-The fact that correlations are independent from the key is not uncommon in
+stream ciphers when the weakness of the key generation function is exploited,
+e.g. RC4. 
+
+-In the plaintext recovery setting, it requires more samples than
+distinguishing attacks. So, the attack does not match practical attack
+scenario of BEAST.
+
+========================================================================
+
+This paper provides a cryptanalysis of the authenticated encryption MORUS,
+finalist of the CAESAR competition. Its main contribution relies on a linear
+correlation in the keystream of the full version of MORUS, which provides a
+distinguisher on its output. The attack complexity for MORUS-1280 is lower
+than what we would expect for a 256-bit security scheme. Two other smaller
+contributions of this paper are forgery attack and key-recovery attack in the
+nonce-misuse setting both in reduced versions of the authenticated encryption
+scheme.
+
+The editorial quality of this paper makes it very easy to follow. The authors
+start with a concrete description of MORUS. Then they introduce a lighter
+scheme they refer to as MiniMORUS to describe a simple version of their main
+attack. Afterwards, the concrete attack of full MORUS is given, followed by
+two extra contributions on round reduced versions of the scheme.
+
+Strengths of this paper are listed below.
+
+1) The main strength of this paper is the impact of the linear correlation
+attack. Namely, the provided attack provides a way to distinguish MORUS'
+output from random with a lower complexity than expected for such security. 
+
+2) The preliminary description of the attack on MiniMORUS is very appreciable
+to understand the full attack. The trail fragments depicted in Figure 2 are
+very helpful to get the procedure. Basically, the idea is to write equations
+between ciphertext and registers in the state at different steps, using a zero
+plaintext. Then, dependencies and equations' weights allow to conclude the
+approximation. 
+
+3) The source code of MiniMORUS' attack is provided as a supplementary
+material.
+
+4) Going from MiniMORUS to full-MORUS is done through an elegant use of
+symmetries. Furthermore, changing the zero plaintext to a known one is pretty
+straightforward as the considered dependencies are linear.
+
+5) The two extra attacks on initialization and finalization are not concrete
+attacks in the sense that they only apply on reduced versions of MORUS.
+Nevertheless, they nicely complete the analysis of MORUS.
+
+A small drawback that I would add is that this paper would benefit from a
+concrete comparison with similar attacks, as the previous one that was found
+on AEGIS. While it does not low down the impact of the attack on a new scheme
+it could help to understand the differences for further cryptanalysis.
+
+Moreover, the provided attack works either if the key is fixed or if the same
+plaintext is repeated a large number of times. While the former case is not a
+big limitation in practice even considering design recommendations, the later
+seems to be less probable in practice. Maybe examples of concrete scenarii
+should be emphasized to strengthen the proposal. Nevertheless, as soon as it
+is possible to mount this main attack under certain circumstances and because
+this scheme is currently under evaluation, I think such work is mandatory to
+determine the concrete security of proposals.
+
+All in one, this paper presents huge contributions that totally fit the scope
+of Asiacrypt conference. While I would appreciate more feedback on previous
+related works, the paper is very well written and advantageously describes
+every attack precisely enough for a 'non-symmetric' audience. For these
+reasons, I lean towards acceptance.
+
+
+Minor comments:
+- few typos in README.nb
+
