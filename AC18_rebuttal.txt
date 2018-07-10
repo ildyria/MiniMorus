@@ -14,7 +14,7 @@ Remember that the deadline for the rebuttals is July 13th, 11:45 UTC.
 * REBUTTAL *************************************************************
 ************************************************************************
 
-We thank all reviewers for taking the time to review this submission.
+We thank all reviewers for their positive comments.
 We will take all editorial comments into account to prepare an updated version.
 Below, we discuss some specific comments raised by the reviewers:
 
@@ -23,7 +23,7 @@ Below, we discuss some specific comments raised by the reviewers:
 > on AEGIS. While it does not low down the impact of the attack on a new scheme
 > it could help to understand the differences for further cryptanalysis.
 
-... TODO ...
+... TODO (Brice?)...
 
 > Moreover, the provided attack works either if the key is fixed or if the same
 > plaintext is repeated a large number of times. While the former case is not a
@@ -32,6 +32,19 @@ Below, we discuss some specific comments raised by the reviewers:
 > should be emphasized to strengthen the proposal.
 
 ... TODO ...
+
+> In the plaintext recovery attack in the broad setting, it requires more
+> samples than distinguishing attacks. So, the attack does not match the
+> practical attack scenario such as BEAST. 
+
+... TODO ...
+
+  Brice wrote:
+  "We are not aware of a distinguishing attack on MORUS with lower complexity than our plaintext recovery attack. Note that MORUS is not a block cipher, and distinguishing attacks on modes of operation (such as the CBC mode targeted in the original BEAST attack) do not apply."
+  A small possibility is that in the broadcast setting of BEAST the same nonce would be used with different keys. If that's true the reviewer could be thinking of a generic multi-target key-guessing attack using the initial known plaintext segment, and they would be kind of right, except it's not a distinguishing attack.
+  
+  Gaëtan wrote:
+  "Another option is that he might be talking about the small constant factors that are needed to get a high probability of success (with 1/epsilon^2 data we only have a small advantage)..  There is also a factor in the complexity depending on the number of bits/bytes that we want to recover (that we didn't consider in the paper, but are needed in order to recover a password or a web cookie)."
 
 ************************************************************************
 * REVIEWS **************************************************************
