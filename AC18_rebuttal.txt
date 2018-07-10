@@ -18,6 +18,7 @@ We thank all reviewers for their positive comments.
 We will take all editorial comments into account to prepare an updated version.
 Below, we discuss some specific comments raised by the reviewers:
 
+
 > A small drawback that I would add is that this paper would benefit from a
 > concrete comparison with similar attacks, as the previous one that was found
 > on AEGIS. While it does not low down the impact of the attack on a new scheme
@@ -25,22 +26,34 @@ Below, we discuss some specific comments raised by the reviewers:
 
 ... TODO (Brice?)...
 
+
 > Moreover, the provided attack works either if the key is fixed or if the same
 > plaintext is repeated a large number of times. While the former case is not a
 > big limitation in practice even considering design recommendations, the later
 > seems to be less probable in practice. Maybe examples of concrete scenarii
 > should be emphasized to strengthen the proposal.
 
-... TODO ...
+As discussed in Section 6, repeated plaintexts actually appear in many practical
+applications due to fixed formats (headers, metadata, file formats) and often
+include some repeated secret parts (password, authentication cookie, ...).
+This scenario has been exploited in several practical attacks, including BEAST
+(TLS), RC4 attacks (TLS, WPA), and Sweet32 (TLS, OpenVPN).
+
 
 > In the plaintext recovery attack in the broad setting, it requires more
 > samples than distinguishing attacks. So, the attack does not match the
 > practical attack scenario such as BEAST. 
 
-... TODO ...
+Clearly, the complexity of the attack we propose is not practical, unlike the
+attacks on legacy cryptosystems in other BEAST-style attacks.
+However, the attack complexity is less than suggested by the security claim of
+MORUS1280. We are not aware of a distinguishing attack on MORUS with lower
+complexity than our plaintext recovery attack. Note that MORUS is not a block
+cipher, and distinguishing attacks on modes of operation (such as the CBC mode
+targeted in the original BEAST attack) do not apply.
+
 
   Brice wrote:
-  "We are not aware of a distinguishing attack on MORUS with lower complexity than our plaintext recovery attack. Note that MORUS is not a block cipher, and distinguishing attacks on modes of operation (such as the CBC mode targeted in the original BEAST attack) do not apply."
   A small possibility is that in the broadcast setting of BEAST the same nonce would be used with different keys. If that's true the reviewer could be thinking of a generic multi-target key-guessing attack using the initial known plaintext segment, and they would be kind of right, except it's not a distinguishing attack.
   
   Gaëtan wrote:
