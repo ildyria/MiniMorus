@@ -16,7 +16,8 @@ Remember that the deadline for the rebuttals is July 13th, 11:45 UTC.
 
 We thank all reviewers for their positive comments.
 We will take all editorial comments into account to prepare an updated version.
-Below, we discuss some specific comments raised by the reviewers:
+Below, we discuss some specific comments raised by the reviewers. We agree with
+those comments and will update the paper with the relevant clarifications.
 
 
 > A small drawback that I would add is that this paper would benefit from a
