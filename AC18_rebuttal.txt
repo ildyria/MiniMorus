@@ -52,9 +52,9 @@ This scenario has been exploited in several practical attacks, including BEAST
 
 Clearly, the complexity of the attack we propose is not practical, unlike the
 attacks on legacy cryptosystems in other BEAST-style attacks.  However, the
-attack complexity is less than suggested by the security claim of MORUS1280. We
-are not aware of a distinguishing attack on MORUS with lower complexity than our
-plaintext recovery attack. Note that MORUS is not a block cipher, and
+attack complexity is less than suggested by the security claim of MORUS1280-256.
+We are not aware of a distinguishing attack on MORUS with lower complexity than
+our plaintext recovery attack. Note that MORUS is not a block cipher, and
 distinguishing attacks on modes of operation (such as the CBC mode targeted in
 the original BEAST attack) do not apply.
 
