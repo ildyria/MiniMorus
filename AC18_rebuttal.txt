@@ -24,7 +24,13 @@ Below, we discuss some specific comments raised by the reviewers:
 > on AEGIS. While it does not low down the impact of the attack on a new scheme
 > it could help to understand the differences for further cryptanalysis.
 
-... TODO (Brice?)...
+Broadly speaking, the attack on MORUS is similar to traditional linear attacks
+on stream ciphers. It is closest to the attack on AEGIS. In both cases, the
+approach is to build a linear trail linking ciphertext bits, while canceling the
+contribution of inner state bits. How the trail is built depends on the state
+update function, and differs significantly between AEGIS and MORUS, as the AEGIS
+state update function relies on the parallel application of AES rounds, rather
+than shift/AND/XOR operations.
 
 
 > Moreover, the provided attack works either if the key is fixed or if the same
@@ -45,12 +51,13 @@ This scenario has been exploited in several practical attacks, including BEAST
 > practical attack scenario such as BEAST. 
 
 Clearly, the complexity of the attack we propose is not practical, unlike the
-attacks on legacy cryptosystems in other BEAST-style attacks.
-However, the attack complexity is less than suggested by the security claim of
-MORUS1280. We are not aware of a distinguishing attack on MORUS with lower
-complexity than our plaintext recovery attack. Note that MORUS is not a block
-cipher, and distinguishing attacks on modes of operation (such as the CBC mode
-targeted in the original BEAST attack) do not apply.
+attacks on legacy cryptosystems in other BEAST-style attacks.  However, the
+attack complexity is less than suggested by the security claim of MORUS1280. We
+are not aware of a distinguishing attack on MORUS with lower complexity than our
+plaintext recovery attack. Note that MORUS is not a block cipher, and
+distinguishing attacks on modes of operation (such as the CBC mode targeted in
+the original BEAST attack) do not apply.
+
 
 
   Brice wrote:
