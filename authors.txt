@@ -1,10 +1,10 @@
 Please insert your name, affiliation and email for the submission.
 
-Tomer Ashur, imec-COSIC KULeuven, Belgium: tomer.ashur@esat.kuleuven.be
+Tomer Ashur, imec-COSIC KU Leuven, Belgium: tomer.ashur@esat.kuleuven.be
 Maria Eichlseder, Graz University of Technology, Austria: maria.eichlseder@iaik.tugraz.at
 Martin M. Lauridsen,               : mail@martinlauridsen.info
 Gaëtan Leurent, Inria, France: gaetan.leurent@inria.fr
-Brice Minaud, RHUL, UK: brice.minaud@gmail.com
+Brice Minaud, Royal Holloway University of London, United Kingdom: brice.minaud@gmail.com
 Yann Rotella, Inria, France: yann.rotella@inria.fr
 Yu Sasaki, NTT, Japan: sasaki.yu@lab.ntt.co.jp
 Benoît Viguier, Radboud University, Netherlands: b.viguier@science.ru.nl
