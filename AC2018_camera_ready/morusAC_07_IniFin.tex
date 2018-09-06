@@ -1,0 +1,292 @@
+%!TEX root = morusAC.tex
+
+\section{Analysis on Initialization and Finalization of Reduced \MORUS}
+\label{sec/IniFin}
+
+The bias in the previous sections analysed the encryption part of the \MORUS. In this section, for comprehensive security analysis of \MORUS, we provide new attacks on reduced version of the initialization and the finalization. We emphasize that the results in this section do not threaten any security claim by the designers. However, we believe that investigating all parts of the design with different approaches from the existing work on \MORUS provides a better understanding and will be useful especially when the design will be tweaked in future.
+
+\subsection{Forgery with Reduced Finalization}
+\label{subsec/Fin}
+We present forgery attacks on 3 out of 10 steps of \MORUS[1280] that claims 128-bit security for integrity. The attack only works for a limited number of steps, while it works in the nonce-respecting setting. As far as we know, this is the first attempt to evaluate integrity of \MORUS in the nonce-respecting setting.
+
+\subsubsection{Overview.}
+A general strategy for forgery attacks in the nonce-respecting setting is to inject some difference in a message block and propagate it so that it can be canceled by a difference in another message block. However this approach does not work well against \MORUS due to its large state size which prevents an attacker from easily controlling the differences in different registers. 
+
+Here we focus on the property that the padding for an associated data $A$ and a message $M$ is the zero-padding, hence $A$ and $A'=A\|0^*$ and $M$ and $M'=M\|0$ result in identical states after the associated data processing and the encryption parts, as long as $A,A'$ and $M,M'$ fit in the same number of blocks. During the finalization, since $A,A'$ (resp. $M,M'$) have different lengths, the corresponding 64-bit values $\adlen$ (resp. $\msglen$) are different, which appears as $\Delta \adlen$ (resp. $\Delta \msglen$) during the finalization, and is injected through the message input interface. Our strategy is to propagate this difference to the 128-bit tags $T$ and $T'$ such that their difference $\Delta T$ appears with higher probability than $2^{-128}$. All in all, the forgery succeeds as long as the desired $\Delta T$ is obtained or in other words, the attacker does not have to cancel the state difference, which is the main advantage of attacking the finalization part of the scheme. 
+
+Note that if the attacker uses different messages $M,M'$, not only the new tag $T'$ but also new ciphertext $C'$ must be guessed correctly. Because the encryption of \MORUS is a simple XOR of the key stream, $C'$ can be easily guessed. For this purpose, the attacker should first query a longer message $M'=M\|0^*$ to obtain $C'$. Then, $C$ can be obtained by truncating $C'$.
+
+\subsubsection{Differential Trails.}
+Recall that the message input during the finalization of \MORUS[1280] is $\adlen\mathrel\|\msglen\mathrel\|0^{128}$ where $\adlen$ and $\msglen$ are 64-bit strings. We set $\Delta \adlen$ to be of low Hamming weight, e.g.,~{\tt 0x0000000000000001}. 
+%Hereafter, we use {\tt typefont} denote hexadecimal numbers.
+This difference propagates through 3 steps as specified in \Cref{Tbl:fin_diff}.
+
+Recall that each step consists of 5 rounds and the input message is absorbed to the state in rounds 2 to 5. The trail in \Cref{Tbl:fin_diff} initially does not have any difference and the same continues even after round 1. Differences start to appear from round 2 and they will go through the bitwise-AND operation from round 4. We need to pay 1 bit to control each active AND gate. The probability evaluation for round 15 can be ignored since in this round only $S_4$ is non-linearly updated, while $S_4$ is never used for computing the tag. Finally, bitwise-AND in the tag computation is taken into account. Note that the tag is only 128 LSBs, thus the number of active AND gates should be counted only for those bits. As shown in \Cref{Tbl:fin_diff}, we can have a particular tag difference $\Delta T$ with probability $2^{-88}$. Thus after observing $A$ and corresponding $T$, $A\|0$ and $(T \oplus \Delta T)$ is a valid pair with probability $2^{-88}$.
+
+\begin{table}[!tb]
+\begin{center}
+\caption{Differential propagation through 3 Steps. Five lines for round $i$ denote the difference of $S_0, \cdots, S_4$ after the round $i$ transformation.} %Weight is a Hamming weight of the state difference and accumulated probability is a probability to satisfy the trail from the beginning.}
+\label{Tbl:fin_diff}
+{%
+\iflncsmargins
+\tiny
+\else
+\scriptsize
+\renewcommand{\arraystretch}{0.9}
+\fi
+\begin{tabular}{ccccccc} \hline
+Round & \multicolumn{4}{c}{State difference} & Weight & Accumulated probability \\ \hline
+%      & & & &                                &        & 
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+Ini   & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $-$ \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+1     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & \\
+2     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & \\
+3     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & $1$\\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \\
+4     & {\tt 0000004000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 1  & $1$\\
+      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 0  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \multirow{3}{*}{$2^{-1}$}\\
+5     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1  & \\
+      & {\tt 0020000000000080} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\ \hline
+
+      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & 1  & \multirow{3}{*}{$2^{-3}$}\\
+6     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1 & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000040000000010} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\ \hline
+
+      & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4  & \multirow{3}{*}{$2^{-6}$}\\
+7     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000004000000000} & 1  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0004400001000000} & {\tt 0000000000000000} & {\tt 0000000010000000} & {\tt 0000000000000000} & 4  & \multirow{3}{*}{$2^{-10}$}\\
+8     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0020000000000080} & 2  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  & \multirow{3}{*}{$2^{-14}$}\\
+9     & {\tt 0400014000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & 4  & \\
+      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7  & \\
+      & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000040000000010} & {\tt 0000000000000000} & 2  & \\ \hline
+
+      & {\tt 0000000000000000} & {\tt 0000000000100004} & {\tt 0000000000000000} & {\tt 0000000000000000} & 2  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  & \multirow{3}{*}{$2^{-20}$}\\
+10    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & \\
+      & {\tt 0220000080000080} & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & 7  & \\
+      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7  & \\ \hline
+
+      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9  & \\
+      & {\tt 0000000010000000} & {\tt 0000000000000000} & {\tt 0004400001000000} & {\tt 0000000000000000} & 4  &\multirow{3}{*}{$2^{-28}$} \\
+11    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & \\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 4000140000000010} & {\tt 0000000000000000} & {\tt 0000400000000100} & {\tt 0000000000010000} & 7  & \\ \hline
+
+      & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & {\tt 0000000008000200} & 9  & \\
+      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 & \multirow{3}{*}{$2^{-39}$}\\
+12    & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000001000} & {\tt 0400014000000000} & 4  & \\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
+
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0004500005000400} & {\tt 0000000000000000} & {\tt 0040000100000040} & {\tt 4000000000000000} & 10 & \multirow{3}{*}{$2^{-53}$}\\
+13    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 &\\
+      & {\tt 0000000000000000} & {\tt 0000000800000000} & {\tt 1000000000004000} & {\tt 0220000080000080} & 7  & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
+
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 & \multirow{3}{*}{$2^{-69}$}\\
+14    & {\tt 0400114000040000} & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & 14 & \\
+      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
+
+%Weight: 69
+      & {\tt 0000000008000200} & {\tt 0000100000100044} & {\tt 0000000200008000} & {\tt 0001000000000000} & 9  & \\
+      & {\tt 0040000100000040} & {\tt 4000000000000000} & {\tt 0004500005000400} & {\tt 0000000000000000} & 10 & \\
+15    & {\tt 0020000000000080} & {\tt 0004000000400000} & {\tt 0000800100005002} & {\tt 0400114000040000} & 14 & $-$\\
+      & {\tt 0228000280020080} & {\tt 0000040000000000} & {\tt 2000008000202008} & {\tt 1000004000004021} & 18 & \\
+      & {\tt 0000400000000100} & {\tt 0000000000010000} & {\tt 4000140000000010} & {\tt 0000000000000000} & 7  & \\ \hline
+
+$\Delta T$ &                   &                        & {\tt 600080830020f00a} & {\tt 1405414005044421} & & $2^{-88}$ \\ \hline
+\end{tabular}
+}
+\end{center}
+\end{table}
+
+\subsubsection{Remarks.} The fact that the $S_4$ is updated in the last round but is not used in the tag generation implies that the \MORUS finalization generally includes unnecessary computations with respect to security. It may be interesting to tweak the design such that the tag can also depend on $S_4$. Indeed in \Cref{Tbl:fin_diff}, we can observe some jump-up of the probability in the tag computation. This is because the non-linearly involved terms are $S_2 \cdot S_3$, and $S_3$ that was updated 2 rounds before has a high Hamming weight. In this sense, involving $S_4$ in non-linear terms of the tag computation imposes more difficulties for the attacker.
+
+
+
+
+\subsection{Extending State Recovery to Key Recovery}
+\label{subsec/Ini}
+Kales et al.~\cite{cryptoeprint:2017:1137} showed that the internal state of \MORUS[640] can be recovered under the nonce-misuse scenario using $2^5$ plaintext-ciphertext pairs. As claimed by \cite{cryptoeprint:2017:1137} the attack is naturally extended to \MORUS[1280] though Kales et al. \cite{cryptoeprint:2017:1137} did not demonstrate specific attacks. The recovered state allows the attacker to mount a universal forgery attack under the same nonce. However, the key still cannot be recovered because the key is used both at the beginning and end of the initialization, which prevents the attacker from backtracking the state value to the initial state. In this section, we show that meet-in-the-middle attacks allow the attacker to recover the key faster than exhaustive search for a relatively large number of steps, i.e., 10 out of 16 steps in \MORUS[1280]. 
+
+\subsubsection{Overview.}
+We divide the 10 steps of the initialization computation into two subsequent parts $F_0$ and $F_1$. (We later set that $F_0$ is the first 4 steps and $F_1$ is the last 6 steps.) Let $S^{-10}$ be the initial state value before setting the key, i.e., $S^{-10} = (\IV\mathrel\|0^{128},0^{256},1^{256},0^{256},\const_0\mathrel\|\const_1)$. Also let $S^0$ be 1280-bit state value after the initialization, which is now assumed to be recovered with the nonce-misuse analysis~\cite{cryptoeprint:2017:1137}. We then have the following relation.
+\begin{align*}
+%F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K\|K, 0, 0, 0)\bigr) \oplus (0,K\|K,0,0,0) = S^0.
+F_1 \circ F_0 \bigl(S^{-10} \oplus (0, K, 0, 0, 0)\bigr) \oplus (0,K,0,0,0) = S^0.
+\end{align*}
+We target the variant \MORUS[1280-128], where $K = K_{128} \mathrel\| K_{128}$.
+
+Here, our strategy is to recover $K_{128}$ by independently processing $F_0$ and $F_1^{-1}$ to find the following match.
+\begin{align*}
+  F_0 (S^{-10} \oplus (0, K_{128}\|K_{128}, 0, 0, 0)) \stackrel{?}{=} F_1^{-1} (S^0 \oplus (0,K_{128}\|K_{128},0,0,0)).
+\end{align*}
+
+To evaluate the attack complexity, we consider the following parameters.
+\begin{itemize}
+\item $G_0$: a set of bits of $K_{128}$ that are guessed for computing $F_0$.
+\item $G_1$: a set of bits of $K_{128}$ that are guessed for computing $F_1^{-1}$.
+\item $G_2$: a set of bits in the intersection of $G_0$ and $G_1$.
+\item $x$ bits can match after processing $F_0$ and $F_1^{-1}$.
+\end{itemize}
+Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K_{128}$. The attack exhaustively guesses $G_2$ and performs the following procedure for each guess.
+\begin{enumerate}
+\item $F_0$ is computed $2^{|G_0|-|G_2|}$ times and the results are stored in a table $T$. (Because $|G_1|-|G_2|$ bits are unknown, only a part of the state is computed.)
+\item $F_1^{-1}$ is computed $2^{|G_1|-|G_2|}$ times and for each result we check the match with any entry in $T$.
+\item There are $2^{|G_0|-|G_2| + |G_1|-|G_2|}$ combinations, and the number of valid matches reduces to $2^{|G_0|-|G_2| + |G_1|-|G_2| - x}$ after matching the $x$ bits.
+\item Check the correctness of the guess by using one plaintext-ciphertext pair.
+\end{enumerate}
+
+In the end,
+$F_0$ is computed $2^{|G_2|} \cdot 2^{|G_0|-|G_2|} = 2^{|G_0|}$ times.
+Similarly, $F_1^{-1}$ is computed $2^{|G_1|}$ times. The number of the total candidates after the $x$-bit match is $2^{|G_2|} \cdot 2^{|G_0|-|G_2| + |G_1|-|G_2| - x} = 2^{|G_0| + |G_1| - |G_2| - x}$. Hence, the key $K_{128}$ is recovered with complexity $$\max( 2^{|G_0|}, 2^{|G_1|}, 2^{|G_0| + |G_1| - |G_2| - x}).$$
+Suppose that we choose $|G_0|$ and $|G_1|$ to be balanced i.e., $|G_0|=|G_1|$. Then, the complexity is $$\max( 2^{|G_0|}, 2^{2|G_0| - |G_2| - x}).$$
+Two terms are balanced when $x = |G_0| - |G_2|$. Hence, the number of matched bits in the middle of two functions must be greater than or equal to the number of independently guessed bits to compute $F_0$ and $F_1^{-1}$.
+
+In the attack below, we choose $|G_0|=|G_1|=127$ and $|G_2|=126$ (equivalently $|G_2|-|G_0| = |G_2|-|G_1| = 1$) in order to aim $x=1$-bit match in the middle, which maximizes the number of attacked rounds.
+
+\begin{table}
+\caption{Analysis of the diffusion and matching bits over 10 steps. `0' and `1' denote that the state bit can and cannot be computed from a partial knowledge of $K_{128}$, respectively. After the partial computations from each direction, 4 bits of $S^{-6}$ can match.} 
+\label{Tbl:ini_diffuse}
+\centering
+{
+\iflncsmargins
+\tiny
+\else
+\footnotesize
+\renewcommand{\arraystretch}{0.9}
+\fi
+\begin{tabular}{ccccc} \hline
+Round & \multicolumn{4}{c}{State Difference}\\ \hline
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+\multirow{3}{*}{$S^{-10}\oplus K_{128}$} & {\tt 0000000000000000} & {\tt 0000000000000001} & {\tt 0000000000000000} & {\tt 0000000000000001} \\
+  & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                         & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+
+      & {\tt 0000000000002000} & {\tt 0000000000000000} & {\tt 0000000000002000} & {\tt 0000000000000000} \\
+      & {\tt 0000000000000000} & {\tt 0000400000000000} & {\tt 0000000000000000} & {\tt 0000400000000000} \\
+1     & {\tt 0008000000000000} & {\tt 0000000000000000} & {\tt 0008000000000000} & {\tt 0000000000000000} \\
+      & {\tt 0000000000100000} & {\tt 0020000000000000} & {\tt 0000000000100000} & {\tt 0020000000000000} \\
+      & {\tt 0000000000020000} & {\tt 0084000000000000} & {\tt 0000000000020000} & {\tt 0084000000000000} \\ \hline
+
+      & {\tt 0800000000000004} & {\tt 0000000204000001} & {\tt 0800000000000004} & {\tt 0000000204000001} \\
+      & {\tt 8000000a00000000} & {\tt 0000002110000004} & {\tt 8000000a00000000} & {\tt 0000002110000004} \\
+2     & {\tt 0400010221000000} & {\tt 008000400a000081} & {\tt 0400010221000000} & {\tt 008000400a000081} \\
+      & {\tt 1000050001000244} & {\tt 4200118a08000280} & {\tt 1000050001000244} & {\tt 4200118a08000280} \\
+      & {\tt 880004a0a0200858} & {\tt 4840123350000050} & {\tt 880004a0a0200858} & {\tt 4840123350000050} \\ \hline
+
+      & {\tt 023d63c00050a850} & {\tt 00a1442000489380} & {\tt 023d63c00050a850} & {\tt 00a1442000489380} \\
+      & {\tt 02b63380056aaa48} & {\tt 00b5563005dcd6c0} & {\tt 02b63380056aaa48} & {\tt 00b5563005dcd6c0} \\
+3     & {\tt d42ab556bf5dfcd6} & {\tt 5a26f633a8556aaa} & {\tt d42ab556bf5dfcd6} & {\tt 5a26f633a8556aaa} \\
+      & {\tt 5fbbf556bd556c65} & {\tt 7aab99aaee6bea2c} & {\tt 5fbbf556bd556c65} & {\tt 7aab99aaee6bea2c} \\
+      & {\tt abff7f3ad7feafad} & {\tt cfff777ffddffd6d} & {\tt abff7f3ad7feafad} & {\tt cfff777ffddffd6d} \\ \hline
+
+      & {\tt fff77dfffffdcf57} & {\tt fefad7efffdffbf7} & {\tt fff77dfffffdcf57} & {\tt fefad7efffdffbf7} \\
+      & {\tt ffffffffffffbfff} & {\tt fffbf7fffddfff77} & {\tt ffffffffffffbfff} & {\tt fffbf7fffddfff77} \\
+4     & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt ffffffffffffffff} & {\tt fffbffffefffffff} & {\tt ffffffffffffffff} & {\tt fffbffffefffffff} \\
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\ \hline 
+%
+%      
+      &                        & 2-bits match           & {\tt                 } & 2-bits match            \\ \hline
+%
+%
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+5     & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} & {\tt ffffffffffffffff} \\
+      & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} \\
+      & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} \\ \hline
+      
+      & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} & {\tt ffffffffedffffff} & {\tt fffff7ffedfffff7} \\
+      & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} \\
+6     & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} & {\tt fffbf5e7cdfffbf7} & {\tt fffff7bfcdfff757} \\
+      & {\tt 7ffd75b6cdfff357} & {\tt fffbf5a6ccfcfb73} & {\tt 7ffd75b6cdfff357} & {\tt fffbf5a6ccfcfb73} \\
+      & {\tt 7ffbf5a6ccfcf373} & {\tt 7ff975b6ccfff353} & {\tt 7ffbf5a6ccfcf373} & {\tt 7ff975b6ccfff353} \\ \hline
+
+      & {\tt 7efbf5a6cc7cf353} & {\tt 7fd975a6cceff353} & {\tt 7efbf5a6cc7cf353} & {\tt 7fd975a6cceff353} \\
+      & {\tt 7eb950a4cc78e353} & {\tt 7dd07184cced7153} & {\tt 7eb950a4cc78e353} & {\tt 7dd07184cced7153} \\
+7     & {\tt 7eb950a4cc78e353} & {\tt 7dd07184ccec7153} & {\tt 7eb950a4cc78e353} & {\tt 7dd07184ccec7153} \\
+      & {\tt 7cd051044c6c3153} & {\tt 3e985024cc48a313} & {\tt 7cd051044c6c3153} & {\tt 3e985024cc48a313} \\
+      & {\tt 3c905004cc482313} & {\tt 7c9051044c6c2113} & {\tt 3c905004cc482313} & {\tt 7c9051044c6c2113} \\ \hline
+
+      & {\tt 2c905004c4482113} & {\tt 7c9050040c682113} & {\tt 2c905004c4482113} & {\tt 7c9050040c682113} \\
+      & {\tt 2810100444082112} & {\tt 5c1010040c402113} & {\tt 2810100444082112} & {\tt 5c1010040c402113} \\
+8     & {\tt 2810100444082112} & {\tt 1c1010040c402113} & {\tt 2810100444082112} & {\tt 1c1010040c402113} \\
+      & {\tt 0c00100404400113} & {\tt 2800000404082112} & {\tt 0c00100404400113} & {\tt 2800000404082112} \\
+      & {\tt 0800000404002112} & {\tt 0800100404400113} & {\tt 0800000404002112} & {\tt 0800100404400113} \\ \hline
+
+      & {\tt 0800000404002112} & {\tt 0800100004000112} & {\tt 0800000404002112} & {\tt 0800100004000112} \\
+      & {\tt 0000000404000102} & {\tt 0000100004000110} & {\tt 0000000404000102} & {\tt 0000100004000110} \\
+9     & {\tt 0000000404000102} & {\tt 0000000004000110} & {\tt 0000000404000102} & {\tt 0000000004000110} \\
+      & {\tt 0000000004000110} & {\tt 0000000000000102} & {\tt 0000000004000110} & {\tt 0000000000000102} \\
+      & {\tt 0000000000000100} & {\tt 0000000004000110} & {\tt 0000000000000100} & {\tt 0000000004000110} \\ \hline
+
+      & {\tt 0000000000000100} & {\tt 0000000004000100} & {\tt 0000000000000100} & {\tt 0000000004000100} \\
+      & {\tt 0000000000000000} & {\tt 0000000004000100} & {\tt 0000000000000000} & {\tt 0000000004000100} \\
+10    & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
+      & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} \\
+      & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\ \hline
+
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+\multirow{3}{*}{$S^0\oplus K_{128} $} & {\tt 0000000000000000} & {\tt 0000000000000100} & {\tt 0000000000000000} & {\tt 0000000000000100} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\
+                     & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} & {\tt 0000000000000000} \\ \hline
+
+\end{tabular}
+}
+\end{table}
+
+\subsubsection{Full Diffusion Rounds.}
+We found that {\tt StepUpdate} was designed to have good diffusion in the forward direction. Thus, once the state is recovered, the attacker can perform the partial computation in the backward direction longer than the forward direction. We set $G_0$ and $G_1$ as follows.
+\begin{align*}
+G_0 &= \{1, 2, \cdots, 127\} & \textrm {Bit position 0 is unknown.}\\
+G_1 &= \{0, 1, \cdots, 7, 9, 10, \cdots, 127\} & \textrm {Bit position 8 is unknown.}
+\end{align*}
+Those will lead to 4 matching bits after the 4-step forward computation and the 6-step backward computation. The analysis of the diffusion is given in \Cref{Tbl:ini_diffuse}. In the end, $K_{128}$ can be recovered faster than the exhaustive search by 1 bit, i.e., with complexity $2^{127}$.
+
+\subsubsection{Remarks.}
+The matching state does not have to be a border of a step. It can be defined on a border of a round, or even in some more complicated way. We did not find the extension of the number of attacked steps even with this way. 
+
+As can be seen in \Cref{Tbl:ini_diffuse}, the updated register in step $i$ is independent of the update function in step $i+1$ in the forward direction, and starts to impact from step $i+2$. By modifying this point, the diffusion speed can increase faster, which makes this attack harder.

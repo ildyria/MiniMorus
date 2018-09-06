@@ -1,0 +1,68 @@
+%!TEX root = morusAC.tex
+
+%\pagebreak[4]
+
+\section{Discussion}
+\label{sec/Discussion}
+
+%This is just a sketch for now...
+
+We now discuss the impact of these attacks on the security of \MORUS.
+
+\subsubsection{Keystream Correlation.}
+
+We emphasize that the correlation we uncover between plaintext and ciphertext bits is
+\emph{absolute}, in the sense that it does not depend on the encryption
+key, or on the nonce.  This is the same situation as the keystream correlations
+in AEGIS~\cite{sacryptMinaud14}.  As such, they can be leveraged to
+mount an attack in the broadcast setting, where the same message is
+encrypted multiple times with different IVs and potentially different
+keys~\cite{DBLP:conf/fse/MantinS01}.  In particular, the broadcast setting appears
+in practice in man-in-the-browser attacks against HTTPS connections
+following the BEAST model~\cite{duong2011here}.  In this scenario, an
+attacker uses Javascript code running in the victim's browser (by
+tricking the victim to visit a malicious website) to generate a large
+number of request to a secure website.  Because of details of the HTTP
+protocol, each request includes an authentication token to identify the
+user, and the attacker can target this token as a repeated plaintext.
+Concretely, correlations in the RC4 keystream have been exploited in this
+setting, leading to the recovery of authentication cookies in
+practice~\cite{DBLP:conf/uss/AlFardanBPPS13}.
+
+
+\subsubsection{Data Complexity.}
+
+The design document of \cipher{MORUS} imposes a limit of $2^{64}$
+encrypted blocks for a given key. However, since our attack is
+independent of the encryption key, and hence immune to rekeying, this
+limitation does not apply: all that matters for our attack is that the
+same plaintext be encrypted enough times.
+
+With the trail presented in this work, the data complexity is clearly
+out of reach in practice, since exploiting the correlation would require
+$2^{152}$ encrypted blocks for \cipher{MORUS1280}, and $2^{146}$
+encrypted blocks for \cipher{MORUS640}. The data complexity could be
+slightly lowered by leveraging multilinear cryptanalysis; indeed, the
+trail holds for any bit shift, and if we assume independence, we could
+run $w$ copies of the trail in parallel on the same encrypted blocks
+(recall that $w$ is the word size, and the trail is invariant by
+rotation by $w$ bits). This would save a factor $2^5$ on the data
+complexity for \cipher{MORUS640}, and $2^6$ for \cipher{MORUS1280}; but
+the resulting complexity is still out of reach.
+
+However, \cipher{MORUS1280} with a 256-bit key claims a security level
+of 256 bits for confidentiality, and an attack with complexity $2^{152}$
+violates this claim, even if it is not practical.  
+
+\subsubsection{Design Considerations.}
+The existence of this trail does hint at some weakness in the
+design of \cipher{MORUS}. Indeed, a notable feature of the trail is that
+the values of rotation constants are mostly irrelevant: a similar trail
+would exist for most choices of the constants. That it is possible to
+build a trail that ignores rotation constants may be surprising. This
+would have been prevented by adding a bit-wise rotation to one of the
+state registers at the input of the ciphertext equation.
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

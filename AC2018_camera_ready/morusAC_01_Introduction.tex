@@ -1,0 +1,88 @@
+%!TEX root = morusAC.tex
+
+\section{Introduction}
+\label{sec/Introduction}
+
+Authenticated Encryption (AE) schemes combine the functionality of symmetric encryption schemes and message authentication codes.
+Based on a shared secret key $K$, they encrypt a plaintext message $M$ to a ciphertext $C$ and authentication tag $T$ in order to protect both the confidentiality and the authenticity of $M$.
+Most modern authenticated encryption algorithms are nonce-based schemes with associated data (AEAD),
+where $(C, T)$ additionally depends on a unique nonce $N$ (or initialization value IV) and optional associated metadata $A$.
+One of the most prominent standardized AEAD designs is \cipher{AES-GCM} \cite{indocryptMcGrewV04,nistDworkin07},
+which is widely deployed in protocols such as \cipher{TLS} (since v1.2).
+
+To address the growing need for modern authenticated encryption designs for different application scenarios, 
+the CAESAR competition was launched in 2013 \cite{CAESAR}.
+The goal of this competition is to select a final portfolio of AEAD designs for three different use-cases:
+(1) lightweight hardware characteristics,
+(2) high-speed software performance, and
+(3) robustness.
+The competition attracted 57 first-round submissions, 7 of which were recently selected as finalists in the fourth selection round.
+
+\MORUS is one of the three finalists for use-case (2), together with \cipher{OCB} and \cipher{AEGIS}.
+This family of authenticated ciphers by Wu and Huang \cite{MORUS} provides three main variants:
+\MORUS[640] with a 128-bit key and \MORUS[1280] with either a 128-bit or a 256-bit key.
+The design approach is reminiscent of classical stream cipher designs and
+continuously updates a relatively large state with a few fast operations.
+\MORUS can be efficiently implemented in both software and hardware;
+in particular, the designers claim that the software performance even surpasses
+\cipher{AES-GCM} implementations using Intel's \cipher{AES-NI} instructions,
+and that \MORUS is the fastest authenticated cipher not using \cipher{AES-NI} \cite{MORUS}.
+
+\subsubsection*{Related Work.}
+In the \MORUS submission document, the designers discuss the security of \MORUS against
+several attacks, including algebraic, differential, and guess-and-determine attacks.
+The main focus is on differential properties, and not many details are given for other attack vectors.
+In third-party analysis,
+Mileva et~al.~\cite{balkancryptsecMilevaDV15} propose a distinguisher in the nonce-reuse setting and practically evaluate the differential behaviour of toy variants of \MORUS.
+Shi et~al.~\cite{aiieShiGLZ16} analyze the differential properties of the finalization reduced to 2 out of 10 steps, but find no attacks.
+Dwivedi et~al.~\cite{cryptoeprint:2016:1053} discuss the applicability of SAT solvers for state recovery, but the resulting complexity of $2^{370}$ for \MORUS[640] is well beyond the security claim.
+Dwivedi et~al.~\cite{secryptDwivediMW17} also propose key-recovery attacks for \MORUS[1280] if initialization is reduced to 3.6 out of 16 steps, and discuss the security of \MORUS against internal differentials and rotational cryptanalysis.
+Salam et~al.~\cite{trustcomSalamSBDPW17} apply cube attacks to obtain distinguishers for up to 5 out of 16 steps of the initialization of \MORUS[1280] with negligible complexity.
+Additionally, 
+Kales et~al.~\cite{cryptoeprint:2017:1137} and
+Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
+independently propose state-recovery and forgery attacks on \MORUS in a nonce-misuse setting with negligible data and time complexities.
+Finally, a keystream correlation similar in nature to our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist, which shares the same overall structure as \MORUS, but uses a very different, \cipher{AES}-based state update function.
+
+\subsubsection*{Our Contributions.}
+Our main contribution is a keystream distinguisher on full \MORUS[1280], built from linear approximations of its core \StateUpdate{} function.
+In addition, we provide results for round-reduced \MORUS, targeting both the initialization or finalization phases of the cipher.
+
+In more detail, our main result is a linear approximation \cite{eurocryptMatsui93,eurocryptMatsuiY92} linking plaintext and ciphertext bits spanning five consecutive encryption blocks.
+%As a consequence of this trail, we exhibit a biased linear combination of ciphertext bits, which holds across any given sequence of five consecutive encryption steps.
+%Technically, this assumes that the inner state of the cipher at the start of the trail is uniformly random, but this is a fair assumption since the inner state should be indistinguishable from uniform randomness by design.
+%Moreover, that is the only assumption required; in particular, the secret key or the nonce used to initialize the inner state of MORUS are irrelevant: the bias is independent of their value.
+%As a consequence, when encrypting a fixed plaintext segment multiple times, a linear correlation exists between some output bits of the cipher.
+Moreover, the correlation does not depend on the secret key of the cipher.
+In principle, this property could be used as a known-plaintext distinguisher, or to recover unknown bits of a plaintext encrypted a large number of times.
+For \MORUS[1280] with 256-bit keys, the linear correlation is $2^{-76}$
+and can be exploited using about $2^{152}$ encrypted blocks.
+
+To the best of our knowledge, this is the first attack on full \MORUS in the nonce-respecting setting.
+We note that rekeying does not prevent the attack: the biases are independent of the secret encryption key and nonce, and can be exploited for plaintext recovery as long as a given plaintext segment is encrypted sufficiently often, regardless of whether each encryption uses a different key.
+A notable feature of the linear trail underpinning our attack is also that it does not depend on the values of rotation constants: a very similar trail would exist for most choices of round constants.
+
+To obtain this result, we propose a simplified abstraction of \MORUS, called \MiniMORUS. \MiniMORUS takes advantage of certain rotational invariants in \MORUS and simplifies the description and analysis of the attack. We then show how the attack can be extended from \MiniMORUS to the real \MORUS.
+%We observe that the actual bias of the approximation is better than suggested by the construction of the characteristics.
+To confirm the validity of our analysis,
+we practically verified the correlation of the full linear trail for \MiniMORUS, as well as the correlation of trail fragments for the full \MORUS.
+Our analysis is also backed by a symbolic evaluation of the full trail equation and its correlation on all variants of \MORUS.
+
+In addition to the previous attack on full \MORUS, we provide two secondary results: (1) we analyze the security of \MORUS against forgery attacks with round-reduced finalization; and (2) we analyze its security against key recovery in a nonce-misuse setting, with round-reduced initialization.
+While this extra analysis does not threaten full \MORUS, it complements the main result to provide a better overall understanding of the security of \MORUS.
+More precisely, we present a forgery attack for round-reduced \MORUS[1280] with success probability $2^{-88}$ for a 128-bit tag if the finalization is reduced to 3 out of 10 steps. This nonce-respecting attack is based on a differential analysis of the padding rule.
+The second result targets round-reduced initialization with 10 out of 16 steps, and extends a state-recovery attack (which can be mounted e.g. in a nonce-misuse setting) into a key-recovery attack.
+
+\subsubsection*{Outline.}
+This paper is organized as follows.
+We first provide a brief description of \MORUS in \Cref{sec/Preliminaries}.
+In \Cref{sec/introminimorus}, we introduce \MiniMORUS, an abstraction of \MORUS based on a certain class of rotational invariants.
+We analyze this simplified scheme in \Cref{sec/minitrails} and provide a ciphertext-only linear approximation with a weight of 16.
+We then extend our result to the full scheme in \Cref{sec/fulltrails}, showing a correlation in the keystream over 5 steps,
+and discuss the implications of our observation for the security of \MORUS in \Cref{sec/Discussion}.
+In \Cref{sec/IniFin}, we present our results on the security of \MORUS with round-reduced initialization (in a nonce-misuse setting) or finalization.
+We conclude in \Cref{sec/Conclusion}.
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

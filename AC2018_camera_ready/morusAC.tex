@@ -1,0 +1,71 @@
+\newif\ifanonymous
+\newif\iflncsmargins
+%\anonymoustrue%uncomment for submission version
+
+\newif\ifshrink
+%\shrinktrue % for screen-friendly original LNCS paper size
+
+\documentclass[a4paper]{llncs}
+\usepackage{common}
+\pagestyle{plain}
+\usepackage{multirow}
+
+\ifanonymous
+\lncsmarginstrue
+\author{}
+\institute{}
+\else
+\author{Tomer Ashur\inst{1} \and Maria Eichlseder\inst{2} \and Martin M. Lauridsen \and Ga\"etan Leurent\inst{3} \and Brice Minaud\inst{4} \and Yann Rotella\inst{3} \and Yu Sasaki\inst{5} \and Beno\^it Viguier\inst{6}}
+\institute{
+imec-COSIC, KU Leuven, Belgium
+\and
+Graz University of Technology, Austria
+\and
+Inria, France
+\and
+Royal Holloway University of London, United Kingdom
+\and
+NTT, Japan
+\and
+Radboud University, Netherlands\\
+\path|tomer.ashur@esat.kuleuven.be|, \path|maria.eichlseder@iaik.tugraz.at|, \path|mail@martinlauridsen.info|, \path|gaetan.leurent@inria.fr|, \path|brice.minaud@gmail.com|, \path|yann.rotella@inria.fr|, \path|b.viguier@science.ru.nl|, \path|sasaki.yu@lab.ntt.co.jp|
+}
+\fi
+
+\iflncsmargins
+\else
+%\usepackage[hmargin=2.5cm,vmargin=3cm]{geometry}
+\fi
+
+\pagestyle{empty}
+
+\begin{document}
+
+\title{Cryptanalysis of \MORUS}
+\maketitle
+%\thispagestyle{empty}
+
+\input{morusAC_00_Abstract}
+\input{morusAC_01_Introduction}
+\input{morusAC_02_Preliminaries}
+\input{morusAC_03_MiniMorus}
+\input{morusAC_04_Mini_trails}
+\input{morusAC_05_Full_trails}
+\input{morusAC_06_Discussion}
+\input{morusAC_07_IniFin}
+\input{morusAC_08_Conclusion}
+
+\bibliographystyle{splncs03}
+\bibliography{morusAC}
+
+\ifanonymous
+\section*{Auxiliary Material}
+\else
+%\clearpage
+\fi
+
+\appendix
+
+\input{morusAC_App_IniFin}
+
+\end{document}

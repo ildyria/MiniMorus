@@ -1,0 +1,152 @@
+%!TEX root = morusAC.tex
+
+\section{Trail for Full \MORUS}
+\label{sec/fulltrails}
+
+In the previous section, we presented a linear trail for the reduced ciphers \MiniMORUS[1280] and \MiniMORUS[640]. We now turn to the full ciphers \MORUS[1280] and \MORUS[640].
+
+%\subsection{Symmetrizing the Trail}
+\subsection{Making the Trail Rotational Invariant}
+In order to build a trail for the full \MORUS, we proceed exactly as we did for \MiniMORUS, following the same path down to step and word rotation values, with one difference: in order to move from the one-word registers of \MiniMORUS to the four-word registers of full \MORUS, we make every term $S^t_{i,j}$ and $C^t_j$ rotational invariant, in the sense of \Cref{sec/introminimorus}.
+That is, for every $S^t_{i,j}$ (resp. $C^t_j$) component in every trail fragment and every equation, we
+%\emph{symmetrize}
+expand the term by adding in the terms $S^t_{i,j+w}$, $S^t_{i,j+2w}$, $S^t_{i,j+3w}$ (resp. $C^t_{j+w}$, $C^t_{j+2w}$, $C^t_{j+3w}$), where as usual $w$ denotes the word size. For example, if $w=64$ (for \MORUS[1280]), the term $S^3_{2,0}$ is expanded into:
+%symmetrized into:
+\[
+S^3_{2,0} \oplus S^3_{2,64} \oplus S^3_{2,128} \oplus S^3_{2,192}.
+\]
+
+Thus, translating the trail from one of the \MiniMORUS ciphers to the corresponding full \MORUS cipher amounts to making every linear combination rotational invariant---indeed, that was the point of introducing \MiniMORUS in the first place.
+Concretely, in order to build the full trail equation for \MORUS, we write rotational invariant versions of equations $\mathbf{A}^t_i$, $\mathbf{B}^t_i$, $\mathbf{C}^t_i$, $\mathbf{D}^t_i$, $\mathbf{E}^t_i$ from \Cref{sec:minitraileq}, and then combine them in exactly the same manner as before.
+This way, the biased linear combination on \MiniMORUS[1280] given in \Cref{sec:minitraileq}, namely:
+\begin{align*}
+&C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37}\\
+\oplus\; &C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24}
+\end{align*}
+ultimately yields the following biased rotational invariant linear combination on the full \MORUS[1280]:
+\begin{align*}
+&C^0_{51} \oplus C^0_{115} \oplus C^0_{179} \oplus C^0_{243} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^1_{64} \oplus C^1_{89}\\
+\oplus\; & C^1_{97} \oplus C^1_{119} \oplus C^1_{128} \oplus C^1_{153} \oplus C^1_{161} \oplus C^1_{183} \oplus C^1_{192} \oplus C^1_{217} \oplus C^1_{225} \oplus C^1_{247}\\
+\oplus\; & C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37} \oplus C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^2_{68} \oplus C^2_{71} \oplus C^2_{93}\\
+\oplus\; & C^2_{101} \oplus C^2_{102} \oplus C^2_{110} \oplus C^2_{115} \oplus C^2_{132} \oplus C^2_{135} \oplus C^2_{157} \oplus C^2_{165} \oplus C^2_{166} \oplus C^2_{174}\\
+\oplus\; & C^2_{179} \oplus C^2_{196} \oplus C^2_{199} \oplus C^2_{221} \oplus C^2_{229} \oplus C^2_{230} \oplus C^2_{238} \oplus C^2_{243} \oplus C^3_{11} \oplus C^3_{20}\\
+\oplus\; & C^3_{42} \oplus C^3_{50} \oplus C^3_{75} \oplus C^3_{84} \oplus C^3_{106} \oplus C^3_{114} \oplus C^3_{139} \oplus C^3_{148} \oplus C^3_{170} \oplus C^3_{178}\\
+\oplus\; & C^3_{203} \oplus C^3_{212} \oplus C^3_{234} \oplus C^3_{242} \oplus C^4_{24} \oplus C^4_{88} \oplus C^4_{152} \oplus C^4_{216}
+\end{align*}
+We refer the reader to \Cref{sec:traileq} for the corresponding linear combination on \MORUS[640].
+
+\subsection{Correlation of the Full Trail}
+
+The rotational invariant trail on full \MORUS may be intuitively understood as consisting of four copies of the original trail on \MiniMORUS. Indeed, the only difference between full \MORUS (for either version of \MORUS) and four independent copies of \MiniMORUS comes from word-wise rotations, which permute words within a register. But as observed in \Cref{sec/introminimorus}, word-wise rotations preserves rotational invariant property; and so, insofar as we only ever use rotational invariant linear combinations on all registers along the trail, word-wise rotations have no effect.
+
+Following the previous intuition, one may expect that the weight of the full trail should simply be four times the weight of the corresponding \MiniMORUS trail, namely 64 for both \MORUS[1280] and \MORUS[640]. However, reality is a little more complex, as the full trail does not exactly behave as four copies of the original trail when one considers nonlinear terms.
+
+To understand why that might be the case, assume a nonlinear term $S^0_{2,0} \cdot S^0_{3,0}$ arising from some part of the trail, and another term $S^0_{2,0} \cdot S^0_{3,w}$ arising from a different part of the trail (where $w$ denotes the word size). Then when we XOR the various trail fragments together, in \MiniMORUS these two terms are actually equal and will cancel out, since word-wise rotations by multiples of $w$ bits are ignored. However in the real \MORUS these terms are of course distinct and do not cancel each other.
+
+In the actual trail for (either version of) full \MORUS, this exact situation occurs when combining trail fragments $\beta^t_i$ and $\gamma^t_i$. Indeed, $\beta^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i}$, while $\gamma^t_i$ requires approximating the term $S^t_{2,i} \cdot S^t_{3,i-w}$ (cf. \Cref{fig:trailcollision}). While in \MiniMORUS, these terms cancel out, in the full \MORUS, when adding all rotational invariant copies of the trail, we end up with the sum:
+{
+\allowdisplaybreaks[0]
+\begin{align}
+&S^t_{2,i} \cdot S^t_{3,i} \oplus S^t_{3,i} \cdot S^t_{2,i+w}
+\oplus S^t_{2,i+w} \cdot S^t_{3,i+w} \oplus S^t_{3,i+w} \cdot S^t_{2,i+2w}\notag\\
+\oplus\; &S^t_{2,i+2w} \cdot S^t_{3,i+2w} \oplus S^t_{3,i+2w} \cdot S^t_{2,i+3w}
+\oplus S^t_{2,i+3w} \cdot S^t_{3,i+3w} \oplus S^t_{3,i+3w} \cdot S^t_{2,i}.\label{eq:8circle}
+\end{align}
+}
+It may be observed that the products occurring in the equation above involve eight terms forming a ring. The weight of this expression can be computed by brute force, and is equal to $3$.
+
+\begin{figure}[t!]
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \begin{subfigure}{.4\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      %(xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      %(xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    %\draw[trail, beta,  dotted] (and-1) -- (and-1-|and1);
+    %\draw[trail, gamma, dotted] (and1)  -- (and-1-|and1) node[above, black] {=};
+    \node (eq) at ($(and-1|-and1)+(-1,-2.4pt)$) {=};
+    \draw[beta,{Circle[sep=-1.8pt]}-]  ($(and-1)+(0,-2.4pt)$) -| (eq);
+    \draw[gamma,{Circle[sep=-1.8pt]}-] ($(and1)+(0,-2.4pt)$) -- (eq);
+  \end{tikzpicture}%}}}
+  \caption*{\MiniMORUS: weight 0 (not 2)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \qquad
+  \begin{subfigure}{.4\textwidth}
+  \centering
+  \begin{tikzpicture}[xscale=0.75,yscale=1.5]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}}
+      ;
+    \draw[trail, gamma]
+      %(W-21) node[above] {$i$}
+      (txor-1) -- (xnd1)
+      (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+    \draw[trail, beta,  dashed] (and-1.east|-tanB-1) -- (tanB-1);
+    \draw[trail, gamma, dashed] (tanB-1)  -- (tanB1) -- (tanB1-|and1.east);
+  \end{tikzpicture}%}}}
+  \caption*{\MORUS: weight $4 \times 1$ (not $4 \times 2$)} %$S^{j,1}_i, S^{j,4}_i, S^{j+1,1}_{i-1}$ ($w\!=\!1$)}
+  \end{subfigure}
+  \caption{Weight of $\beta^t_i \oplus \gamma^t_i$ for \MiniMORUS and \MORUS.}
+  \label{fig:trailcollision}
+\end{figure}
+
+For \MORUS[1280], since the trail fragment $\gamma^t_i$ is used four times, this phenomenon adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \MiniMORUS[1280] is 16). We have confirmed this by explicitly computing the full trail equation in \Cref{sec:traileq}, and evaluating its exact weight like we did for \MiniMORUS in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the weight of each connected component separately by brute force, and then add up the weights of all components per the Piling-Up Lemma. Overall, the full trail equation given in \Cref{sec:traileq} yields a weight of 76 for the full trail on \MORUS[1280].
+
+In the case of \MORUS[640], collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used in the course of the full trail with an offset of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case of \MORUS[640] is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurrences of \Cref{eq:8circle}. Therefore, when computing the full trail equation on \MORUS[640], we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
+
+%TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
+%(maybe not relevant due to overall complexity\dots)
+
+\subsection{Taking Variable Plaintext into Account}
+\label{subsec:variable}
+
+In our analysis so far, for the sake of simplicity, we have assumed that all plaintext blocks are zero. We now examine what happens if we remove that assumption, and integrate plaintext variables into our analysis. What we show is that plaintext variables only contribute linearly to the trail. In other words, the full trail equation with plaintext variables is equal to the full trail equation with all-zero plaintext XORed with a linear combination of plaintext variables.
+
+To see this, recall that plaintext bits contribute to the encryption process in two ways (cf. \Cref{subsec/Spec}):
+\begin{enumerate}
+\item They are added to some bits derived from the state to form the ciphertext.\label{item:1}
+\item During each encryption step, the \StateUpdate{} function adds a plaintext block to every register except $S_0$.\label{item:2}
+\end{enumerate}
+
+The effect of \Cref{item:1} is that whenever we use a ciphertext bit in our full trail equation, the corresponding plaintext bit also needs to be XORed in. Because ciphertext bits only contribute linearly to the trail equation, this only adds a linear combination of plaintext bits to the equation.
+
+Regarding \Cref{item:2}, recall that the full trail equation is a linear combination of (the rotational invariant version of) equations $\mathbf{A}^t_i$, $\mathbf{B}^t_i$, $\mathbf{C}^t_i$, $\mathbf{D}^t_i$, $\mathbf{E}^t_i$ in \Cref{sec:minitraileq}. Also observe that in each equation, state bits that are shifted by a bit-wise rotation only contribute linearly. Because plaintext bits are XORed into each register at the same time bit-wise rotation is performed, this implies that plaintext bits resulting from \Cref{item:2} also only contribute linearly.
+In fact in all cases, it so happens that updating the equation to take plaintext variables into account simply involves XORing in the plaintext bit $M^t_i$.
+
+It may be observed that message blocks in the \StateUpdate{} function only contribute linearly to the state, and in that regard play a role similar to key bits in an SPN cipher; and indeed in SPN ciphers, it is the case that key bits contribute linearly to linear trails \cite{eurocryptMatsui93}. In this light the previous result may not be surprising.
+
+In the end, with variable plaintext, our trail yields a biased linear combination of ciphertext bits and plaintext bits.
+In regards to attacks, this means the situation is effectively the same as with a biased stream cipher: in particular if the plaintext is known we obtain a distinguisher; and if a fixed unknown plaintext is encrypted multiple times (possibly also with some known variable part) then our trail yields a plaintext recovery attack.
+
+%%% Local Variables:
+%%% TeX-master: "morusAC"
+%%% End:

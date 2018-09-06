@@ -1,0 +1,56 @@
+%!TEX root = morusAC.tex
+
+\section{Rotational Invariant Linear Combinations and \MiniMORUS}
+\label{sec/introminimorus}
+
+To simplify the description of the attack, we assume all plaintext blocks are zero. This assumption will be removed in \Cref{subsec:variable}, where we will show that plaintext bits only contribute linearly to the trail. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
+
+\subsection{Rotational Invariant Linear Combinations}
+
+We begin with a few observations about the \StateUpdate{} function. Besides XOR and AND operations, the \StateUpdate{} function uses two types of bit rotations:
+\begin{enumerate}
+\item \emph{bit-wise} rotations perform a circular shift on each word within a register;
+\item \emph{word-wise} rotations perform a circular shift on a whole register.
+\end{enumerate}
+The second type of rotation always shifts registers by a multiple of the word size $w$. This amounts to a (circular) permutation of the words within the register: for example, if a register contains the words $(A, B, C, D)$, and a word-wise rotation by $w$ bits to the left is performed, then the register now contains the words $(B, C, D, A)$.
+
+To build our linear trail, we start with a linear combinations of bits within a single register.
+\begin{definition}
+Recall that $w$ denotes the word size in bits, and $4w$ is the size of a register. A linear combination of the form:
+\[
+S^t_{i,j(0)} \oplus S^t_{i,j(1)} \oplus \dots \oplus S^t_{i,j(k)}
+\]
+is said to be \emph{rotational invariant} iff the set of bits $S^t_{i,j(0)}, \dots, S^t_{i,j(k)}$ is left invariant by a circular shift by $w$ bits; that is, iff:
+\[
+\{j(i) : i\leq k\} = \{j(i) + w \text{\rm{} mod } 4w : i\leq k\}.
+\]
+\end{definition}
+\emph{Example.} The following linear combination is rotational invariant for \MORUS[640], i.e. $w = 32$:
+\begin{equation}
+S^t_{0,0} \oplus S^t_{0,32} \oplus S^t_{0,64} \oplus S^t_{0,96}.
+\label{eq:symmetric}
+\end{equation}
+
+This definition naturally extends to a linear combination across multiple registers, and also across ciphertext blocks.
+The value of such a linear combination is unaffected by word-wise rotations, since those rotations always shift registers by a multiple of the word size.
+On the other hand, since bit-wise rotations always shift all four words within a register by the same amount, bit-wise rotations preserve the rotational invariant property. Moreover, the XOR of two rotational invariant linear combinations is also rotational invariant.%; and the same holds for the AND operation (if we extend the symmetric property to non-linear combinations in the natural way).
+
+This naturally leads to the idea of building a linear trail using only rotational invariant linear combinations, which is what we are going to do. As a result, the effect of word-wise rotations can be ignored. Moreover, since all linear combinations we consider are going to be rotational invariant, they can be described by truncating the linear combination to the first word of a register. Indeed, an equivalent way of saying a linear combination is rotational invariant, is that it involves the same bits in each word within a register. For example, in the case of (\ref{eq:symmetric}) above, the four bits involved are the first bit of each of the four words.
+
+\subsection{\MiniMORUS}
+
+In fact, we can go further and consider a reduced version of \MORUS where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that word-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \MiniMORUS[640] and \MiniMORUS[1280], for \MORUS[640] and \MORUS[1280] respectively. Since registers in \MiniMORUS contain a single word, bit-wise and word-wise rotations are the same operation; for simplicity we write $\lll$ for bit-wise rotations.
+
+Since the trail we are building is relatively complex, we will first describe it on \MiniMORUS. We will then extend it to the full \MORUS via the previous rotational invariant property.
+
+\begin{figure}[h]
+  \substatesfalse
+  % \substatesfalse to label state words and/or masks
+  \centering
+  \tikzsetnextfilename{minimorus_plain}
+  \begin{tikzpicture}[xscale=1.0,yscale=1.5]%{{{
+    \printstate
+  \end{tikzpicture}%}}}
+  \caption{\MiniMORUS state update function.}
+  \label{fig:minimorus}
+\end{figure}
