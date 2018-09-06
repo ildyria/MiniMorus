@@ -42,7 +42,14 @@ Additionally,
 Kales et~al.~\cite{cryptoeprint:2017:1137} and
 Vaudenay and Viz\'{a}r \cite{cryptoeprint:2017:1147}
 independently propose state-recovery and forgery attacks on \MORUS in a nonce-misuse setting with negligible data and time complexities.
-Finally, a keystream correlation similar in nature to our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist, which shares the same overall structure as \MORUS, but uses a very different, \cipher{AES}-based state update function.
+
+Finally, a keystream correlation similar in nature to our main attack was uncovered by Minaud \cite{sacryptMinaud14} on the authenticated cipher \cipher{AEGIS} \cite{AEGIS,sacryptWuP13}, another CAESAR finalist.
+\cipher{AEGIS} shares the same overall structure as \MORUS, but uses a very different state update function,
+based on the parallel application of \cipher{AES} rounds, rather than the shift/AND/XOR operations used in \MORUS.
+Similar to our attack, the approach in \cite{sacryptMinaud14} is to build a linear trail linking ciphertext bits, while canceling the
+contribution of inner state bits.
+How the trail is built depends primarily on the state update function, and how it lends itself to linear cryptanalysis.
+Because the state update function differs significantly between AEGIS and MORUS, the process used to build the trail is also quite different.
 
 \subsubsection*{Our Contributions.}
 Our main contribution is a keystream distinguisher on full \MORUS[1280], built from linear approximations of its core \StateUpdate{} function.

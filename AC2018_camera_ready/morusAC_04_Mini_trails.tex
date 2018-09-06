@@ -373,12 +373,12 @@ We then need to cancel two terms of the form $S^t_{2,i}$. To do this, we add to 
 &&\oplus\; & S^4_{2,24} \cdot S^4_{3,24}&&\text{weight 1}
 \end{flalign*}
 
-The equation for \MiniMORUS[640] is very similar, and is given in \Cref{sec:traileq}.
+The equation for \MiniMORUS[640] is very similar, and is given in the full version of this paper \cite{fullversion}.
 
 \subsection{Correlation of the Trail}
 \label{sec:minibias}
 
-In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms (in the sense that no two lines share a common term), and each line has a weight of 1. By the Piling-Up Lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a correlation of $2^{-16}$. The same holds for \MiniMORUS[640] (cf. \Cref{sec:traileq}).
+In the equation for \MiniMORUS[1280] from the previous section, each line on the right-hand side of the equality involves distinct $S^t_{i,j}$ terms (in the sense that no two lines share a common term), and each line has a weight of 1. By the Piling-Up Lemma, it follows that if we assume distinct $S^t_{i,j}$ terms to be uniform and independent, then the expression on the right-hand side has a weight of 16. Hence the linear combination of ciphertext bits on the left-hand side has a correlation of $2^{-16}$. The same holds for \MiniMORUS[640].
 
 %That the correlation is so high may be surprising: indeed, the full trail uses trail fragment $\varepsilon^t_i$ 1 time, $\delta^t_i$ 2 times, $\gamma^t_i$ 4 times, $\beta^t_i$ 8 times, and $\alpha^t_i$ 9 times. 
 The correlation is surprising high. The full trail uses trail fragments $\varepsilon^t_i$, $\delta^t_i$, $\gamma^t_i$, $\beta^t_i$, and $\alpha^t_i$, once, twice, 4 times, 8 times, and 9 times, respectively.
@@ -386,8 +386,11 @@ Since each trail fragment has a weight of 1, this would suggest that the total w
 
 \subsection{Experimental Verification}
 
-To confirm that our analysis is correct, we ran experiments on an implementation of \MiniMORUS[1280] and \MiniMORUS[640]. In both cases, we measured the correlation of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the correlation of the full trail itself (denoted by $\chi$). Results are displayed on \Cref{tab:miniapproximations}.
-While our analysis from the previous section predicts a correlation of $2^{-16}$, experiments indicate a slightly better empirical correlation of $2^{-15.5}$ for \MORUS[640]. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
+To confirm that our analysis is correct, we ran experiments on an implementation of \MiniMORUS[1280] and \MiniMORUS[640].
+We consider two halves $\chi_1$ and $\chi_2$ of the full trail (depicted on \Cref{fig:twoapproximations}), as well as the full trail itself, denoted by $\chi$. In each case, we give the weight predicted by the analysis from the previous section, and the weight measured by our experiments.
+%In both cases, we measured the correlation of two halves $\chi_1$ and $\chi_2$ of the full trail, as well as the correlation of the full trail itself (denoted by $\chi$).
+Results are displayed on \Cref{tab:miniapproximations}.
+While our analysis predicts a correlation of $2^{-16}$, experiments indicate a slightly better empirical correlation of $2^{-15.5}$ for \MORUS[640]. The discrepancy of $2^{-0.5}$ probably arises from the fact that register bits across different steps are not completely independent.
 
 \ifanonymous
 The programs used to verify the bias experimentally have been
@@ -423,28 +426,28 @@ The programs we used to verify the bias experimentally are available at:\\
   \caption{Experimental verification of trail correlations.}
   \label{tab:miniapproximations}
   \centerline{
-  \begin{tabular}{@{}llSSS@{}}
+  \begin{tabular}{@{}llSS@{}}
     \toprule
-    & & \multicolumn{3}{@{}c@{}}{Weight} \\
-    \cmidrule{3-5}
+    & & \multicolumn{2}{@{}c@{}}{Weight} \\
+    \cmidrule{3-4}
     \multicolumn{2}{@{}l}{Approximations for \MiniMORUS[640]}
-             & {Exp.} & {Bool.} & {Meas.} \\
+             & {Predicted} & {Measured} \\
     \midrule
     $\chi_1$ & $S^{2,2}_0 = C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12}$
-             & 7    & 7     & 7 \\
+             & 7     & 7 \\
     $\chi_2$ & $S^{2,2}_0 = C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19}$
-             & 9    & 9     & 9 \\
+             & 9     & 9 \\
     $\chi$   & $0 = C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus C^3_{6,12,14,20} \oplus C^4_{19}$
-             & 16   & 16    & 15.5 \\
+             & 16    & 15.5 \\
     \midrule
     \multicolumn{2}{@{}l}{Approximations for \MiniMORUS[1280]} \\
     \midrule
     $\chi_1$ & $S^{2,2}_0 = C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50}$
-             & 7    & 7     & 7 \\
+             & 7     & 7 \\
     $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
-             & 9    & 9     & 9 \\
+             & 9     & 9 \\
     $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
-             & 16   & 16    & 15.9 \\
+             & 16    & 15.9 \\
     \bottomrule
   \end{tabular}
   }

@@ -1,14 +1,21 @@
 \newif\ifanonymous
 \newif\iflncsmargins
-%\anonymoustrue%uncomment for submission version
+\newif\ifcameraready%removes some stuff in the appendix to fit within the page limits
 
+%\anonymoustrue%uncomment for submission version
 \newif\ifshrink
 %\shrinktrue % for screen-friendly original LNCS paper size
 
+\camerareadytrue
+
 \documentclass[a4paper]{llncs}
 \usepackage{common}
-\pagestyle{plain}
+%\pagestyle{plain}
 \usepackage{multirow}
+
+\ifcameraready
+\lncsmarginstrue
+\fi
 
 \ifanonymous
 \lncsmarginstrue
