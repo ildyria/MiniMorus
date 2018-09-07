@@ -1,6 +1,6 @@
 %!TEX root = morusAC.tex
 
-\section{Rotational Invariance and \MiniMORUS}
+\section{Rotational Invariance and \texorpdfstring{\MiniMORUS}{MiniMORUS}}
 \label{sec/introminimorus}
 
 To simplify the description of the attack, we assume all plaintext blocks are zero. This assumption will be removed in \Cref{subsec:variable}, where we will show that plaintext bits only contribute linearly to the trail. Recall that the inner state of the cipher consists of five $4w$-bit registers $S_0,\dots,S_4$, each containing four $w$-bit words.
@@ -37,7 +37,7 @@ On the other hand, since bit-wise rotations always shift all four words within a
 
 This naturally leads to the idea of building a linear trail using only rotationally invariant linear combinations, which is what we are going to do. As a result, the effect of word-wise rotations can be ignored. Moreover, since all linear combinations we consider are going to be rotationally invariant, they can be described by truncating the linear combination to the first word of a register. Indeed, an equivalent way of saying a linear combination is rotationally invariant, is that it involves the same bits in each word within a register. For example, in the case of (\ref{eq:symmetric}) above, the four bits involved are the first bit of each of the four words.
 
-\subsection{\MiniMORUS}
+\subsection{\texorpdfstring{\MiniMORUS}{MiniMORUS}}
 
 In fact, we can go further and consider a reduced version of \MORUS where each register contains a single word instead of four. The \StateUpdate{} function is unchanged, except for the fact that word-wise rotations are removed: see \Cref{fig:minimorus}. We call these reduced versions \MiniMORUS[640] and \MiniMORUS[1280], for \MORUS[640] and \MORUS[1280] respectively. Since registers in \MiniMORUS contain a single word, bit-wise and word-wise rotations are the same operation; for simplicity we write $\lll$ for bit-wise rotations.
 
