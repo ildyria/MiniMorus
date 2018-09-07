@@ -145,9 +145,9 @@
     { \node[opand] (and\r) at ($(W\r3) +(.5,\opoffset+.75)$)  {$\cdot$}; }
     { \node[opand] (and\r) at ($(W\r\r) +(.5,\opoffset+.75)$) {$\cdot$}; }
     \ifthenelse{\equal{\r}{-1}}%
-    { \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$M$};
+    { \node[inner sep=0pt] (M) at ($(xnd\r) +(0,.40)$) {$M$}; % sep=0pt for figure margin
       \node[inner sep=1pt] (C) at ($(lll\r) +(0,-.5)$) {$C$};
-      \draw[next] (M) -- (xnd\r);
+      \draw[next,shorten <=3pt] (M) -- (xnd\r);
       \draw[next] (lll\r) -- (C);
       \coordinate[optee] (tlll\r) at ($(W\r\tlllx) +(0,\opoffset+.25)$); }{}
       \coordinate[optee] (txor\r) at ($(W\r\txorx) +(0,\opoffset+.50)$);
