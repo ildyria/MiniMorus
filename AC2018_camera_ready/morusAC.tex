@@ -6,7 +6,7 @@
 \newif\ifshrink
 %\shrinktrue % for screen-friendly original LNCS paper size
 
-\camerareadytrue
+%\camerareadytrue
 
 \documentclass[a4paper]{llncs}
 \usepackage{common}
@@ -41,7 +41,7 @@ Radboud University, Netherlands\\
 
 \iflncsmargins
 \else
-%\usepackage[hmargin=2.5cm,vmargin=3cm]{geometry}
+\usepackage[hmargin=2.5cm,vmargin=3cm]{geometry}
 \fi
 
 \pagestyle{empty}
@@ -62,13 +62,16 @@ Radboud University, Netherlands\\
 \input{morusAC_07_IniFin}
 \input{morusAC_08_Conclusion}
 
-\bibliographystyle{splncs03}
+\clearpage
+
+%\bibliographystyle{splncs03}
+\bibliographystyle{alpha}
 \bibliography{morusAC}
 
 \ifanonymous
 \section*{Auxiliary Material}
 \else
-%\clearpage
+\clearpage
 \fi
 
 \appendix

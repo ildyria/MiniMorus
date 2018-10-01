@@ -173,7 +173,7 @@ Suppose that the union of $G_0$ and $G_1$ covers all the bits of $K_{128}$. The 
 \begin{enumerate}
 \item $F_0$ is computed $2^{|G_0|-|G_2|}$ times and the results are stored in a table $T$. (Because $|G_1|-|G_2|$ bits are unknown, only a part of the state is computed.)
 \item $F_1^{-1}$ is computed $2^{|G_1|-|G_2|}$ times and for each result we check the match with any entry in $T$.
-\item There are $2^{|G_0|-|G_2| + |G_1|-|G_2|}$ combinations, and the number of valid matches reduces to $2^{|G_0|-|G_2| + |G_1|-|G_2| - x}$ after matching the $x$ bits.
+\item The number of possible combinations is $2^{|G_0|-|G_2| + |G_1|-|G_2|}$, and the number of valid matches reduces to $2^{|G_0|-|G_2| + |G_1|-|G_2| - x}$ after matching the $x$ bits.
 \item Check the correctness of the guess by using one plaintext-ciphertext pair.
 \end{enumerate}
 

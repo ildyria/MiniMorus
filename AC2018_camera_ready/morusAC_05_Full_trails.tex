@@ -33,7 +33,10 @@ ultimately yields the following biased rotationally invariant linear combination
 \oplus\; & C^3_{42} \oplus C^3_{50} \oplus C^3_{75} \oplus C^3_{84} \oplus C^3_{106} \oplus C^3_{114} \oplus C^3_{139} \oplus C^3_{148} \oplus C^3_{170} \oplus C^3_{178}\\
 \oplus\; & C^3_{203} \oplus C^3_{212} \oplus C^3_{234} \oplus C^3_{242} \oplus C^4_{24} \oplus C^4_{88} \oplus C^4_{152} \oplus C^4_{216}
 \end{align*}
-We refer the reader to the full version of this paper \cite{fullversion} for the corresponding linear combination on \MORUS[640].
+We refer the reader to
+\Cref{sec:traileq}
+%the full version of this paper \cite{fullversion}
+for the corresponding linear combination on \MORUS[640].
 
 \subsection{Correlation of the Full Trail}
 
@@ -121,7 +124,7 @@ It may be observed that the products occurring in the equation above involve eig
 
 For \MORUS[1280], since the trail fragment $\gamma^t_i$ is used four times, this phenomenon adds a contribution of $4 \cdot 3 = 12$ to the overall weight of the full trail. This results in a total weight of $4 \cdot 16 + 12 = 76$ (recall that the weight of the trail on \MiniMORUS[1280] is 16). We have confirmed this by explicitly computing the full trail equation in \Cref{sec:traileq}, and evaluating its exact weight like we did for \MiniMORUS in \Cref{sec:minibias}. That is, since the equation is quadratic, we may view it as a graph, which we split into connected components; we then compute the weight of each connected component separately by brute force, and then add up the weights of all components per the Piling-Up Lemma. Overall, the full trail equation given in \Cref{sec:traileq} yields a weight of 76 for the full trail on \MORUS[1280].
 
-In the case of \MORUS[640], collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used in the course of the full trail with an offset of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case of \MORUS[640] is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurrences of \Cref{eq:8circle}. Therefore, when computing the full trail equation on \MORUS[640], we get that the weight of the trail is 73 (cf. the full version of this paper for the full trail equation for \MORUS[640]).
+In the case of \MORUS[640], collisions between rotation constants further complicate the analysis. Specifically, when using trail fragment $\beta^t_i$, the term $S^t_{2,i} \cdot S^t_{3,i}$ occurs. As explained previously, a partial collision with the term $S^t_{2,i} \cdot S^t_{3,i-w}$ from trail fragment $\gamma^t_i$ results in \Cref{eq:8circle}. However trail fragment $\alpha^t_{i+d}$ is once used in the course of the full trail with an offset of $d = b_1+b_4-b_0-b_2$ (relative to $\gamma^t_i$), which in the case of \MORUS[640] is equal to $31+13-5-7 = 0 \;\text{mod}\; 32$. This creates another term $S^t_{2,i} \cdot S^t_{3,i}$, which ultimately destroys one of the four occurrences of \Cref{eq:8circle}. Therefore, when computing the full trail equation on \MORUS[640], we get that the weight of the trail is 73 (cf. \Cref{sec:traileq}).
 
 %TODO: check $\alpha_i \oplus \beta_i \oplus \gamma_i$ in step 2 of $\cipher{MORUS-640}$
 %(maybe not relevant due to overall complexity\dots)
