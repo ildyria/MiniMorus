@@ -1,0 +1,823 @@
+\documentclass[aspectratio=169,table]{beamer}
+\newif\ifexternalize\externalizefalse
+
+% Theme %{{{
+\usetheme[minimal, webfont, nofootline, noheadline, nofiles]{tugraz2018}
+\changefontsizes{12pt}
+%\colorlet{inst}{head}
+\renewcommand{\emph}[1]{{\color{inst}#1}}
+\newcommand{\sn}[1]{\textcolor{gray}{\small #1}}
+
+\newcommand{\itemwrap}[1]{\parbox{1cm}{\centering #1}}
+\setbeamertemplate{section in toc}{\inserttocsection}
+\newcommand{\mysection}[3]{% Title   - Subtitle   - Icon
+  \section{\itemwrap{\large\emph{#3}} #1}
+  \sectionheader[#2]{#1\\\emph{#3}}
+}
+\newcommand{\mysectionmute}[3]{
+  \section*{\itemwrap{\large\emph{#3}} #1}
+  \sectionheader[#2]{#1\\\emph{#3}}
+}
+%}}}
+
+% Packages and commands %{{{
+\usepackage{fontawesome}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{filecontents}
+\usepackage{tabu}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{morus.bib}
+
+\newcommand{\cipher}[1]{\textsc{#1}}
+%}}}
+
+% TikZ %{{{
+\usetikzlibrary{positioning}
+\usetikzlibrary{external}
+\makeatletter
+\newcommand*{\overlaynumber}{\number\beamer@slideinframe}
+\makeatother
+\ifexternalize
+  \tikzexternalize[only named=true, aux in dpth=false]
+\fi
+
+\tikzset{every node/.style={align=center,inner sep=2pt},
+         every label/.style={inner sep=2pt, tugblue,label position=below,label distance=0pt}}
+
+\newcommand{\legobrick}[1][black]{
+  \begin{tikzpicture}[thick]
+    \fill[#1] (-.66,0) -- (0,.4) -- (.66,0) -- (.66,-.4) -- (0,-.8) -- (-.66,-.4) -- cycle;
+    \draw[white] (-.66,0) -- (0,.4) -- (.66,0) -- (.66,-.4) -- (0,-.8) -- (-.66,-.4) -- cycle
+                            (-.66,0) -- (0,-.4) -- (.66,0)
+                            (0,-.4) -- (0,-.8);
+    \foreach \x/\y in {-.33/.085,.33/.085,0/.285,0/-.115} {
+      \draw[white] (\x-.15,\y) -- ++(0,-.085) arc (180:360:.15 and .085) -- ++(0,.085);
+      \draw[white,fill=#1] (\x,\y) ellipse (.15 and .085);
+      \fill[white] (\x-.15,\y) -- ++(0,-.085) arc (180:270:.15 and .085) -- ++(0,.085) arc (-90:-180:.15 and .085) -- cycle;
+    }
+  \end{tikzpicture}
+}
+
+\usetikzlibrary{cipher} % with some tweaks:
+\tikzset{op/.append style={minimum size=1.00ex}}
+\tikzset{and/.style={op, rectangle, rounded corners=2pt, minimum size=1.25ex}}
+\tikzset{rot/.append style={inner sep=1pt, minimum width=3ex, minimum height=1.6ex, font=\scriptsize, fill=white}}
+\tikzset{rotw/.style={rot, fill=body}}
+\tikzset{box/.append style={fill=lite}}
+\tikzset{trail/.style={line width=2pt}} %, line cap=round}}
+%}}}
+
+% MORUS %{{{
+\definecolor{delta}{HTML}{B58900}
+\definecolor{epsil}{HTML}{CB4B16}
+\definecolor{gamma}{HTML}{6C71C4}
+\definecolor{beta}{HTML}{268BD2}
+\definecolor{alpha}{HTML}{859900}
+
+\newcommand{\MORUS}[1][]{\ifx\relax#1\relax\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
+\newcommand{\MiniMORUS}[1][]{\ifx\relax#1\relax\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
+
+\newif\ifstates\statestrue
+\newif\ifrotw\rotwfalse
+\newif\ifmessage\messagefalse
+
+\newcommand{\printstate}{
+  \pgfmathsetmacro{\roundsep}{0.80}
+  \pgfmathsetmacro{\opoffset}{.1}
+
+  \foreach \r in {-1,...,4} {
+    \foreach \w in {0,...,4} {
+      \coordinate (W\r\w) at (\w,-\r*\roundsep-.125);
+    }
+  }
+  \foreach \w in {0,...,4} {
+    \coordinate (W-2\w) at (\w,--2.375*\roundsep-.125);
+  }
+  \coordinate (W-1-1) at (-1,--1*\roundsep-.125);
+  \coordinate (W-2-1) at (-2,--1*\roundsep-.125);
+
+  %\foreach \r/\rot in {-1/0,0/5,1/31,2/7,3/22,4/13} { % round
+  \foreach \r/\rot in {-1/0,0/b_0,1/b_1,2/b_2,3/b_3,4/b_4} { % round
+    \ifthenelse{\equal{\r}{-1}}{
+      \pgfmathsetmacro{\txorx}{int(mod(\r+2,5))}
+      \pgfmathsetmacro{\tanAx}{int(mod(\r+4,5))}
+      \pgfmathsetmacro{\tanBx}{int(mod(\r+3,5))}
+      \pgfmathsetmacro{\tlllx}{int(mod(\r+1,5))}
+    }{
+      \pgfmathsetmacro{\txorx}{int(mod(\r+3,5))}
+      \pgfmathsetmacro{\tanAx}{int(mod(\r+2,5))}
+      \pgfmathsetmacro{\tanBx}{int(mod(\r+1,5))}
+    }
+    \pgfmathsetmacro{\rprev}{int(\r-1)}
+    \ifthenelse{\equal{\r}{-1}}%
+    { \node[xor] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {}; }%
+    { \node[rot] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {$\lll\!\rot$}; }
+      \node[xor] (xor\r) at ($(W\r\r) +(0,\opoffset+.50)$)  {};
+      \node[xor] (xnd\r) at ($(W\r\r) +(0,\opoffset+.75)$)  {};
+    \ifthenelse{\equal{\r}{4}}
+    { \node[and] (and\r) at ($(W\r3) +(.5,\opoffset+.75)$)  {$\cdot$}; }
+    { \node[and] (and\r) at ($(W\r\r) +(.5,\opoffset+.75)$) {$\cdot$}; }
+    \ifthenelse{\equal{\r}{-1}}%
+    {
+    \ifmessage
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$M$};
+    \else
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {\color{black!2}{$M$}};
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$0$};
+    \fi
+      \node[inner sep=1pt] (C) at ($(lll\r) +(0,-.5)$) {$C$};
+      \draw[next] (M) -- (xnd\r);
+      \draw[next] (lll\r) -- (C);
+      \coordinate[tee] (tlll\r) at ($(W\r\tlllx) +(0,\opoffset+.25)$); }{}
+      \coordinate[tee] (txor\r) at ($(W\r\txorx) +(0,\opoffset+.50)$);
+      \coordinate[tee] (tanA\r) at ($(W\r\tanAx) +(0,\opoffset+.825)$);
+      \coordinate[tee] (tanB\r) at ($(W\r\tanBx) +(0,\opoffset+.675)$);
+
+    \ifthenelse{\equal{\r}{-1}}%
+    { \draw[next] (tlll\r) -- (lll\r); }{}
+      \draw[next] (txor\r) -- (xor\r);
+    \ifthenelse{\tanAx < \r}%
+    { \draw[next] (tanA\r) -- (tanA\r-|and\r.west); }%
+    { \draw[next] (tanA\r) -- (tanA\r-|and\r.east); }
+    \ifthenelse{\tanBx < \r}%
+    { \draw[next] (tanB\r) -- (tanB\r-|and\r.west); }%
+    { \draw[next] (tanB\r) -- (tanB\r-|and\r.east); }
+    \draw[next] (and\r) -- (xnd\r);
+    \draw[    ] (xnd\r) -- (xor\r);
+    \draw[    ] (xor\r) -- (lll\r);
+
+    \foreach \w in {0,...,4} {
+      \ifthenelse{\equal{\w}{\r}}{
+        \draw (W\rprev\w) -- (xnd\r);
+        \draw (lll\r) -- (W\r\w);
+      }{
+        \draw (W\rprev\w) -- (W\r\w);
+      }
+    }
+  }
+  \foreach \r in {1,...,4} {
+    \ifmessage
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {$M$};
+      \node[xor] (xorM\r) at ($(W\r\r) +(0,\opoffset+1)$)  {};
+      \draw[next] (M\r) |- (xorM\r);
+    \else
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {\color{black!2}$M$};
+    \fi
+
+  }
+
+  \ifrotw
+    \foreach \r/\rotw in {-1/3w,0/1w,1/2w,2/3w,3/2w,4/1w} { % round
+      \ifthenelse{\equal{\r}{-1}}{
+        \pgfmathsetmacro{\txorx}{int(mod(\r+2,5))}
+        \pgfmathsetmacro{\tanAx}{int(mod(\r+4,5))}
+        \pgfmathsetmacro{\tanBx}{int(mod(\r+3,5))}
+        \pgfmathsetmacro{\tlllx}{int(mod(\r+1,5))}
+        \pgfmathsetmacro{\tlllw}{int(mod(\r+4,5))}
+      }{
+        \pgfmathsetmacro{\tlllw}{int(mod(\r+4,5))}
+        \pgfmathsetmacro{\txorx}{int(mod(\r+3,5))}
+        \pgfmathsetmacro{\tanAx}{int(mod(\r+2,5))}
+        \pgfmathsetmacro{\tanBx}{int(mod(\r+1,5))}
+      }
+      \ifthenelse{\equal{\r}{-1}}%
+      { \node[rotw] (lll\r-w) at ($(W\r\r) +(1.5,\opoffset+.5)$)  {$\lll\!\rotw$}; }%
+      { \node[rotw] (lll\r-w) at ($(W\r\txorx) +(0,\opoffset+.25)$)  {$\lll\!\rotw$}; }
+    }
+    \foreach \r in {0,...,4} {
+      \node[inner sep=1pt] (S\r) at ($(W0\r) +(0,\opoffset+2)$) {$S_\r$};
+    }
+  \else
+  \fi
+  \ifstates
+    \foreach \r in {0,...,4} {
+      \node[inner sep=1pt] (S\r) at ($(W0\r) +(0,\opoffset+2)$) {$S_\r$};
+    }
+  \else
+  \fi
+}
+%}}}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%   MORUS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title[]{Linear Cryptanalysis of MORUS}
+\author{Tomer Ashur \and \textbf{Maria Eichlseder} \and Martin M. Lauridsen \and Ga\"etan Leurent \and \\Brice Minaud \and Yann Rotella \and Yu Sasaki \and Beno\^it Viguier}
+\instituteurl{www.iaik.tugraz.at}
+\date{Seminar, 23 Oct 2018}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain,noframenumbering]%{{{
+  \maketitle
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Spoilers}%{{{
+  \structure{\bfseries Target design:}
+  \begin{itemize}
+    \item Authenticated cipher \MORUS[1280], a CAESAR finalist
+  \end{itemize}
+  \structure{\bfseries Analysis:}
+  \begin{itemize}
+    \item Keystream correlation based on linear cryptanalysis
+    \item Full-round attack, breaks confidentiality
+    \item Requires \textit{a lot of} data %: about $2^{146}$ blocks (from possibly multiple keys)
+  \end{itemize}
+  \structure{\bfseries Paper:}
+  \begin{itemize}
+    \item Results from ``Flexible Symmetric Crypto'' workshop @ Lorentz Center
+    \item Published at ASIACRYPT 2018 (\url{https://eprint.iacr.org/2018/464})
+  \end{itemize}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\itemwrap{\faMapSigns} Outline}%{{{
+  \tableofcontents
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysection{\MORUS design}{\& \MiniMORUS toy-cipher}{\faCogs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzset{stateopts/.style={scale=.5}}
+\begin{frame}{\MORUS}%{{{
+  \begin{itemize}
+    \item Family of authenticated ciphers by Wu and Huang \sn{\cite{MORUS}} \\
+      \begin{itemize}
+        \item \MORUS[640] with 128-bit key
+
+          \tikzsetnextfilename{morusstate-640}
+          \begin{tikzpicture}[stateopts/.append style={yscale=.6,xscale=.6},baseline=-.1cm]
+            \foreach \s in {0,...,4} { \draw (\s*1.6,0) node[state,label={$S_{\s}$}] {\Row{}}; }
+          \end{tikzpicture}
+          \hfill
+          $5 \times 4 \times 32$-bit words
+        \item \MORUS[1280-128] with 128-bit key
+        \item \MORUS[1280-256] with 256-bit key
+
+          \tikzsetnextfilename{morusstate-1280}
+          \begin{tikzpicture}[stateopts/.append style={yscale=.6,xscale=.8},baseline=-.1cm]
+            \foreach \s in {0,...,4} { \draw (\s*1.9,0) node[state,label={$S_{\s}$}] {\Row{}}; }
+          \end{tikzpicture}
+          \hfill
+          $5 \times 4 \times 64$-bit words
+      \end{itemize}
+    %\item Security claim for confidentiality = key size; data limit $2^{64}$ blocks
+    \item CAESAR finalist for Use-Case 2 (High Performance)
+  \end{itemize}
+\end{frame}%}}}
+
+\newcommand{\Filt}{\text{\color{tugblue}\faFilter}}
+\newcommand{\StateUpdate}{\text{\color{tugblue}\cipher{StateUpdate}\,\faRefresh}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MORUS Authenticated Cipher (simplified)}%{{{
+  \begin{columns}[c]
+    \column{.35\textwidth}
+      \small
+      %\tikzsetnextfilename{morus-round-abstract}
+      \begin{tikzpicture}[xscale=0.9,yscale=1.2]
+        \pgfmathsetmacro{\roundsep}{0.80}
+
+        \foreach \w in {-1,...,4} {
+          \foreach \r in {-1,...,4} {
+            \coordinate (W\r\w) at (\w,-\r*\roundsep-.125);
+          }
+          \coordinate (W-2\w) at (\w,--2.375*\roundsep-.125);
+        }
+        \foreach \w in {0,...,4} {
+          %\draw (W-2\w) -- (W4\w);
+          \node[inner sep=1pt] (S\w) at ($(W0\w) +(0,.1+2)$) {$S_\w$};
+        }
+        \draw (W-1-1) node[inner sep=1pt] {\phantom{$M$}};
+        \draw (W-1-1) node[above right,tugblue,box,minimum height=4.8ex,yshift=1ex,xshift=-.5ex] (filt) {\Filt};
+        \foreach \w in {0,...,3} {
+          \draw (W-1\w|-filt.south) +(0,.5ex+\w ex) coordinate[tee, name=t\w];
+          \draw[next] (t\w) -- (t\w-|filt.east);
+        }
+        \draw (W22) node[tugblue,box,minimum width=4cm,minimum height=4cm,yshift=3ex] (upd) {\StateUpdate};
+        \foreach \w in {0,...,4} {
+          \draw[next] (W-2\w) -- (W-2\w|-upd.north);
+          \draw[next] (W4\w|-upd.south) -- (W4\w);
+        }
+        \draw[next] (filt.south) -- ++(0,-2ex) node[below] {out};
+        \draw[prev] (upd.west) -- (upd-|filt) -- ++(0,2ex) node[above] {in};
+      \end{tikzpicture}
+    \column{.55\textwidth}
+    \begin{boxenumerate}
+      \footnotesize
+      \item<1> \structure{Initialization:}\vskip-10pt
+        \begin{enumerate}
+          \footnotesize
+          \item $S_0 = N$,\quad $S_1 = K$
+          \item $16 \times \StateUpdate(0)$
+          \item $S_1 = S_1 \oplus K$
+        \end{enumerate}
+        \vspace*{-12pt}
+      \item \structure{Encryption:} For each msg block $M_i$:\vskip-10pt
+        \begin{enumerate}
+          \footnotesize
+          \item $C_i = M_i \oplus \Filt(S_0,\ldots,S_3)$
+          \item $\StateUpdate(M_i)$
+        \end{enumerate}
+        \vspace*{-12pt}
+      \item<1> \structure{Finalization:} \vskip-10pt
+        \begin{enumerate}
+          \footnotesize
+          \item $S_4 = S_4 \oplus S_0$
+          \item $10 \times \StateUpdate(\operatorname{len}(M))$
+          \item $T = \Filt(S_0,\ldots,S_3)$
+            \vskip-10pt
+        \end{enumerate}
+    \end{boxenumerate}
+  \end{columns}
+  \pause
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MORUS \cipher{StateUpdate} Function}%{{{
+  \begin{columns}[c]
+    \column{.35\textwidth}
+      \small
+      \tikzsetnextfilename{morus-round}
+      \begin{tikzpicture}[xscale=0.9,yscale=1.2]
+        \rotwtrue
+        \messagetrue
+        \printstate
+      \end{tikzpicture}
+    \column{.55\textwidth}
+    \begin{itemize}
+      \item \structure{Nonlinearity:}\\
+        ``Toffoli'' gate $z = z \oplus (x \odot y)$
+      \item \structure{Diffusion:}\\
+        Xors $z = z \oplus x$\\
+        Rotation within words \tikz[baseline=(t.base)]{\node[rot] (t) {$\lll\!\vphantom{b_0}r$};}\\
+        Rotate words \tikz[baseline=(t.base)]{\node[rotw] (t) {$\lll\!\vphantom{b_0}r w$};}
+    \end{itemize}
+  \end{columns}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MiniMORUS \cipher{StateUpdate} Function}%{{{
+  \begin{columns}[c]
+    \column{.35\textwidth}
+      \small
+      \tikzsetnextfilename{morus-mini-round}
+      \begin{tikzpicture}[xscale=0.9,yscale=1.2]
+        \rotwfalse
+        \messagetrue
+        \printstate
+      \end{tikzpicture}
+    \column{.55\textwidth}
+    \begin{itemize}
+      \item \MORUS state\smallskip
+
+        \begin{tikzpicture}[stateopts/.append style={yscale=.6,xscale=.6}]
+          \foreach \s in {0,...,4} { \draw (\s*1.6,0) node[state,label={$S_{\s}$}] {\Row{}}; }
+        \end{tikzpicture}\\
+        \structure{\faArrowCircleDown}
+      \item \MiniMORUS state\smallskip
+
+        \begin{tikzpicture}
+          \foreach \s in {0,...,4} { \draw (\s*1.6,0) node[state,label={$S_{\s}$},draw,minimum size=.3cm] {}; }
+        \end{tikzpicture}
+      \item We will later use
+        \tikz{\draw rectangle (.3,.3);} \structure{=}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);}
+      \item Rotational invariance
+    \end{itemize}
+  \end{columns}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysection{Analysis of \MiniMORUS}{}{\faCubes}% \faCodeFork \faGamepad
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\good}[1]{\textcolor{tuggreen}{#1}}
+\begin{frame}{Linear Cryptanalysis and \cipher{And}-gates}%{{{
+  \begin{center}
+    \begin{tabu}{|cc|c|cccc|}
+      \hline
+      $x$&$y$&$x \odot y$& 0 &$x$&$y$&$x \oplus y$\\
+      \hline
+      0 & 0 &         0 & \good{0} & \good{0} & \good{0} & \good{0} \\
+      0 & 1 &         0 & \good{0} & \good{0} &       1  &       1  \\
+      1 & 0 &         0 & \good{0} &       1  & \good{0} &       1  \\
+      1 & 1 &         1 &       0  & \good{1} & \good{1} &       0  \\
+      \hline
+      \multicolumn{3}{|l|}{Probability} & $\frac{3}{4}$ & $\frac{3}{4}$ & $\frac{3}{4}$ & $\frac{1}{4}$ \\
+      \hline
+      \multicolumn{3}{|l|}{Weight}      & 1 & 1 & 1 & 1 \\
+      \hline
+    \end{tabu}
+  \end{center}
+  \begin{itemize}
+    \item Total weight = sum of weights of (independent) \cipher{And}s
+    \item Data complexity $2^{2 \cdot \text{weight}}$
+  \end{itemize}
+\end{frame}%}}}
+
+\tikzset{trailsize/.style={xscale=0.45,yscale=1.15,font=\scriptsize,
+                           rot/.append style={font=\tiny,minimum height=1.2ex},
+                           op/.append style={minimum size=.75ex},
+                           and/.append style={minimum size=1ex},
+                           next/.style={-},
+                           }}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MiniMORUS: Approximation fragments ${\color{alpha}\alpha}, 
+                                                   {\color{beta}\beta},
+                                                   {\color{gamma}\gamma},
+                                                   {\color{delta}\delta},
+                                                   {\color{epsil}\varepsilon}$}%{{{
+  \rotwfalse
+  \statesfalse
+  \messagefalse
+  \centering
+  \tikzsetnextfilename{trail-alpha-\overlaynumber}
+  \begin{tikzpicture}[trailsize]%{{{
+    \printstate
+    \draw[trail, alpha]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (xnd-1) -- (and-1) (xor-1) -- (txor-1) (txor-1) -- (tanB0) (tanB0) -- (tanB0-|and0.east)
+      (and0) -- (xnd0) (xnd0) -- (tlll-1) -- (lll-1) (xnd0) -- (xor0)
+      (and-1.east|-tanA-1) -- (tanA-1) -- (txor0) -- (xor0)
+      (xor0) -- (lll0) (lll0) -- (W40) node[below] {$i+b_0$}
+      ;
+    \draw[trail, alpha, dashed]
+      (and-1.east|-tanB-1) -- (tanB-1) -- (tanA0) -- (tanA0-|and0.east);
+    \draw (W42) + (0,-0.5) node[below] {weight($\alpha^t_i$) = 1 (not 2)};
+  \end{tikzpicture}\pause%}}}
+  \tikzsetnextfilename{trail-beta-\overlaynumber}
+  \begin{tikzpicture}[trailsize]%{{{
+    \printstate
+    \draw[trail, beta]
+      (C) -- node[right] {$i$} (lll-1)
+      (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+      (tlll-1) -- (W-20) node[above] {$i$}
+      (xor-1) -- (txor-1) (txor-1) -- (W-21) node[above] {$i$}
+      (xnd-1) -- (and-1)
+      (W40) node[below] {\phantom{$i$}};
+      \draw (W42) + (0,-0.5) node[below] {weight($\beta^t_i$) = 1};
+  \end{tikzpicture}%}}}
+  \tikzsetnextfilename{trail-gamma-\overlaynumber}
+  \begin{tikzpicture}[trailsize]%{{{
+    \printstate
+    \draw[trail, gamma]
+      (W-21) node[above] {$i$} -- (xnd1) (xnd1) -- (xor1) (xor1) -- (lll1)
+      (xnd1) -- (and1)
+      (xor1) -- (txor1)
+      (txor1) -- (W-24) node[above] {$i$}
+      (lll1) -- (W41) node[below] {$i+b_1$}
+      ;
+      \draw (W42) + (0,-0.5) node[below] {weight($\gamma^t_i$) = 1};
+  \end{tikzpicture}%}}}
+  \tikzsetnextfilename{trail-delta-\overlaynumber}
+  \begin{tikzpicture}[trailsize]%{{{
+    \printstate
+    \draw[trail, delta]
+      (W-24) node[above] {$i$} -- (xnd4) (xnd4) -- (xor4) (xnd4) -- (and4)
+      (xor4) -- (lll4) (xor4) -- (txor4) (txor4) -- (W42) node[below] {$i$}
+      (lll4) -- (W44) node[below] {$i+b_4$}
+      ;
+      \draw (W42) + (0,-0.5) node[below] {weight($\delta^t_i$) = 1};
+  \end{tikzpicture}%}}}
+  \tikzsetnextfilename{trail-epsil-\overlaynumber}
+  \begin{tikzpicture}[trailsize]%{{{
+    \printstate
+    \draw[trail, epsil]
+      (W-22) node[above] {$i$} -- (xnd2) (xnd2) -- (xor2) (xnd2) -- (and2)
+      (xor2) -- (lll2) (xor2) -- (txor2) (txor2) -- (W40) node[below] {$i$}
+      (lll2) -- (W42) node[below] {$i+b_2$}
+      ;
+    \draw (W42) + (0,-0.5) node[below] {weight($\varepsilon^t_i$) = 1};
+  \end{tikzpicture}%}}}
+  %\tikzsetnextfilename{trail-lego-\overlaynumber}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw<3-> (current page.center) +(-5.35,0) node {\legobrick[alpha]};
+    \draw<3-> (current page.center) +(-2.35,0) node {\legobrick[beta]};
+    \draw<3-> (current page.center)  +(0.50,0) node {\legobrick[gamma]};
+    \draw<3-> (current page.center)  +(3.35,0) node {\legobrick[delta]};
+    \draw<3-> (current page.center)  +(6.25,0) node {\legobrick[epsil]};
+  \end{tikzpicture}%
+  \pause
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{
+\newcommand{\M}[2]{1.65,-1.5*#1-.25-.25*#2}
+\newcommand{\C}[1]{-.1,-.25-1.5*#1}
+\renewcommand{\S}[2]{.25+.25*#2,-1.5*#1}
+\begin{frame}{} %{\MiniMORUS[640]: Building trails with $\chi_1$ and $\chi_2$}%{{{
+  \centering
+  %\tikzsetnextfilename{trail-\overlaynumber}
+  \resizebox{!}{0.95\textheight}{%
+    \begin{tikzpicture}[very thick,xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
+      % \begin{scope}
+        \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+        \foreach \r in {0,...,4} { \draw (\S{0}{\r}) node[above] {$S_{\r}$}; }
+        \draw (\C{0}|-\S{0}{0}) node[above] {$C$};
+
+        \draw[alpha] (\C{0}) node[left] {27} -| (\S{1}{0}) node[above right] {0}
+                     (\M{0}{0}) node[right] {$\alpha_{27}$};
+        \pause
+
+        \draw[beta]  (\C{1}) node[above left] {0} -| (\S{1}{0}) node[below right] {0}
+                     (\C{1}-|\S{1}{0}) -| ([xshift=-1pt]\S{1}{1}) node[above] {0\,}
+                     (\M{1}{0}) node[right] {$\beta_0$};
+        \pause
+
+        \draw[gamma] (\S{1}{1}) node[above] {\,0} -- (\S{2}{1}) node[above left] {31\!\!}
+                      (\S{1}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{1}{4}) node[above] {0\,}
+                      (\M{1}{2}) node[right] {$\gamma_0$};
+        \pause
+
+        \draw[beta]  (\C{2}) node[above left] {31} -| ([xshift=-1pt]\S{2}{0}) node[below left] {31\!}
+                     (\C{2}) -| (\S{2}{1}) node[below left] {31\!\!}
+                     (\M{2}{0}) node[right] {$\beta_{31}$};
+
+        \draw[alpha] ([yshift=-3.0pt]\C{1}) node[below left] {26} -| ([xshift=-1pt]\S{2}{0}) node[above left] {31\!}
+                    (\M{1}{1}) node[right] {$\alpha_{26}$};
+        \pause
+
+        \draw[delta] (\S{1}{4}) node[above] {\,0} -- (\S{2}{4}) node[above right] {13}
+                     (\S{1}{4}) ++(0,-1.25) -| ([xshift=2pt]\S{2}{2}) node[below] {0} node[black] {$\times$}
+                     (\M{1}{3}) node[right] {$\delta_0$};
+        \pause
+
+        \draw[gamma] ([xshift=2pt]\S{2}{1}) node[below right] {13} -- ([xshift=2pt]\S{3}{1}) node[above right] {12}
+                     ([xshift=2pt]\S{2}{1}) ++(0,-.75) -| (\S{2}{4}) node[below right] {13}
+                     (\M{2}{2}) node[right] {$\gamma_{13}$};
+
+        \draw[beta]  ([yshift=-1.5pt]\C{2}) node[left] {13} -| (\S{2}{0}) node[below right] {\!\!13}
+                     ([yshift=-1.5pt]\C{2}-|\S{2}{0}) -| ([xshift=1pt]\S{2}{1}) node[above] {\,\,\,13};
+        \draw[beta]  (\M{2}{0}) + (0.14,-0.02) node[right] {$\vphantom{\beta}_{, 13}$};
+
+        \draw[alpha] ([yshift=-1.5pt]\C{1}) node[left] {8} -| (\S{2}{0}) node[above right] {\!\!13}
+                     (\M{1}{1}) + (0.14,0) node[right] {$\vphantom{\alpha}_{, 8}$};
+
+        \draw[beta]  (\C{3}) node[left] {12} -| (\S{3}{0}) node[below right] {12}
+                     (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {12}
+                     (\M{3}{0}) node[right] {$\beta_{12}$};
+
+        \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {7} -| (\S{3}{0}) node[above right] {12}
+                     (\M{2}{1}) node[right] {$\alpha_7$};
+
+        \draw (\S{4}{2}) node[above] {\normalsize  $\chi_1$: \textit{estimated} weight 11};
+
+        \draw (\S{4}{1}) + (0,-0.25) node [below] {\normalsize $C^0_{27} \oplus C^1_{0} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{7} \oplus C^2_{13} \oplus C^2_{31} \oplus C^3_{12} \to S^2_{2,0}$};
+
+      \pause
+
+      \begin{scope}[xshift=2.5cm]
+        \foreach \r in {1,...,4} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+        \foreach \r in {0,...,4} { \draw (\S{1}{\r}) node[above] {$S_{\r}$}; }
+        \draw (\C{0}|-\S{1}{0}) node[above] {$C$};
+
+        \draw[epsil] (\S{2}{2}) node[above] {0} node[black] {$\times$} -- (\S{3}{2}) node[below] {7\,}
+                     (\S{2}{2}) ++(0,-1.00) -| ([xshift=-4pt]\S{3}{0}) node[above left] {0}
+                     (\M{2}{3}) node[right] {$\varepsilon_0$};
+        \pause
+
+        \draw[delta] (\S{2}{4}) node[above] {\,7} -- (\S{3}{4}) node[above right] {20}
+                     (\S{2}{4}) ++(0,-1.25) -| ([xshift=1pt]\S{3}{2}) node[below] {\,7}
+                     (\M{2}{4}) node[right] {$\delta_7$};
+
+        \pause
+
+        \draw[gamma] (\S{2}{1}) node[above] {\,7} -- (\S{3}{1}) node[above left] {6\!}
+                     (\S{2}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{2}{4}) node[above] {7\,}
+                     (\M{2}{2}) node[right] {$\gamma_7$};
+
+        \draw[gamma] ([xshift=2pt]\S{3}{1}) node[below right] {20} -- ([xshift=2pt]\S{4}{1}) node[above right] {19}
+                     ([xshift=2pt]\S{3}{1}) ++(0,-.75) -| (\S{3}{4}) node[below right] {20}
+                     (\M{3}{2}) node[right] {$\gamma_{20}$};
+
+        \pause
+
+        \draw[beta]  (\C{2}) node[above left] {7} -| (\S{2}{0}) node[below right] {7}
+                    (\C{2}-|\S{2}{0}) -| ([xshift=-1pt]\S{2}{1}) node[above] {7\,}
+                    (\M{2}{0}) node[right] {$\beta_7$};
+
+        \draw[beta]  (\C{3}) node[above left] {6} -| ([xshift=-1pt]\S{3}{0}) node[below left] {6\!}
+                     ([xshift=-1pt]\C{3}-|\S{3}{0}) -| (\S{3}{1}) node[below left] {6\!}
+                     (\M{3}{0}) node[right] {$\beta_{20,6}$};
+        \draw[beta]  ([yshift=-1.5pt]\C{3}) node[left] {20} -| (\S{3}{0}) node[below right] {\!20}
+                     ([yshift=-1.5pt]\C{3}-|\S{3}{0}) -| ([xshift=1pt]\S{3}{1}) node[above] {\,\,\,\,20};
+
+        \draw[beta]  (\C{4}) node[left] {19} -| (\S{4}{0}) node[below right] {19}
+                    (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {19}
+                    (\M{4}{0}) node[right] {$\beta_{19}$};
+
+        \pause
+
+        \draw[alpha] (\C{1}) node[left] {2} -| (\S{2}{0}) node[above right] {7}
+                     (\M{1}{0}) node[right] {$\alpha_{2}$};
+
+        \draw[alpha] ([yshift=-1.5pt]\C{2}) node[left] {15} -| (\S{3}{0}) node[above right] {\!20}
+                     (\M{2}{1}) node[right] {$\alpha_{15,1,27}$};
+        \draw[alpha] ([yshift=-3.0pt]\C{2}) node[below left] {1} -| ([xshift=-1pt]\S{3}{0}) node[above left] {6\!};
+        \draw[alpha] ([yshift=-4.5pt]\C{2}) node[below] {\,\,\,\,27} -| ([xshift=-3pt]\S{3}{0}) node[below] {0\,\,};
+
+        \draw[alpha] ([yshift=-3.0pt]\C{3}) node[below left] {14} -| (\S{4}{0}) node[above right] {19}
+                     (\M{3}{1}) node[right] {$\alpha_{14}$};
+
+        \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: \textit{estimated} weight 13};
+
+        \draw (\S{1}{4}) + (0,0.5)  node [above] {\normalsize $C^1_{2} \oplus C^2_{1} \oplus C^2_{7} \oplus C^2_{15} \oplus C^2_{27} \oplus C^3_{6} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19} \to  S^2_{2,0}$};
+        % \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
+        % \draw (\S{0}{2}) node[below] {\normalsize \MiniMORUS[640]};
+      \end{scope}
+    \end{tikzpicture}%
+  }
+\end{frame}%}}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MiniMORUS: Weight of $\beta^t_i \oplus \gamma^t_i$}%{{{
+  \begin{columns}[c]
+    \column{.35\textwidth}
+      \small
+      \tikzsetnextfilename{morus-betagamma}
+      \begin{tikzpicture}[xscale=0.75,yscale=1.25]
+        \rotwfalse
+        \messagefalse
+        \statesfalse
+        \printstate
+
+        \draw[trail, beta]
+          (C) -- node[right] {$i$} (lll-1)
+          (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+          (tlll-1) -- (W-20) node[above] {$i$}
+          (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+          %(xnd-1) -- (and-1)
+          (W40) node[below] {\phantom{$i$}}
+          ;
+        \draw[trail, gamma]
+          %(W-21) node[above] {$i$}
+          (txor-1) -- (xnd1)
+          (xnd1) -- (xor1) (xor1) -- (lll1)
+          %(xnd1) -- (and1)
+          (xor1) -- (txor1)
+          (txor1) -- (W-24) node[above] {$i$}
+          (lll1) -- (W41) node[below] {$i+b_1$}
+          ;
+        \draw[trail, beta,  dotted] (and-1) -- ++(-1,0) |- (and-1|-and1);
+        \draw[trail, gamma, dotted] (and1)  -- (and-1|-and1) node[black,fill=white] {~=~};
+        \node[and,fill,beta] at (and-1) {\color{white}$\cdot$};
+        \node[and,fill,gamma] at (and1) {\color{white}$\cdot$};
+      \end{tikzpicture}
+    \column{.55\textwidth}
+    \begin{itemize}
+      \item Weight of $\beta^t_i \oplus \gamma^t_i$ is 0 (not 2).
+        \bigskip
+      \item Weight of $\chi_1$ is 7 (not 11)
+      \item Weight of $\chi_2$ is 9 (not 13)
+    \end{itemize}
+  \end{columns}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\MiniMORUS: Final Approximation}%{{{
+  \begin{itemize}
+    \item \MiniMORUS[640] \footnotesize
+      \[C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus
+      C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19} = 0\]
+      \normalsize 
+    \item \MiniMORUS[1280] \footnotesize
+      \[C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37} \oplus
+      C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24} = 0\]
+      \normalsize 
+      \medskip
+    \item Total weight of $\chi$: $7 + 9 = 16$.
+      \bigskip
+    \item Experimentally verified
+      \begin{itemize}
+        \item Analysis of the Algebraic Normal Form
+        \item Measurements on random inputs \sn{(slightly better than expected)}
+      \end{itemize}
+  \end{itemize}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mysection{Application to MORUS}{}{\faCube} % \faArrows
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{From \MiniMORUS to \MORUS}%{{{
+  \begin{itemize}
+    \item 
+        \tikz{\draw rectangle (.3,.3);} \structure{=}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);} \structure{+}
+        \tikz{\draw rectangle (.3,.3);}
+
+      $S_{i,j}$ in \MiniMORUS = $S_{i,j} \oplus S_{i,j + w} \oplus S_{i,j + 2w} \oplus S_{i,j + 3w}$ in \MORUS
+      \bigskip
+    \item Weight $\times 4$\pause, except $\beta_i + \gamma_i$ has weight 0 in \MiniMORUS but 3 in \MORUS
+      \bigskip
+    \item[\faArrowCircleRight] \MORUS[640]:~ Weight $4 \times 16 + 3 \times 3 = \emph{73}$
+      $\;\to\;$ data complexity $\approx 2^{146}$ \hfill\faFrownO
+    \item[\faArrowCircleRight] \MORUS[1280]: Weight $4 \times 16 + 4 \times 3 = \emph{76}$
+      $\;\to\;$ data complexity $\approx 2^{152}$ \hfill\alt<1>{\faMehO}{\faSmileO}%
+      \bigskip
+    \item \sn{(actual data complexity is about a factor of $2^6$ lower)}
+      %\bigskip%
+    %\item[\faExclamationTriangle] Data limit $2^{64}$
+      %\pause \dots but correlation is independent of the key
+  \end{itemize}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Impact for \MORUS}%{{{
+  \begin{itemize}
+    \item \textbf{Keystream correlation}
+      \begin{itemize}
+        \item The bias is \textit{independent} of key or nonce
+        \item Known plaintexts $\to$ Distinguisher
+        \item Fixed plaintext $\to$ Plaintext recovery
+        \item Similar to RC4, BEAST (man-in-the-browser) attack
+      \end{itemize}
+      \pause
+    \item \textbf{Data complexity}
+      \begin{itemize}
+        \item Data limit $2^{64}$
+          \dots but correlation holds under rekeying
+        \item Requires $2^{146}$ blocks for \MORUS[1280-256] 
+        \item Violates the 256-bit confidentiality claim (?)
+        \item Not practical ;-)
+      \end{itemize}
+    \item Attack with similar effect on \cipher{AEGIS} \sn{\cite{AEGIS,sacryptMinaud14}}, another finalist for UC2\!
+  \end{itemize}
+\end{frame}%}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\unnumbered{
+\begin{frame}{Bibliography}%{{{
+  \printbibliography
+\end{frame}%}}}
+}
+
+% BIBLIOGRAPHY %{{{
+\begin{filecontents*}{morus.bib}
+@misc{MORUS,
+  title        = {The Authenticated Cipher {MORUS} (v2)},
+  author       = {Hongjun Wu and Tao Huang},
+  howpublished = {Submission to CAESAR: Competition for Authenticated Encryption. Security, Applicability, and Robustness (Round 3 and Finalist)},
+  year         = {2016},
+  month        = {September},
+  note         = {\url{http://competitions.cr.yp.to/round3/morusv2.pdf}}
+}
+
+@misc{AEGIS,
+  title        = {{AEGIS}: {A} Fast Authenticated Encryption Algorithm (v1.1)},
+  author       = {Hongjun Wu and Bart Preneel},
+  howpublished = {Submission to CAESAR: Competition for Authenticated Encryption. Security, Applicability, and Robustness (Round 3 and Finalist)},
+  year         = {2016},
+  month        = {September},
+  note         = {\url{http://competitions.cr.yp.to/round3/aegisv11.pdf}}
+}
+
+@inproceedings{sacryptWuP13,
+  author    = {Hongjun Wu and
+               Bart Preneel},
+  editor    = {Tanja Lange and
+               Kristin E. Lauter and
+               Petr Lisonek},
+  title     = {{AEGIS}: {A} Fast Authenticated Encryption Algorithm},
+  booktitle = {Selected Areas in Cryptography -- {SAC} 2013},
+  series    = {LNCS},
+  volume    = {8282},
+  pages     = {185--201},
+  publisher = {Springer},
+  year      = {2013},
+  doi       = {10.1007/978-3-662-43414-7_10},
+  note      = {See also: \url{https://eprint.iacr.org/2013/695}},
+}
+
+@inproceedings{sacryptMinaud14,
+  author       = {Brice Minaud},
+  editor       = {Antoine Joux and
+                  Amr M. Youssef},
+  title        = {Linear Biases in {AEGIS} Keystream},
+  booktitle    = {Selected Areas in Cryptography -- {SAC} 2014},
+  series       = {LNCS},
+  volume       = {8781},
+  pages        = {290--305},
+  publisher    = {Springer},
+  year         = {2014},
+  doi          = {10.1007/978-3-319-13051-4_18},
+  note         = {See also: \url{https://eprint.iacr.org/2018/292}}
+}
+\end{filecontents*}
+%}}}
+
+\end{document}
+% vim: foldmethod=marker
