@@ -1,0 +1,10 @@
+\begin{tikzpicture}[font=\Huge]
+
+\foreach \s in {0,...,4} {
+  \node (S\s) at (2+4.5*\s,1) {$S_\s$};
+  \foreach \w in {0,...,3} {
+    \draw (\w+4.5*\s,0) rectangle +(0.75,0.5);
+  }
+}
+
+\end{tikzpicture}

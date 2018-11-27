@@ -1,0 +1,105 @@
+\newcommand{\M}[2]{1.65,-1.5*#1-.25-.25*#2}
+\newcommand{\C}[1]{-.1,-.25-1.5*#1}
+\renewcommand{\S}[2]{.25+.25*#2,-1.5*#1}
+
+% \begin{tikzpicture}[xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
+\begin{tikzpicture}[xscale=3, yscale=1.5, every node/.style={font=\scriptsize,inner sep=2pt}]
+  % \begin{scope}
+    \foreach \r in {0,...,3} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+    \foreach \r in {0,...,4} { \draw (\S{0}{\r}) node[above] {$S_{\r}$}; }
+    \draw (\C{0}|-\S{0}{0}) node[above] {$C$};
+
+    \draw[beta, thick]  (\C{1}) node[above left] {0} -| (\S{1}{0}) node[below right] {0}
+                 (\C{1}-|\S{1}{0}) -| ([xshift=-1pt]\S{1}{1}) node[above] {0\,}
+                 (\M{1}{0}) node[right] {$\beta_0$};
+    \draw[alpha, thick] (\C{0}) node[left] {27} -| (\S{1}{0}) node[above right] {0}
+                 (\M{0}{0}) node[right] {$\alpha_{27}$};
+
+     \draw[gamma, thick] (\S{1}{1}) node[above] {\,0} -- (\S{2}{1}) node[above left] {31\!\!}
+                  (\S{1}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{1}{4}) node[above] {0\,}
+                  (\M{1}{2}) node[right] {$\gamma_0$};
+
+    \draw[beta, thick]  (\C{2}) node[above left] {31} -| ([xshift=-1pt]\S{2}{0}) node[below left] {31\!}
+                 (\C{2}) -| (\S{2}{1}) node[below left] {31\!\!}
+                 (\M{2}{0}) node[right] {$\beta_{31,}$};
+
+    \draw[alpha, thick] ([yshift=-3.0pt]\C{1}) node[below left] {26} -| ([xshift=-1pt]\S{2}{0}) node[above left] {31\!}
+                (\M{1}{1}) node[right] {$\alpha_{26,}$};
+
+    \draw[delta, thick] (\S{1}{4}) node[above] {\,0} -- (\S{2}{4}) node[above right] {13}
+                 (\S{1}{4}) ++(0,-1.25) -| ([xshift=2pt]\S{2}{2}) node[below] {0} node[black] {$\times$}
+                 (\M{1}{3}) node[right] {$\delta_0$};
+
+    \draw[gamma, thick] ([xshift=2pt]\S{2}{1}) node[below right] {13} -- ([xshift=2pt]\S{3}{1}) node[above right] {12}
+                 ([xshift=2pt]\S{2}{1}) ++(0,-.75) -| (\S{2}{4}) node[below right] {13}
+                 (\M{2}{2}) node[right] {$\gamma_{13}$};
+
+    \draw[beta, thick]  ([yshift=-1.5pt]\C{2}) node[left] {13} -| (\S{2}{0}) node[below right] {\!\!13}
+                 ([yshift=-1.5pt]\C{2}-|\S{2}{0}) -| ([xshift=1pt]\S{2}{1}) node[above] {\,\,\,13};
+    \draw[beta, thick]  (\M{2}{0}) + (0.11,-0.02) node[right] {$_{, 13}$};
+
+    \draw[alpha, thick] ([yshift=-1.5pt]\C{1}) node[left] {8} -| (\S{2}{0}) node[above right] {\!\!13}
+                 (\M{1}{1}) + (0.12,0) node[right] {$_{, 8}$};
+
+    \draw[beta, thick]  (\C{3}) node[left] {12} -| (\S{3}{0}) node[below right] {12}
+                 (\C{3}-|\S{3}{0}) -| ([xshift=2pt]\S{3}{1}) node[below right] {12}
+                 (\M{3}{0}) node[right] {$\beta_{12}$};
+
+    \draw[alpha, thick] ([yshift=-3.0pt]\C{2}) node[below left] {7} -| (\S{3}{0}) node[above right] {12}
+                 (\M{2}{1}) node[right] {$\alpha_7$};
+    \draw (\S{4}{2}) node[above] {\large  $\chi_1$: weight 7 (not 11)};
+
+    \draw (\S{4}{1}) + (0,-0.25) node [below] {\large $C^0_{27} \oplus C^1_{0} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{7} \oplus C^2_{13} \oplus C^2_{31} \oplus C^3_{12} \to S^2_{2,0}$};
+
+  \begin{scope}[xshift=2.5cm]
+    \foreach \r in {1,...,4} { \draw[gray, rounded corners=2pt] (0,-\r*1.5) rectangle ++(1.5,-1.5); }
+    \foreach \r in {0,...,4} { \draw (\S{1}{\r}) node[above] {$S_{\r}$}; }
+    \draw (\C{0}|-\S{1}{0}) node[above] {$C$};
+
+    \draw[epsil, thick] (\S{2}{2}) node[above] {0} node[black] {$\times$} -- (\S{3}{2}) node[below] {7\,}
+                 (\S{2}{2}) ++(0,-1.00) -| ([xshift=-4pt]\S{3}{0}) node[above left] {0}
+                 (\M{2}{3}) node[right] {$\varepsilon_0$};
+    \draw[delta, thick] (\S{2}{4}) node[above] {\,7} -- (\S{3}{4}) node[above right] {20}
+                 (\S{2}{4}) ++(0,-1.25) -| ([xshift=1pt]\S{3}{2}) node[below] {\,7}
+                 (\M{2}{4}) node[right] {$\delta_7$};
+
+    \draw[gamma, thick] (\S{2}{1}) node[above] {\,7} -- (\S{3}{1}) node[above left] {6\!}
+                 (\S{2}{1}) ++(0,-.75) -| ([xshift=-1pt]\S{2}{4}) node[above] {7\,}
+                 (\M{2}{2}) node[right] {$\gamma_7$};
+
+    \draw[gamma, thick] ([xshift=2pt]\S{3}{1}) node[below right] {20} -- ([xshift=2pt]\S{4}{1}) node[above right] {19}
+                 ([xshift=2pt]\S{3}{1}) ++(0,-.75) -| (\S{3}{4}) node[below right] {20}
+                 (\M{3}{2}) node[right] {$\gamma_{20}$};
+
+    \draw[beta, thick]  (\C{2}) node[above left] {7} -| (\S{2}{0}) node[below right] {7}
+                (\C{2}-|\S{2}{0}) -| ([xshift=-1pt]\S{2}{1}) node[above] {7\,}
+                (\M{2}{0}) node[right] {$\beta_7$};
+
+    \draw[beta, thick]  (\C{3}) node[above left] {6} -| ([xshift=-1pt]\S{3}{0}) node[below left] {6\!}
+                 ([xshift=-1pt]\C{3}-|\S{3}{0}) -| (\S{3}{1}) node[below left] {6\!}
+                 (\M{3}{0}) node[right] {$\beta_{20,6}$};
+    \draw[beta, thick]  ([yshift=-1.5pt]\C{3}) node[left] {20} -| (\S{3}{0}) node[below right] {\!20}
+                 ([yshift=-1.5pt]\C{3}-|\S{3}{0}) -| ([xshift=1pt]\S{3}{1}) node[above] {\,\,\,\,20};
+
+    \draw[beta, thick]  (\C{4}) node[left] {19} -| (\S{4}{0}) node[below right] {19}
+                (\C{4}-|\S{4}{0}) -| ([xshift=2pt]\S{4}{1}) node[below right] {19}
+                (\M{4}{0}) node[right] {$\beta_{19}$};
+
+    \draw[alpha, thick] (\C{1}) node[left] {2} -| (\S{2}{0}) node[above right] {7}
+                 (\M{1}{0}) node[right] {$\alpha_{2}$};
+
+    \draw[alpha, thick] ([yshift=-1.5pt]\C{2}) node[left] {15} -| (\S{3}{0}) node[above right] {\!20}
+                 (\M{2}{1}) node[right] {$\alpha_{15,1,27}$};
+    \draw[alpha, thick] ([yshift=-3.0pt]\C{2}) node[below left] {1} -| ([xshift=-1pt]\S{3}{0}) node[above left] {6\!};
+    \draw[alpha, thick] ([yshift=-4.5pt]\C{2}) node[below] {\,\,\,\,27} -| ([xshift=-3pt]\S{3}{0}) node[below] {0\,\,};
+
+    \draw[alpha, thick] ([yshift=-3.0pt]\C{3}) node[below left] {14} -| (\S{4}{0}) node[above right] {19}
+                 (\M{3}{1}) node[right] {$\alpha_{14}$};
+
+    \draw (\S{5}{2}) node[above] {\large $\chi_2$: weight 9 (not 13)};
+
+    \draw (\S{1}{4}) + (0,0.5)  node [above] {\large $C^1_{2} \oplus C^2_{1} \oplus C^2_{7} \oplus C^2_{15} \oplus C^2_{27} \oplus C^3_{6} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19} \to  S^2_{2,0}$};
+    % \draw (\S{5}{2}) node[above] {\normalsize $\chi_2$: weight 9 (not 13)};
+    % \draw (\S{0}{2}) node[below] {\normalsize \MiniMORUS[640]};
+  \end{scope}
+\end{tikzpicture}

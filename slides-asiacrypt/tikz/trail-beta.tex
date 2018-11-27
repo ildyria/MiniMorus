@@ -1,0 +1,16 @@
+\begin{tikzpicture}[xscale=0.65,yscale=1.5]%{{{
+  \rotwfalse
+  \messagefalse
+  \printstate
+  \draw[trail, beta]
+    (C) -- node[right] {$i$} (lll-1)
+    (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+    (tlll-1) -- (W-20) node[above] {$i$}
+    (xor-1) -- (txor-1) (txor-1) -- (W-21) node[above] {$i$}
+    (xnd-1) -- (and-1)
+    (W40) node[below] {\phantom{$i$}};
+
+    \draw (W42) + (0,-0.5) node[below] {weight($\beta^t_i$) = 1};
+    % \draw[beta, very thick] (W-21) + (0,+0.175) ellipse (0.2cm and 0.15cm);
+
+\end{tikzpicture}%}}}

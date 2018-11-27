@@ -1,0 +1,32 @@
+\begin{tikzpicture}[xscale=0.75,yscale=1.5]
+  \rotwfalse
+  \messagefalse
+  \statesfalse
+  \printstate
+
+  \draw[trail, beta]
+    (C) -- node[right] {$i$} (lll-1)
+    (lll-1) -- (tlll-1) (lll-1) -- (xor-1) (xor-1) -- (xnd-1)
+    (tlll-1) -- (W-20) node[above] {$i$}
+    (xor-1) -- (txor-1) %(txor-1) -- (W-21) node[above] {$i$}
+    %(xnd-1) -- (and-1)
+    (W40) node[below] {\phantom{$i$}}
+    ;
+  \draw[trail, gamma]
+    %(W-21) node[above] {$i$}
+    (txor-1) -- (xnd1)
+    (xnd1) -- (xor1) (xor1) -- (lll1)
+    %(xnd1) -- (and1)
+    (xor1) -- (txor1)
+    (txor1) -- (W-24) node[above] {$i$}
+    (lll1) -- (W41) node[below] {$i+b_1$}
+    ;
+  % \draw[trail, beta,  dotted] (and-1) -- (and-1-|and1);
+  % \draw[trail, gamma, dotted] (and1)  -- (and-1-|and1) node[above, black] {=};
+  \node (eq) at ($(and-1|-and1)+(-1,-2.4pt)$) {=};
+  % \node ()
+  \node [opand,fill=beta] at (and-1) {$\cdot$};
+  \node [opand,fill=gamma] at (and1) {$\cdot$};
+  \draw[beta,{Circle[sep=-1.8pt]}-]  ($(and-1)+(0,-2.4pt)$) -| (eq);
+  \draw[gamma,{Circle[sep=-1.8pt]}-] ($(and1)+(0,-2.4pt)$) -- (eq);
+\end{tikzpicture}

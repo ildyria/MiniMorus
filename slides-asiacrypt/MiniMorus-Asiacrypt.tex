@@ -1,0 +1,399 @@
+\documentclass[aspectratio=169,9pt]{beamer}
+% \documentclass[9pt]{beamer}
+\usetheme[block=fill]{ru}           % Use ru theme
+\usepackage{common}
+
+
+\title{Linear Cryptanalysis of \MORUS}
+
+\author{Tomer Ashur, Maria Eichlseder, Martin M. Lauridsen, Ga\"etan Leurent, Brice Minaud, Yann Rotella, Yu Sasaki,\\ \textbf{Beno\^it Viguier}}
+\date[Short Occasion]{DS Lunch Talk, June 22, 2018}
+
+\begin{document}
+
+% -------------------------------------------------------------
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{Overview}
+  \setbeamertemplate{section in toc}{{\color{gray}$\blacktriangleright$}~\inserttocsection}
+  \tableofcontents
+\end{frame}
+
+\section{\MORUS \& \MiniMORUS}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{What is \MORUS?}
+
+\begin{itemize}
+  \item Authenticated encryption algorithm (Encrypt-and-MAC)
+  \item Designed by Wu and Huang
+  % \item 3 versions:
+  %   \begin{itemize}
+  %     \item \MORUS[640] with 128-bit key
+  %     \item \MORUS[1280-128] with 128-bit key
+  %     \item \MORUS[1280-256] with 128-bit key
+  %   \end{itemize}
+\end{itemize}
+\begin{table}[b]
+\caption{Security goals of \MORUS.}
+% \label{Tbl/security}
+\centering
+\begin{tabular}{@{}l@{\quad}c@{\qquad}c@{}}\toprule
+                        & Confidentiality (bits) & Integrity (bits) \\ \midrule
+\MORUS[640-128]   & 128                    & 128              \\
+\MORUS[1280-128]  & 128                    & 128              \\
+\MORUS[1280-256]  & 256                    & 128              \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\centerline{Impose rekeying every $2^{64}$ encrypted blocks.}
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{What is \MORUS?}
+
+\MORUS state:
+\begin{itemize}
+  \item 5 registers of 4 words.
+  \item \MORUS[640], 32-bit words $\implies$ 128-bit registers $\implies$ SSE instructions.
+  \item \MORUS[1280], 64-bit words $\implies$ 256-bit registers $\implies$ AVX2 instructions.
+\end{itemize}
+\begin{figure}[h]
+  \centering
+  \resizebox{0.8\textwidth}{!}{%
+  \input{tikz/Morus_state.tex}
+  }
+  % \caption{\MiniMORUS state update function.}
+  % \label{fig:morus_state}
+\end{figure}
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{What is \MORUS?}
+
+\begin{figure}[h]
+  \substatesfalse
+  \centering
+  \resizebox{0.9\textwidth}{!}{%
+  \input{tikz/MorusRounds.tex}
+  }
+\end{figure}
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{What is \MORUS?}
+
+\begin{figure}[h]
+  \substatesfalse
+  \centering
+  \resizebox{!}{0.8\textheight}{%
+  \input{tikz/Morus.tex}
+  }
+  % \caption{\MiniMORUS state update function.}
+  % \label{fig:morus}
+\end{figure}
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS!}
+
+% \begin{columns}
+%   \begin{column}
+\begin{figure}[h]
+  \substatesfalse
+  \centering
+  \resizebox{!}{0.8\textheight}{%
+  \input{tikz/MiniMorus.tex}
+  }
+  % \caption{\MiniMORUS state update function.}
+  % \label{fig:minimorus}
+\end{figure}
+%   \end{column}
+%   \begin{column}
+%     \begin{itemize}
+%       \item \MiniMORUS[640] : 32bits of security
+%     \end{itemize}
+%   \end{column}
+% \end{columns}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS with chosen plaintext!}
+
+\begin{figure}[h]
+  \substatesfalse
+  \centering
+  \resizebox{!}{0.8\textheight}{%
+  \input{tikz/MiniMorusNoPlaintext.tex}
+  }
+  % \caption{\MiniMORUS state update function.}
+  % \label{fig:minimorus}
+\end{figure}
+\end{frame}
+
+
+\section{Linear Cryptanalysis of \MiniMORUS}
+
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{Weight and Bias}
+
+\begin{center}
+\texttt{x = u $\oplus$ y $\oplus$ (z $\land$ t)}\\
+Can be linear approximated with\\
+\texttt{E: x = u $\oplus$ y}
+\end{center}
+
+This linear approximation holds with a bias $\varepsilon$:
+$$\Pr(E) = \frac{1}{2} + \varepsilon$$
+
+The {\it correlation} and {\it weight} of an approximation is:
+\begin{align*}
+\corr(E) &\eqdef 2\Pr(E)-1 = 2 \varepsilon\\
+\weight(E) &\eqdef -\log_2|\corr(E)|
+\end{align*}
+
+\begin{alertblock}{Pilling Up Lemma (Matsui M., 1993)}
+  The correlation (resp. weight) of an XOR of independent variables is equal to
+  the product (resp. sum) of their individual correlations (resp. weights)
+\end{alertblock}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS : trails $\alpha, \beta, \gamma, \delta, \varepsilon$}
+
+  \begin{figure}
+    \substatesfalse
+    \rotwfalse
+    \statesfalse
+    \messagefalse
+
+    \resizebox{!}{0.78\textheight}{%
+    \input{tikz/trail-alpha.tex}
+    }
+    \resizebox{!}{0.78\textheight}{%
+    \input{tikz/trail-beta.tex}
+    }
+    \resizebox{!}{0.78\textheight}{%
+    \input{tikz/trail-gamma.tex}
+    }
+    \resizebox{!}{0.78\textheight}{%
+    \input{tikz/trail-delta.tex}
+    }
+    \resizebox{!}{0.78\textheight}{%
+    \input{tikz/trail-epsil.tex}
+    }
+  \end{figure}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+
+\begin{frame}{Building Trails}
+
+\begin{figure}
+  \includegraphics[width=0.9\textwidth]{lego.jpg}
+\end{figure}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS[640] : Building trails with $\chi_1$ and $\chi_2$}
+
+  \begin{figure}
+    \resizebox{!}{0.90\textheight}{%
+      \input{tikz/trails.tex}
+    }
+  \end{figure}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS : Weight of $\beta^t_i \oplus \gamma^t_i$}
+
+\begin{columns}
+\begin{column}{0.6\textwidth}
+  \begin{figure}
+    \resizebox{!}{0.90\textheight}{%
+      \input{tikz/BetaGamma.tex}
+    }
+  \end{figure}
+\end{column}
+\begin{column}{0.3\textwidth}  %%<--- here
+        Weight of $\beta^t_i \oplus \gamma^t_i$ is 0 (not 2).
+  \end{column}
+\end{columns}
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS[640] : Weight corrected}
+
+  \begin{figure}
+    \resizebox{!}{0.90\textheight}{%
+      \input{tikz/trails-nopause.tex}
+    }
+  \end{figure}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS : Full Trail}
+
+\begin{itemize}
+  \item \MiniMORUS[640]
+  $$\chi_1 \oplus \chi_2 = C^0_{27} \oplus C^1_{0} \oplus C^1_{2} \oplus C^1_{8} \oplus C^1_{26} \oplus C^2_{1} \oplus C^2_{13} \oplus C^2_{15} \oplus
+   C^2_{27} \oplus C^2_{31} \oplus C^3_{6} \oplus C^3_{12} \oplus C^3_{14} \oplus C^3_{20} \oplus C^4_{19} \to 0$$
+   \item \MiniMORUS[1280]
+  $$C^0_{51} \oplus C^1_{0} \oplus C^1_{25} \oplus C^1_{33} \oplus C^1_{55} \oplus C^2_{4} \oplus C^2_{7} \oplus C^2_{29} \oplus C^2_{37} \oplus
+  C^2_{38} \oplus C^2_{46} \oplus C^2_{51} \oplus C^3_{11} \oplus C^3_{20} \oplus C^3_{42} \oplus C^3_{50} \oplus C^4_{24} \to 0$$
+\end{itemize}
+
+  In both case, the weight of the trail is 7 + 9 = 16.
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{\MiniMORUS : Experimental verification}
+
+  \begin{table}[h!]
+    % \caption{Experimental verification of trail correlations.}
+    % \label{tab:miniapproximations}
+    \centerline{
+    \begin{tabular}{@{}llSSS@{}}
+      % \toprule
+      & & \multicolumn{3}{@{}c@{}}{Weight} \\
+      \cmidrule{3-5}
+      \multicolumn{2}{@{}l}{Approximations for \MiniMORUS[640]}
+               & {Exp.} & {Bool.} & {Meas.} \\
+      \midrule
+      $\chi_1$ & $S^{2,2}_0 = C^0_{27} \oplus C^1_{0, 8, 26} \oplus C^2_{7,13,31} \oplus C^3_{12}$
+               & 7    & 7     & 7 \\
+      $\chi_2$ & $S^{2,2}_0 = C^1_{2} \oplus C^2_{1,7,15,27} \oplus C^3_{6,14,20} \oplus C^4_{19}$
+               & 9    & 9     & 9 \\
+      $\chi$   & $0 = C^0_{27} \oplus C^1_{0, 2, 26, 8} \oplus C^2_{1,13,15,27,31} \oplus C^3_{6,12,14,20} \oplus C^4_{19}$
+               & 16   & 16    & 15.5 \\
+      \midrule
+      \multicolumn{2}{@{}l}{Approximations for \MiniMORUS[1280]} \\
+      \midrule
+      $\chi_1$ & $S^{2,2}_0 = C^0_{51} \oplus C^1_{0, 33, 55} \oplus C^2_{4,37,46} \oplus C^3_{50}$
+               & 7    & 7     & 7 \\
+      $\chi_2$ & $S^{2,2}_0 = C^1_{25} \oplus C^2_{7,29,38,51} \oplus C^3_{11,20,42} \oplus C^4_{24}$
+               & 9    & 9     & 9 \\
+      $\chi$   & $0 = C^0_{51} \oplus C^1_{0, 25, 33, 55} \oplus C^2_{4,7,29,37,38,46,51} \oplus C^3_{11,20,42,50} \oplus C^4_{24}$
+               & 16   & 16    & 15.9 \\
+      \bottomrule
+    \end{tabular}
+    }
+  \end{table}
+
+  \begin{center}
+    The programs we used to verify the bias experimentally are available at:\\
+    \centerline{\url{https://github.com/ildyria/MorusBias}}
+  \end{center}
+
+\end{frame}
+
+\section{Extension to \MORUS and Consequences}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{From \MiniMORUS to \MORUS}
+
+\begin{itemize}
+  \itemsep1.5em
+  \item Trail extension:\\
+    $S_{i,j}$ in \MiniMORUS is translated into $S_{i,j} \oplus S_{i,j + w} \oplus S_{i,j + 2w} \oplus S_{i,j + 3w}$ in \MORUS\\
+    e.g. $S_{2,0}$ in \MiniMORUS[1280] $\iff S_{2,0} \oplus S_{2,64} \oplus S_{2,128} \oplus S_{2,192}$ in \MORUS[1280].
+   \item Weight implication:\\
+     word ``\textit{equality}'' occurs with probability $\frac{1}{2^4}$ $\implies$ weight $\times 4$\\
+
+    \item $\beta_i + \gamma_i$ has weight 0 in \MiniMORUS but weight 4 in \MORUS\\
+\end{itemize}
+
+\begin{alertblock}{Weight of the trails}
+  \centering
+  \MORUS[640]: Weight($\chi$) = 73\\
+  \MORUS[1280]: Weight($\chi$) = 76
+\end{alertblock}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}{Impact for \MORUS}
+
+\begin{itemize}
+  \item \textbf{Keystream correlation}
+    \begin{itemize}
+      \item The bias is \textit{absolute}: does not depends on Key or Nounce!
+      \item Similar to RC4, BEAST attack\ldots
+      \item Known plaintext $\implies$ Distinguisher.
+      \item Multiple fixed plaintext $\implies$ plaintext recovery.
+    \end{itemize}
+  \pause
+  \item \textbf{Data complexity}
+    \begin{itemize}
+      \item Immune to rekeying every $2^{64}$ encrypted block.
+      \item Require $2^{146}$ blocks for \MORUS[640]
+      \item Require $2^{152}$ blocks for \MORUS[1280] \textbf{\alert{(violate 256-bit confidentiality claim)}}
+      \item trail is immune to bit-shift:\\
+        - save $2^5$ data for \MORUS[640].\\
+        - save $2^6$ data for \MORUS[1280].\\
+      \item Not practical. :(
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+% -------------------------------------------------------------
+\begin{frame}[standout]
+
+\centerline{\huge\textbf{\url{https://eprint.iacr.org/2018/464.pdf}}}
+
+\end{frame}
+
+
+\end{document}
