@@ -8,6 +8,28 @@
 % \usepackage{framed}
 
 
+% Theme %{{{
+%\colorlet{inst}{head}
+\renewcommand{\emph}[1]{{\color{ruDarkTeal}#1}}
+\newcommand{\sn}[1]{\textcolor{gray}{\small #1}}
+
+\newcommand{\itemwrap}[1]{\parbox{1cm}{\centering #1}}
+\setbeamertemplate{section in toc}{\inserttocsection}
+%}}}
+
+% Packages and commands %{{{
+\usepackage{fontawesome}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{filecontents}
+\usepackage{tabu}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{latex.out/morus.bib}
+
+\newcommand{\cipher}[1]{\textsc{#1}}
+%}}}
+
 \setbeamersize{text margin left=5mm,text margin right=5mm}
 
 \usetikzlibrary{crypto.symbols}
@@ -65,6 +87,15 @@
 \usepackage{tikz}
 \usetikzlibrary{calc,math,arrows.meta,external}
 
+\usetikzlibrary{cipher} % with some tweaks:
+\tikzset{op/.append style={minimum size=1.00ex}}
+\tikzset{and/.style={op, rectangle, rounded corners=2pt, minimum size=1.25ex}}
+\tikzset{rot/.append style={inner sep=1pt, minimum width=3ex, minimum height=1.6ex, font=\scriptsize, fill=white}}
+\tikzset{rotw/.style={rot, fill=body}}
+\tikzset{box/.append style={fill=lite}}
+\tikzset{trail/.style={line width=2pt}} %, line cap=round}}
+
+
 \makeatletter
 \pgfdeclareshape{oplus}{%{{{
   \inheritsavedanchors[from=circle]
@@ -105,25 +136,67 @@
 \tikzset{optee/.style={shape=circle, fill, draw, inner sep=0pt, minimum size=2pt}}
 \tikzset{next/.style={->, >=latex}}
 \tikzset{trail/.style={line width=2pt, line cap=round}}
+
+%%% Faculties
+\definecolor{arch}{HTML}{0a98a2} % Architektur
+\definecolor{bauw}{HTML}{d68e23} % Bauingenieurwissenschaften
+\definecolor{etec}{HTML}{68242c} % Elektrotechnik und Informationstechnik
+\definecolor{mach}{HTML}{3066ba} % Maschinenbau und Wirtschaftswissenschaften
+\definecolor{chem}{HTML}{5e60a8} % Technische Chemie, Verfahrenstechnik und Biotechnologie
+\definecolor{info}{HTML}{0a2a2c} % Informatik und Biomedizinische Technik
+\definecolor{math}{HTML}{1e6934} % Mathematik, Physik und Geodäsie
+%%% Faculty synonyms - official
+\colorlet{bau}{bauw}
+\colorlet{etit}{etec}
+\colorlet{mpug}{math}
+\colorlet{tcvp}{chem}
+\colorlet{mbww}{mach}
+\colorlet{infbio}{info}
+
+%%% Powerpoint palette
+\definecolor{fore}{HTML}{0f0f0f} % Text/Hintergrund - dunkel 1
+\definecolor{back}{HTML}{ffffff} % Text/Hintergrund - hell 1
+\definecolor{dark}{HTML}{3b5a70} % Text/Hintergrund - dunkel 2
+\definecolor{lite}{HTML}{eeece1} % Text/Hintergrund - hell 2
+\definecolor{head}{HTML}{245b78} % Web blocks - head/dark
+\definecolor{body}{HTML}{e2e9ed} % Web blocks - body/lite
+\definecolor{urlA}{HTML}{0066d8} % Link
+\definecolor{urlB}{HTML}{6c2f91} % Besuchter Link
+\definecolor{colA}{HTML}{f70146} % Akzent 1
+\definecolor{colB}{HTML}{5191c1} % Akzent 2
+\definecolor{colC}{HTML}{a5a5a5} % Akzent 3
+\definecolor{colD}{HTML}{285f82} % Akzent 4
+\definecolor{colE}{HTML}{78b473} % Akzent 5
+\definecolor{colF}{HTML}{e59352} % Akzent 6
+\definecolor{colEold}{HTML}{77babf} % Akzent 5 OLD
+
+\colorlet{tugred}{colA}
+\colorlet{tuggreen}{colE}
+\colorlet{tugblue}{colD}
+\colorlet{tugyellow}{colF}
+\colorlet{tugcyan}{colEold}
+\colorlet{tugpurple}{urlB}
+\colorlet{tugviolet}{chem}
+\colorlet{tugmagenta}{tugpurple}
+\colorlet{tugturquoise}{arch}
+\colorlet{tugbrown}{etec}
+\colorlet{tugteal}{info}
+\colorlet{tugblack}{fore}
+\colorlet{tugwhite}{back}
+\colorlet{tuggray}{colC}
+\colorlet{tuggrey}{tuggray}
+\colorlet{tugdark}{dark}
+\colorlet{tugmid}{colB}
+\colorlet{tuglite}{lite}
+
 \definecolor{delta}{HTML}{B58900}
 \definecolor{epsil}{HTML}{CB4B16}
 \definecolor{gamma}{HTML}{6C71C4}
 \definecolor{beta}{HTML}{268BD2}
 \definecolor{alpha}{HTML}{859900}
-%\definecolor{mybase0}{HTML}{839496}
-%\definecolor{mybase1}{HTML}{93A1A1}
-%\definecolor{mybase2}{HTML}{EEE8D5}
-%\definecolor{mybase3}{HTML}{FDF6E3}
-%\definecolor{myred}{HTML}{DC322F}
-%\definecolor{mymagenta}{HTML}{D33682}
-%\definecolor{mycyan}{HTML}{2AA198}
-
-\newcommand{\cipher}[1]{\textsf{#1}}
 
 \usepackage{xspace}
-%\newcommand{\morus}[1][]{\cipher{MORUS#1}\xspace}
 \newcommand{\MORUS}[1][]{\ifx\relax#1\relax\cipher{MORUS}\else\cipher{MORUS-#1}\fi\xspace}
-%\newcommand{\minimorus}[1][]{\cipher{MiniMORUS#1}\xspace}
 \newcommand{\MiniMORUS}[1][]{\ifx\relax#1\relax\cipher{MiniMORUS}\else\cipher{MiniMORUS-#1}\fi\xspace}
 
 \newif\ifsubstates\substatesfalse
@@ -188,7 +261,7 @@
     \pgfmathsetmacro{\rprev}{int(\r-1)}
     \ifthenelse{\equal{\r}{-1}}%
     { \node[opxor] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {}; }%
-    { \node[oprot] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {$\lll\!\rot$}; }
+    { \node[oprot] (lll\r) at ($(W\r\r) +(0,\opoffset+.25)$)  {\footnotesize$\lll\!\rot$}; }
       \node[opxor] (xor\r) at ($(W\r\r) +(0,\opoffset+.50)$)  {};
       \node[opxor] (xnd\r) at ($(W\r\r) +(0,\opoffset+.75)$)  {};
     \ifthenelse{\equal{\r}{4}}
@@ -197,12 +270,12 @@
     \ifthenelse{\equal{\r}{-1}}%
     {
     \ifmessage
-      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$M$};
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {\footnotesize$M$};
     \else
-      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {\color{black!2}{$M$}};
+      \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {\color{black!2}{\footnotesize$M$}};
       \node[inner sep=1pt] (M) at ($(xnd\r) +(0,.45)$) {$0$};
     \fi
-      \node[inner sep=1pt] (C) at ($(lll\r) +(0,-.5)$) {$C$};
+      \node[inner sep=1pt] (C) at ($(lll\r) +(0,-.5)$) {\footnotesize$C$};
       \draw[next] (M) -- (xnd\r);
       \draw[next] (lll\r) -- (C);
       \coordinate[optee] (tlll\r) at ($(W\r\tlllx) +(0,\opoffset+.25)$); }{}
@@ -234,11 +307,11 @@
   }
   \foreach \r in {1,...,4} {
     \ifmessage
-      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {$M$};
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {\footnotesize$M$};
       \node[opxor] (xorM\r) at ($(W\r\r) +(0,\opoffset+1)$)  {};
       \draw[next] (M\r) |- (xorM\r);
     \else
-      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {\color{black!2}$M$};
+      \node[inner sep=1pt] (M\r) at ($(W\r\r) +(.45,\opoffset+1.18)$) {\color{black!2}\footnotesize$M$};
     \fi
 
   }
@@ -258,8 +331,8 @@
         \pgfmathsetmacro{\tanBx}{int(mod(\r+1,5))}
       }
       \ifthenelse{\equal{\r}{-1}}%
-      { \node[oprotw] (lll\r-w) at ($(W\r\r) +(1.5,\opoffset+.5)$)  {$\lll\!\rotw$}; }%
-      { \node[oprotw] (lll\r-w) at ($(W\r\txorx) +(0,\opoffset+.25)$)  {$\lll\!\rotw$}; }
+      { \node[oprotw] (lll\r-w) at ($(W\r\r) +(1.5,\opoffset+.5)$)  {\footnotesize$\lll\!\rotw$}; }%
+      { \node[oprotw] (lll\r-w) at ($(W\r\txorx) +(0,\opoffset+.25)$)  {\footnotesize$\lll\!\rotw$}; }
     }
     \foreach \r in {0,...,4} {
       \node[inner sep=1pt] (S\r) at ($(W0\r) +(0,\opoffset+2)$) {$S_\r$};
@@ -280,7 +353,8 @@
 \newcommand{\corr}{\ensuremath{\operatorname{cor}}}
 \newcommand{\weight}{\ensuremath{\operatorname{weight}}}
 \newcommand\eqdef{:=}%equality by definition
-\newcommand\StateUpdate{\ensuremath{\texttt{StateUpdate}}}
+\newcommand{\Filt}{\text{\color{tugblue}\faFilter}}
+\newcommand{\StateUpdate}{\text{\color{tugblue}\cipher{StateUpdate}\,\faRefresh}}
 \newcommand\rotl{\ensuremath{\lll}}
 \newcommand\rotlxy{\ensuremath{\lll_w}}
 
@@ -304,3 +378,28 @@
   \noindent #1
   \par
 }}
+
+\newcommand{\colbox}[2][tug]{\tikz[baseline=-.7ex]{\node[fill=#1, draw=#1, draw, inner sep=0pt, minimum size=1em, text=white, name={n}] at (0,0) {#2};}}
+
+\setbeamercolor{item projected}{fg=white,bg=ruDarkTeal}
+\setbeamercolor{subitem projected}{fg=white,bg=gray}
+\setbeamercolor{subsubitem projected}{fg=white,bg=gray!50}
+%
+% \defbeamertemplate{enumerate item}{tugnum}{\usebeamercolor[fg]{item}\insertenumlabel.}
+% \defbeamertemplate{enumerate subitem}{tugnum}{\usebeamercolor[fg]{subitem}\alph{enumii}.}
+% \defbeamertemplate{enumerate subsubitem}{tugnum}{\usebeamercolor[fg]{subsubitem}\roman{enumiii}.}
+%
+\defbeamertemplate{enumerate item}{tugbox}{\usebeamercolor{item projected}\colbox[bg]{\color{fg}\insertenumlabel}}
+\defbeamertemplate{enumerate subitem}{tugbox}{\usebeamercolor{subitem projected}\colbox[bg]{\color{fg}\alph{enumii}}}
+\defbeamertemplate{enumerate subsubitem}{tugbox}{\usebeamercolor{subsubitem projected}\colbox[bg]{\color{fg}\Roman{enumiii}}}
+
+% \setbeamertemplate{enumerate item}[tugnum]
+% \setbeamertemplate{enumerate subitem}[tugnum]
+% \setbeamertemplate{enumerate subsubitem}[tugnum]
+
+\newenvironment{boxenumerate}{%
+  \enumerate%
+  \setbeamertemplate{enumerate item}[tugbox]
+  \setbeamertemplate{enumerate subitem}[tugbox]
+  \setbeamertemplate{enumerate subsubitem}[tugbox]
+  }{\endenumerate}
