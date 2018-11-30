@@ -6,16 +6,16 @@
     \foreach \r in {-1,...,5} {
       \coordinate (W\r\w) at (\w,-\r*\roundsep-.125);
     }
-    \coordinate (W-2\w) at (\w,--2.375*\roundsep-.125);
+    \coordinate (W-2\w) at (\w,--2.375*\roundsep-.425);
   }
   \foreach \w in {0,...,4} {
     %\draw (W-2\w) -- (W4\w);
-    \node[inner sep=1pt] (S\w) at ($(W0\w) +(0,.1+2)$) {$S_\w$};
+    \node[inner sep=1pt] (S\w) at ($(W0\w) +(0,.1+1.7)$) {$S_\w$};
   }
   \draw (W-1-1) node[inner sep=1pt] {\phantom{$M$}};
-  \draw (W-1-1) node[above right,gray,box,minimum height=4.8ex,yshift=1ex,xshift=-.5ex] (filt) {\Filt};
+  \draw (W-1-1) node[above right,gray,box,minimum height=4.8ex,yshift=1.1ex,xshift=-.5ex] (filt) {\Filt};
   \foreach \w in {0,...,3} {
-    \draw (W-2\w|-filt.south) +(0,.5ex+\w ex) coordinate[tee, name=t\w];
+    \draw (W-2\w|-filt.south) +(0,.85ex+.7*\w ex) coordinate[tee, name=t\w];
     \draw[next] (t\w) -- (t\w-|filt.east);
   }
   \draw (W22) node[gray,box,minimum width=5cm,minimum height=5cm,yshift=3ex] (upd) {\StateUpdate};
